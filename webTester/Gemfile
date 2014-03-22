@@ -1,0 +1,6 @@
+source "https://rubygems.org"
+
+gem "sinatra", github: "sinatra"
+gem 'activerecord-jdbcsqlite3-adapter'
+gem 'jruby-openssl'
+gem 'warbler'
