@@ -7,7 +7,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-import static com.mapzen.osrm.RouteHelper.getBearing;
+import static com.mapzen.helpers.GeometryHelper.distanceBetweenPoints;
+import static com.mapzen.helpers.GeometryHelper.getBearing;
 import static java.lang.Math.toRadians;
 
 public class Route {
@@ -148,7 +149,8 @@ public class Route {
                 Node node = new Node(x,y);
                 if (!poly.isEmpty()) {
                     Node lastElement = poly.get(poly.size()-1);
-                    double distance = distanceBetweenPoints(node.getPoint(), lastElement.getPoint());
+                    double distance = distanceBetweenPoints(node.getPoint(),
+                            lastElement.getPoint());
                     double totalDistance = distance + lastElement.getTotalDistance();
                     node.setTotalDistance(totalDistance);
                     if(lastNode != null) {
@@ -162,18 +164,6 @@ public class Route {
             }
         }
         return poly;
-    }
-
-    private double distanceBetweenPoints(double[] pointA, double[] pointB) {
-        double R = 6371;
-        double lat = toRadians(pointB[0] - pointA[0]);
-        double lon = toRadians(pointB[1] - pointA[1]);
-        double a = Math.sin(lat / 2) * Math.sin(lat / 2) +
-                Math.cos(toRadians(pointA[0])) * Math.cos(toRadians(pointB[0])) *
-                        Math.sin(lon / 2) * Math.sin(lon / 2);
-        double c = 2 * Math.asin(Math.min(1, Math.sqrt(a)));
-        double d = R * c;
-        return d * 1000;
     }
 
     public int getCurrentLeg() {
