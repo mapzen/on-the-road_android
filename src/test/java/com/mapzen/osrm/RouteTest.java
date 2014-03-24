@@ -158,7 +158,6 @@ public class RouteTest {
         assertThat(snapped).isNotEqualTo(myroute.getStartCoordinates());
     }
 
-    /*
     @Test
     public void snapToRoute_shouldSnapToBeginning() throws Exception {
         Route myroute = getRoute("greenpoint_around_the_block");
@@ -182,7 +181,6 @@ public class RouteTest {
         double[] snapToNextLeg3 = {40.659781, -73.987890};
         assertThat(myroute.snapToRoute(snapToNextLeg3)).isEqualTo(expected);
     }
-    */
 
     @Test
     public void snapToRoute_shouldAdvanceToNextLegButNotSnapToThatBeginning() throws Exception {
@@ -223,7 +221,8 @@ public class RouteTest {
         myroute.getGeometry();
         myroute.snapToRoute(new double[]{40.660785, -73.987878});
         double[] lost = {
-                40.658749, -73.986102
+                40.662046, -73.987089
+                //40.658749, -73.986102
         };
         double[] snapped = myroute.snapToRoute(lost);
         assertThat(snapped).isNull();

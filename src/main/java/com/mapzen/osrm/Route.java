@@ -223,9 +223,7 @@ public class Route {
 
         double[] current = poly.get(currentLeg);
         double[] fixedPoint = snapTo(current, originalPoint, current[KEY_BEARING]);
-        if (fixedPoint == null) {
-            return null;
-        } else if (Double.isNaN(fixedPoint[0]) || Double.isNaN(fixedPoint[1])) {
+        if (fixedPoint == null || (Double.isNaN(fixedPoint[0]) || Double.isNaN(fixedPoint[1]))) {
             log.info("Snapping => returning current");
             return new double[] {current[KEY_LAT], current[KEY_LNG]};
         } else {
