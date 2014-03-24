@@ -196,7 +196,6 @@ public class RouteTest {
         Route myroute = getRoute("greenpoint_around_the_block");
         double[] point = {40.660785, -73.987878};
         double[] snapped = myroute.snapToRoute(point);
-        out.println("snapped: " + snapped[0] + ", " + snapped[1]);
         assertThat(snapped).isNotNull();
         assertThat(myroute.getCurrentLeg()).isEqualTo(4);
     }
@@ -207,9 +206,6 @@ public class RouteTest {
         Route myroute = getRoute("greenpoint_around_the_block");
         lost = new double[] {40.662046, -73.987089};
         assertThat(myroute.snapToRoute(lost)).isNull();
-        myroute.rewind();
-        lost = new double[] {40.658749, -73.986102};
-        //assertThat(myroute.snapToRoute(lost)).isNull();
     }
 
     @Test

@@ -12,6 +12,7 @@ import static com.mapzen.helpers.GeometryHelper.getBearing;
 import static java.lang.Math.toRadians;
 
 public class Route {
+    public static final int LOST_THRESHOLD = 100;
     private ArrayList<Node> poly = null;
     private ArrayList<Instruction> instructions = null;
     private JSONObject jsonObject;
@@ -201,10 +202,9 @@ public class Route {
         }
 
         Node current = poly.get(currentLeg);
-        double[] fixedPoint = snapTo(current.getPoint(), originalPoint, current.getBearing());
-        if (fixedPoint == null || (Double.isNaN(fixedPoint[0]) || Double.isNaN(fixedPoint[1]))) {
-            log.info("Snapping => returning current");
-            return current.getPoint();
+        double[] fixedPoint = snapTo(current, originalPoint);
+        if (fixedPoint == null) {
+            fixedPoint = current.getPoint();
         } else {
             double distance = distanceBetweenPoints(current.getPoint(), fixedPoint);
             log.info("Snapping => distance between current and fixed: " + String.valueOf(distance));
@@ -220,26 +220,20 @@ public class Route {
             }
         }
 
-        boolean tooFarAway = true;
-        for (Node point : poly) {
-            double distance = distanceBetweenPoints(point.getPoint(), fixedPoint);
-            if (distance < 200) {
-                tooFarAway = false;
-                break;
-            }
-        }
-
-        if (tooFarAway) {
-            return null;
-        } else {
+        double correctionDistance = distanceBetweenPoints(originalPoint, fixedPoint);
+        log.info("Snapping => correctionDistance: " + String.valueOf(correctionDistance));
+        log.info("Snapping => Lost Threshold: " + String.valueOf(LOST_THRESHOLD));
+        if (correctionDistance < LOST_THRESHOLD) {
             return fixedPoint;
+        } else {
+            return null;
         }
     }
 
-    private double[] snapTo(double[] turnPoint, double[] location, double turnBearing) {
-        double[] correctedLocation = snapTo(turnPoint, location, turnBearing, 90);
+    private double[] snapTo(Node turnPoint, double[] location) {
+        double[] correctedLocation = snapTo(turnPoint, location, 90);
         if (correctedLocation == null) {
-            correctedLocation = snapTo(turnPoint, location, turnBearing, -90);
+            correctedLocation = snapTo(turnPoint, location, -90);
         }
         double distance;
         if (correctedLocation != null) {
@@ -253,16 +247,19 @@ public class Route {
     }
 
 
-    private double[] snapTo(double[] turnPoint, double[] location, double turnBearing, int offset) {
-        double lat1 = toRadians(turnPoint[0]);
-        double lon1 = toRadians(turnPoint[1]);
+    private double[] snapTo(Node turnPoint, double[] location, int offset) {
+        double lat1 = toRadians(turnPoint.getLat());
+        double lon1 = toRadians(turnPoint.getLng());
         double lat2 = toRadians(location[0]);
         double lon2 = toRadians(location[1]);
 
-        double brng13 = toRadians(turnBearing);
-        double brng23 = toRadians(turnBearing + offset);
+        double brng13 = toRadians(turnPoint.getBearing());
+        double brng23 = toRadians(turnPoint.getBearing() + offset);
         double dLat = lat2 - lat1;
         double dLon = lon2 - lon1;
+        if (dLon == 0) {
+            dLon = 0.001;
+        }
 
         double dist12 = 2 * Math.asin(Math.sqrt(Math.sin(dLat / 2) * Math.sin(dLat / 2) +
                 Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) * Math.sin(dLon / 2)));

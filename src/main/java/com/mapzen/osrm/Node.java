@@ -8,6 +8,14 @@ public class Node {
         this.lng = lng;
     }
 
+    public double getLat() {
+        return lat;
+    }
+
+    public double getLng() {
+        return lng;
+    }
+
     public double getTotalDistance() {
         return totalDistance;
     }
