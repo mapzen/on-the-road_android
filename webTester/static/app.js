@@ -43,14 +43,22 @@ $(function() {
 	var result = L.marker(initialLocation, { icon: L.divIcon({className: 'count-icon-corrector', html: "", iconSize: [10,10]})}).addTo(map); 
 
 	var currentLeg = 0;
+        var lat, lng;
 	dropper.on('dragend', function(x) {
 	    var latLng = x.target.getLatLng();
 	    var foo = new LatLon(latLng.lat, latLng.lng);
 	    $.get('snap?current_leg='+currentLeg+'&route_id=' + $('#map').data().currentRoute + '&lat=' + latLng.lat + '&amp;lng=' + latLng.lng, function(resp) {
-	      currentLeg = resp.split(",")[2];
-              console.log(resp);
-	      result.setLatLng(new L.LatLng(resp.split(",")[0], resp.split(",")[1]));
-  	      console.log(foo.distanceTo(new LatLon(resp.split(",")[0], resp.split(",")[1])));
+                responseArray = resp.split(",");
+                console.log(resp);
+                if (responseArray.length > 2) {
+	            currentLeg = responseArray[2];
+                    lat = responseArray[0];
+                    lng = responseArray[1];
+	            result.setLatLng(new L.LatLng(lat, lng));
+  	            console.log(foo.distanceTo(new LatLon(lat, lng)));
+                } else {
+                    console.log("LOST");
+                }
 	    });
 	});
 	dropper.addTo(map);
