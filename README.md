@@ -10,5 +10,3 @@ cd webTester
 jruby -S bundle exec warble
 
 java -jar webTester.war
-
-
