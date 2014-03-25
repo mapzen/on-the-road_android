@@ -29,10 +29,13 @@ module WebApp
       route = Route.where(:_id => params[:route_id]).first
       osrm_route = com.mapzen.osrm.Route.new(route.raw)  
       osrm_route.set_current_leg(params[:current_leg].to_i)
-      osrm_route.get_geometry
       snapped = osrm_route.snap_to_route([params[:lat].to_f, params[:lng].to_f])
       currentLeg = osrm_route.get_current_leg
-      "#{snapped[0]}, #{snapped[1]}, #{currentLeg}"     
+      if snapped
+        "#{snapped[0]}, #{snapped[1]}, #{currentLeg}"     
+      else
+        "lost?"
+      end
     end
   end
 end

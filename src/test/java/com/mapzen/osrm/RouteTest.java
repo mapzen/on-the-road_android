@@ -145,13 +145,9 @@ public class RouteTest {
     @Test
     public void snapToRoute_shouldStayOnLeg() throws Exception {
         Route myroute = getRoute("greenpoint_around_the_block");
-        myroute.getGeometry();
         double[] stayOnRoute = {
                 40.660250, -73.988105
         };
-        for(double[] el : myroute.getGeometry()) {
-            out.println(el[4] + ", " + el[0] + "," + el[1] + "," + el[2] + "," + el[3]);
-        }
         double[] snapped = myroute.snapToRoute(stayOnRoute);
         assertThat(myroute.getCurrentLeg()).isEqualTo(0);
         assertThat(snapped).isNotNull();
@@ -161,7 +157,6 @@ public class RouteTest {
     @Test
     public void snapToRoute_shouldSnapToBeginning() throws Exception {
         Route myroute = getRoute("greenpoint_around_the_block");
-        myroute.getGeometry();
         double[] snapToBeginning = {40.661060, -73.990004};
         assertThat(myroute.snapToRoute(snapToBeginning)).isEqualTo(myroute.getStartCoordinates());
     }
@@ -170,7 +165,6 @@ public class RouteTest {
     public void snapToRoute_shouldSnapToNextLeg() throws Exception {
         // these points are behind the new line
         Route myroute = getRoute("greenpoint_around_the_block");
-        myroute.getGeometry();
         double[] expected = {myroute.getGeometry().get(1)[0], myroute.getGeometry().get(1)[1]};
         double[] snapToNextLeg1 = {40.659740, -73.987802};
         assertThat(myroute.snapToRoute(snapToNextLeg1)).isEqualTo(expected);
@@ -185,10 +179,6 @@ public class RouteTest {
     @Test
     public void snapToRoute_shouldAdvanceToNextLegButNotSnapToThatBeginning() throws Exception {
         Route myroute = getRoute("greenpoint_around_the_block");
-        myroute.getGeometry();
-        for(double[] el : myroute.getGeometry()) {
-            out.println(el[0] + "," + el[1] + "," + el[2] + "," + el[3]);
-        }
         double[] justAroundTheCorner1 = {40.659826, -73.987838};
         double[] snappedTo1 = myroute.snapToRoute(justAroundTheCorner1);
         out.println("snapped: " + snappedTo1[0] + ", " + snappedTo1[1]);
@@ -204,34 +194,23 @@ public class RouteTest {
     @Test
     public void snapToRoute_shouldFindFutureLegs() throws Exception {
         Route myroute = getRoute("greenpoint_around_the_block");
-        myroute.getGeometry();
-        for(double[] el : myroute.getGeometry()) {
-            out.println(el[4] + ": " + el[0] + "," + el[1] + "," + el[2] + "," + el[3]);
-        }
         double[] point = {40.660785, -73.987878};
         double[] snapped = myroute.snapToRoute(point);
-        out.println("snapped: " + snapped[0] + ", " + snapped[1]);
         assertThat(snapped).isNotNull();
         assertThat(myroute.getCurrentLeg()).isEqualTo(4);
     }
 
     @Test
     public void snapToRoute_shouldRealizeItsLost() throws Exception {
+        double[] lost;
         Route myroute = getRoute("greenpoint_around_the_block");
-        myroute.getGeometry();
-        myroute.snapToRoute(new double[]{40.660785, -73.987878});
-        double[] lost = {
-                40.662046, -73.987089
-                //40.658749, -73.986102
-        };
-        double[] snapped = myroute.snapToRoute(lost);
-        assertThat(snapped).isNull();
+        lost = new double[] {40.662046, -73.987089};
+        assertThat(myroute.snapToRoute(lost)).isNull();
     }
 
     @Test
     public void snapToRoute_shouldBeFinalDestination() throws Exception {
         Route myroute = getRoute("greenpoint_around_the_block");
-        myroute.getGeometry();
         double[] foundIt = {
                 40.661434, -73.989030
         };
@@ -247,7 +226,6 @@ public class RouteTest {
     @Test
     public void snapToRoute_shouldHandleSharpTurn() throws Exception {
         Route myroute = getRoute("sharp_turn");
-        myroute.getGeometry();
         double[] aroundSharpTurn = {
                 40.687052, -73.976300
         };

@@ -7,24 +7,17 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-import static java.lang.Math.PI;
+import static com.mapzen.helpers.GeometryHelper.distanceBetweenPoints;
+import static com.mapzen.helpers.GeometryHelper.getBearing;
 import static java.lang.Math.toRadians;
 
 public class Route {
-    public static final int KEY_LAT = 0;
-    public static final int KEY_LNG = 1;
-    public static final int KEY_TOTAL_DISTANCE = 2;
-    public static final int KEY_BEARING = 3;
-    public static final int KEY_LEG_DISTANCE = 4;
-    private ArrayList<double[]> poly = null;
-    private ArrayList<Instruction> turnByTurn = null;
-    private JSONArray instructions;
+    public static final int LOST_THRESHOLD = 100;
+    private ArrayList<Node> poly = null;
+    private ArrayList<Instruction> instructions = null;
     private JSONObject jsonObject;
     private int currentLeg = 0;
     static final Logger log = Logger.getLogger("RouteLogger");
-
-    public Route() {
-    }
 
     public Route(String jsonString) {
         setJsonObject(new JSONObject(jsonString));
@@ -37,8 +30,8 @@ public class Route {
     public void setJsonObject(JSONObject jsonObject) {
         this.jsonObject = jsonObject;
         if (foundRoute()) {
-            this.instructions = this.jsonObject.getJSONArray("route_instructions");
-            initializeTurnByTurn();
+            initializeTurnByTurn(jsonObject.getJSONArray("route_instructions"));
+            initializePolyline(jsonObject.getString("route_geometry"));
         }
     }
 
@@ -58,53 +51,56 @@ public class Route {
         return getSumary().getInt("total_time");
     }
 
-    private void initializeTurnByTurn() {
-        turnByTurn = new ArrayList<Instruction>();
+    private void initializeTurnByTurn(JSONArray instructions) {
+        this.instructions = new ArrayList<Instruction>();
         for(int i = 0; i < instructions.length(); i++) {
             Instruction instruction = new Instruction(instructions.getJSONArray(i));
-            turnByTurn.add(instruction);
+            this.instructions.add(instruction);
         }
     }
 
     public ArrayList<Instruction> getRouteInstructions() {
-        double[] pre = null;
+        Node pre = null;
         double distance = 0;
         double totalDistance = 0;
         double[] markerPoint = {0, 0};
 
         int marker = 1;
-        ArrayList<double[]> geometry = getGeometry();
         // set initial point to first instruction
-        turnByTurn.get(0).setPoint(geometry.get(0));
-        for(int i = 0; i < geometry.size(); i++) {
-            double[] f = geometry.get(i);
-            if(marker == turnByTurn.size()) {
+        instructions.get(0).setPoint(poly.get(0).getPoint());
+        for(int i = 0; i < poly.size(); i++) {
+            Node node = poly.get(i);
+            if(marker == instructions.size()) {
                 continue;
             }
-            Instruction instruction = turnByTurn.get(marker);
+            Instruction instruction = instructions.get(marker);
             if(pre != null) {
-                distance = f[KEY_TOTAL_DISTANCE] - pre[KEY_TOTAL_DISTANCE];
+                distance = node.getTotalDistance() - pre.getTotalDistance();
                 totalDistance += distance;
             }
             // this needs the previous distance marker hence minus one
-            if(Math.floor(totalDistance) > turnByTurn.get(marker-1).getDistance()) {
+            if(Math.floor(totalDistance) > instructions.get(marker-1).getDistance()) {
                 instruction.setPoint(markerPoint);
                 marker++;
                 totalDistance = distance;
             }
-            markerPoint = new double[]{f[0], f[1]};
-            pre = f;
+            markerPoint = node.getPoint();
+            pre = node;
 
             // setting the last one to the destination
-            if(geometry.size() - 1 == i) {
-                turnByTurn.get(marker).setPoint(markerPoint);
+            if(poly.size() - 1 == i) {
+                instructions.get(marker).setPoint(markerPoint);
             }
         }
-        return turnByTurn;
+        return instructions;
     }
 
     public ArrayList<double[]> getGeometry() {
-        return decodePolyline(jsonObject.getString("route_geometry"));
+        ArrayList<double[]> geometry = new ArrayList<double[]>();
+        for(Node node : poly) {
+            geometry.add(node.getPoint());
+        }
+        return geometry;
     }
 
     public double[] getStartCoordinates() {
@@ -124,10 +120,10 @@ public class Route {
        return jsonObject.getJSONObject("route_summary");
     }
 
-    private ArrayList<double[]> decodePolyline(String encoded) {
-        double[] lastPair = {};
+    private ArrayList<Node> initializePolyline(String encoded) {
+        Node lastNode = null;
         if (poly == null) {
-            poly = new ArrayList<double[]>();
+            poly = new ArrayList<Node>();
             int index = 0, len = encoded.length();
             int lat = 0, lng = 0;
             while (index < len) {
@@ -151,37 +147,24 @@ public class Route {
                 lng += dlng;
                 double x = (double) lat / 1E6;
                 double y = (double) lng / 1E6;
-                double[] pair = {0, 0, 0, 0, 0};
-                pair[KEY_LAT] = x;
-                pair[KEY_LNG] = y;
+                Node node = new Node(x,y);
                 if (!poly.isEmpty()) {
-                    double[] lastElement = poly.get(poly.size()-1);
-                    double distance = distanceBetweenPoints(pair, lastElement);
-                    double totalDistance = distance + lastElement[KEY_TOTAL_DISTANCE];
-                    pair[KEY_TOTAL_DISTANCE] = totalDistance;
-                    if(lastPair.length > 0) {
-                        lastPair[KEY_BEARING] = RouteHelper.getBearing(lastPair, pair);
+                    Node lastElement = poly.get(poly.size()-1);
+                    double distance = distanceBetweenPoints(node.getPoint(),
+                            lastElement.getPoint());
+                    double totalDistance = distance + lastElement.getTotalDistance();
+                    node.setTotalDistance(totalDistance);
+                    if(lastNode != null) {
+                        lastNode.setBearing(getBearing(lastNode.getPoint(), node.getPoint()));
                     }
-                    lastPair[KEY_LEG_DISTANCE] = distance;
+                    lastNode.setLegDistance(distance);
                 }
 
-                lastPair = pair;
-                poly.add(pair);
+                lastNode = node;
+                poly.add(node);
             }
         }
         return poly;
-    }
-
-    private double distanceBetweenPoints(double[] pointA, double[] pointB) {
-        double R = 6371;
-        double lat = toRadians(pointB[0] - pointA[0]);
-        double lon = toRadians(pointB[1] - pointA[1]);
-        double a = Math.sin(lat / 2) * Math.sin(lat / 2) +
-                Math.cos(toRadians(pointA[0])) * Math.cos(toRadians(pointB[0])) *
-                        Math.sin(lon / 2) * Math.sin(lon / 2);
-        double c = 2 * Math.asin(Math.min(1, Math.sqrt(a)));
-        double d = R * c;
-        return d * 1000;
     }
 
     public int getCurrentLeg() {
@@ -209,31 +192,27 @@ public class Route {
             return null;
         }
 
-        double[] destination = poly.get(sizeOfPoly-1);
+        Node destination = poly.get(sizeOfPoly-1);
 
         // if close to destination
-        double distanceToDestination = distanceBetweenPoints(destination, originalPoint);
+        double distanceToDestination = distanceBetweenPoints(destination.getPoint(), originalPoint);
         log.info("Snapping => distance to destination: " + String.valueOf(distanceToDestination));
         if (Math.floor(distanceToDestination) < 20) {
-            return new double[] {
-                    destination[KEY_LAT],
-                    destination[KEY_LNG]
-            };
+            return destination.getPoint();
         }
 
-        double[] current = poly.get(currentLeg);
-        double[] fixedPoint = snapTo(current, originalPoint, current[KEY_BEARING]);
-        if (fixedPoint == null || (Double.isNaN(fixedPoint[0]) || Double.isNaN(fixedPoint[1]))) {
-            log.info("Snapping => returning current");
-            return new double[] {current[KEY_LAT], current[KEY_LNG]};
+        Node current = poly.get(currentLeg);
+        double[] fixedPoint = snapTo(current, originalPoint);
+        if (fixedPoint == null) {
+            fixedPoint = current.getPoint();
         } else {
-            double distance = distanceBetweenPoints(current, fixedPoint);
+            double distance = distanceBetweenPoints(current.getPoint(), fixedPoint);
             log.info("Snapping => distance between current and fixed: " + String.valueOf(distance));
-            double bearingToOriginal = RouteHelper.getBearing(current, originalPoint);
+            double bearingToOriginal = getBearing(current.getPoint(), originalPoint);
             log.info("Snapping => bearing to original: " + String.valueOf(bearingToOriginal));
                                                /// UGH somewhat arbritrary
-            double bearingDiff = Math.abs(bearingToOriginal - current[KEY_BEARING]);
-            if (distance > current[KEY_LEG_DISTANCE] - 5 || (distance > 30 && bearingDiff > 20.0)) {
+            double bearingDiff = Math.abs(bearingToOriginal - current.getBearing());
+            if (distance > current.getLegDistance() - 5 || (distance > 30 && bearingDiff > 20.0)) {
                 ++currentLeg;
                 log.info("Snapping => incrementing and trying again");
                 log.info("Snapping => currentLeg: " + String.valueOf(currentLeg));
@@ -241,26 +220,20 @@ public class Route {
             }
         }
 
-        boolean tooFarAway = true;
-        for (double[] point : poly) {
-            double distance = distanceBetweenPoints(point, fixedPoint);
-            if (distance < 200) {
-                tooFarAway = false;
-                break;
-            }
-        }
-
-        if (tooFarAway) {
-            return null;
-        } else {
+        double correctionDistance = distanceBetweenPoints(originalPoint, fixedPoint);
+        log.info("Snapping => correctionDistance: " + String.valueOf(correctionDistance));
+        log.info("Snapping => Lost Threshold: " + String.valueOf(LOST_THRESHOLD));
+        if (correctionDistance < LOST_THRESHOLD) {
             return fixedPoint;
+        } else {
+            return null;
         }
     }
 
-    private double[] snapTo(double[] turnPoint, double[] location, double turnBearing) {
-        double[] correctedLocation = snapTo(turnPoint, location, turnBearing, 90);
+    private double[] snapTo(Node turnPoint, double[] location) {
+        double[] correctedLocation = snapTo(turnPoint, location, 90);
         if (correctedLocation == null) {
-            correctedLocation = snapTo(turnPoint, location, turnBearing, -90);
+            correctedLocation = snapTo(turnPoint, location, -90);
         }
         double distance;
         if (correctedLocation != null) {
@@ -274,16 +247,19 @@ public class Route {
     }
 
 
-    private double[] snapTo(double[] turnPoint, double[] location, double turnBearing, int offset) {
-        double lat1 = toRadians(turnPoint[0]);
-        double lon1 = toRadians(turnPoint[1]);
+    private double[] snapTo(Node turnPoint, double[] location, int offset) {
+        double lat1 = toRadians(turnPoint.getLat());
+        double lon1 = toRadians(turnPoint.getLng());
         double lat2 = toRadians(location[0]);
         double lon2 = toRadians(location[1]);
 
-        double brng13 = toRadians(turnBearing);
-        double brng23 = toRadians(turnBearing + offset);
+        double brng13 = toRadians(turnPoint.getBearing());
+        double brng23 = toRadians(turnPoint.getBearing() + offset);
         double dLat = lat2 - lat1;
         double dLon = lon2 - lon1;
+        if (dLon == 0) {
+            dLon = 0.001;
+        }
 
         double dist12 = 2 * Math.asin(Math.sqrt(Math.sin(dLat / 2) * Math.sin(dLat / 2) +
                 Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) * Math.sin(dLon / 2)));
