@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/mapzen/OnTheRoad.svg?branch=master)](https://travis-ci.org/mapzen/on-the-road)
+[![Build Status](https://travis-ci.org/mapzen/on-the-road.svg?branch=master)](https://travis-ci.org/mapzen/on-the-road)
 
 
 To test with the web interface
