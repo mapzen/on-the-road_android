@@ -53,7 +53,7 @@ public class Route {
 
     private void initializeTurnByTurn(JSONArray instructions) {
         this.instructions = new ArrayList<Instruction>();
-        for(int i = 0; i < instructions.length(); i++) {
+        for (int i = 0; i < instructions.length(); i++) {
             Instruction instruction = new Instruction(instructions.getJSONArray(i));
             this.instructions.add(instruction);
         }
@@ -63,7 +63,7 @@ public class Route {
         Node pre = null;
         double distance = 0;
         double totalDistance = 0;
-        double[] markerPoint = {0, 0};
+        double[] markerPoint = { 0, 0 };
 
         int marker = 1;
         // set initial point to first instruction
@@ -106,8 +106,8 @@ public class Route {
     public double[] getStartCoordinates() {
         JSONArray points = getViaPoints().getJSONArray(0);
         double[] coordinates = {
-            points.getDouble(0),
-            points.getDouble(1)
+                points.getDouble(0),
+                points.getDouble(1)
         };
         return coordinates;
     }
@@ -117,7 +117,7 @@ public class Route {
     }
 
     private JSONObject getSumary() throws JSONException {
-       return jsonObject.getJSONObject("route_summary");
+        return jsonObject.getJSONObject("route_summary");
     }
 
     private ArrayList<Node> initializePolyline(String encoded) {
@@ -188,7 +188,7 @@ public class Route {
         int sizeOfPoly = poly.size();
 
         // we have exhausted options
-        if(currentLeg >= sizeOfPoly) {
+        if (currentLeg >= sizeOfPoly) {
             return null;
         }
 
@@ -238,14 +238,13 @@ public class Route {
         double distance;
         if (correctedLocation != null) {
             distance = distanceBetweenPoints(correctedLocation, location);
-            if(Math.round(distance) > 1000) {
+            if (Math.round(distance) > 1000) {
                 return null;
             }
         }
 
         return correctedLocation;
     }
-
 
     private double[] snapTo(Node turnPoint, double[] location, int offset) {
         double lat1 = toRadians(turnPoint.getLat());
@@ -301,9 +300,10 @@ public class Route {
                 Math.cos(lat1) * Math.sin(dist13) * Math.cos(brng13));
         double dLon13 = Math.atan2(Math.sin(brng13) * Math.sin(dist13) * Math.cos(lat1),
                 Math.cos(dist13) - Math.sin(lat1) * Math.sin(lat3));
-        double lon3 = ((lon1 + dLon13) + 3 * Math.PI) % (2 * Math.PI) - Math.PI;  // normalise to -180..+180º
+        double lon3 = ((lon1 + dLon13) + 3 * Math.PI) % (2 * Math.PI)
+                - Math.PI;  // normalise to -180..+180º
 
-        double[] point = {Math.toDegrees(lat3), Math.toDegrees(lon3)};
+        double[] point = { Math.toDegrees(lat3), Math.toDegrees(lon3) };
         return point;
     }
 }
