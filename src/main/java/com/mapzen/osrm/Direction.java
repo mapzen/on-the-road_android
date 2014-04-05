@@ -20,7 +20,7 @@ public class Direction {
     }
 
     protected static class Router {
-        private String endpoint = "http://example.com";
+        private String endpoint = "http://osrm.test.mapzen.com";
         private OkHttpClient client = new OkHttpClient();
         private Type type = Type.DRIVING;
         private List<double[]> locations = new ArrayList<double[]>();
@@ -91,10 +91,12 @@ public class Direction {
                 HttpURLConnection connection = client.open(getRouteUrl());
                 if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                     callback.failure(connection.getResponseCode());
+                    return;
                 }
                 in = connection.getInputStream();
                 final String responseText = readInputStream(in);
-                callback.success(new Route(responseText));
+                Route route = new Route(responseText);
+                callback.success(route);
             } finally {
                 if (in != null) {
                     in.close();

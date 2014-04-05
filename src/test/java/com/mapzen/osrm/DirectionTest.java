@@ -1,16 +1,14 @@
 package com.mapzen.osrm;
 
-import com.squareup.okhttp.OkHttpClient;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import retrofit.Callback;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
@@ -19,10 +17,19 @@ public class DirectionTest {
     @SuppressWarnings("unused")
     ArgumentCaptor<Callback> callback;
 
+    @Captor
+    @SuppressWarnings("unused")
+    ArgumentCaptor<Route> route;
+
+    @Captor
+    @SuppressWarnings("unused")
+    ArgumentCaptor<Integer> statusCode;
+
     Direction.Router validRouter;
 
     @Before
     public void setup() throws Exception {
+        MockitoAnnotations.initMocks(this);
         double[] loc = new double[] {1.0, 2.0};
         validRouter = Direction.getRouter().setLocation(loc).setLocation(loc);
     }
@@ -30,7 +37,7 @@ public class DirectionTest {
     @Test
     public void shouldHaveDefaultEndpoint() throws Exception {
         URL url = validRouter.getRouteUrl();
-        assertThat(url.toString()).startsWith("http://example.com");
+        assertThat(url.toString()).startsWith("http://osrm.test.mapzen.com");
     }
 
     @Test
@@ -97,4 +104,39 @@ public class DirectionTest {
         assertThat(url.toString()).contains("&loc=1.0,2.0&loc=3.0,4.0&loc=5.0,6.0");
     }
 
+    @Test
+    public void shouldGetRoute() throws Exception {
+        Callback callback = Mockito.mock(Callback.class);
+        Direction.getRouter().setLocation(new double[] {
+                40.659241, -73.983776
+        }).setLocation(new double[] {
+                40.671773, -73.981115
+        }).fetch(callback);
+        Mockito.verify(callback).success(route.capture());
+        assertThat(route.getValue().foundRoute()).isTrue();
+    }
+
+    @Test
+    public void shouldGetNotError() throws Exception {
+        Callback callback = Mockito.mock(Callback.class);
+        Direction.getRouter().setEndpoint("http://snitchmedia.com").setLocation(new double[] {
+                40.659241, -73.983776
+        }).setLocation(new double[] {
+                40.671773, -73.981115
+        }).fetch(callback);
+        Mockito.verify(callback).failure(statusCode.capture());
+        assertThat(statusCode.getValue()).isEqualTo(500);
+    }
+
+    @Test
+    public void shouldGetNotFound() throws Exception {
+        Callback callback = Mockito.mock(Callback.class);
+        Direction.getRouter().setEndpoint("http://example.com").setLocation(new double[] {
+                40.659241, -73.983776
+        }).setLocation(new double[] {
+                40.671773, -73.981115
+        }).fetch(callback);
+        Mockito.verify(callback).failure(statusCode.capture());
+        assertThat(statusCode.getValue()).isEqualTo(404);
+    }
 }
