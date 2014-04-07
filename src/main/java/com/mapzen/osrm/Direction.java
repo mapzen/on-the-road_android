@@ -18,7 +18,7 @@ public class Direction {
         return new Direction.Router();
     }
 
-    protected static class Router implements Runnable {
+    public static class Router implements Runnable {
         protected Thread runner;
         private String endpoint = "http://osrm.test.mapzen.com";
         private OkHttpClient client = new OkHttpClient();
