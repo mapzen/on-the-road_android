@@ -70,8 +70,14 @@ public class RouterTest {
     }
 
     @Test
-    public void shouldSetZoom() throws Exception {
+    public void shouldSetZoomAsInt() throws Exception {
         URL url = validRouter.setZoomLevel(11).getRouteUrl();
+        assertThat(url.toString()).contains("z=11");
+    }
+
+    @Test
+    public void shouldSetZoomAsDouble() throws Exception {
+        URL url = validRouter.setZoomLevel(11.0).getRouteUrl();
         assertThat(url.toString()).contains("z=11");
     }
 
