@@ -211,6 +211,27 @@ public class RouterTest {
         });
     }
 
+    @Test
+    public void shouldStoreRawRoute() throws Exception {
+        startServerAndEnqueue(new MockResponse().setBody(getFixture("brooklyn")));
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                String endpoint = server.getUrl("").toString();
+                Callback callback = Mockito.mock(Callback.class);
+                Router router = Router.getRouter()
+                        .setEndpoint(endpoint)
+                        .setLocation(new double[] { 40.659241, -73.983776 })
+                        .setLocation(new double[] { 40.671773, -73.981115 });
+                router.setCallback(callback);
+                router.fetch();
+                Mockito.verify(callback).success(route.capture());
+                assertThat(route.getValue().getRawRoute()).isEqualTo(getFixture("brooklyn"));
+            }
+        });
+    }
+
     private void startServerAndEnqueue(MockResponse response) throws Exception {
         server.enqueue(response);
         server.play();
