@@ -19,7 +19,7 @@ import java.net.URL;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-public class DirectionTest {
+public class RouterTest {
     @Captor
     @SuppressWarnings("unused")
     ArgumentCaptor<Callback> callback;
@@ -32,7 +32,7 @@ public class DirectionTest {
     @SuppressWarnings("unused")
     ArgumentCaptor<Integer> statusCode;
 
-    Direction.Router validRouter;
+    Router validRouter;
 
     MockWebServer server;
 
@@ -41,7 +41,7 @@ public class DirectionTest {
         server = new MockWebServer();
         MockitoAnnotations.initMocks(this);
         double[] loc = new double[] {1.0, 2.0};
-        validRouter = Direction.getRouter().setLocation(loc).setLocation(loc);
+        validRouter = Router.getRouter().setLocation(loc).setLocation(loc);
     }
 
     @After
@@ -99,12 +99,12 @@ public class DirectionTest {
 
     @Test(expected=MalformedURLException.class)
     public void shouldThrowErrorWhenNoLocation() throws Exception {
-        Direction.getRouter().getRouteUrl();
+        Router.getRouter().getRouteUrl();
     }
 
     @Test(expected=MalformedURLException.class)
     public void shouldThrowErrorWhenOnlyOneLocation() throws Exception {
-        Direction.getRouter().setLocation(new double[] {1.0, 1.0}).getRouteUrl();
+        Router.getRouter().setLocation(new double[] {1.0, 1.0}).getRouteUrl();
     }
 
     @Test
@@ -112,7 +112,7 @@ public class DirectionTest {
         double[] loc1 = { 1.0, 2.0 };
         double[] loc2 = { 3.0, 4.0 };
         double[] loc3 = { 5.0, 6.0 };
-        URL url = Direction.getRouter()
+        URL url = Router.getRouter()
                 .setLocation(loc1)
                 .setLocation(loc2)
                 .setLocation(loc3).getRouteUrl();
@@ -124,13 +124,13 @@ public class DirectionTest {
         startServerAndEnqueue(new MockResponse().setBody(getFixture("brooklyn")));
         String endpoint = server.getUrl("").toString();
         Callback callback = Mockito.mock(Callback.class);
-        Direction.Router router = Direction.getRouter()
+        Router router = Router.getRouter()
                 .setEndpoint(endpoint)
                 .setLocation(new double[] { 40.659241, -73.983776 })
                 .setLocation(new double[] { 40.671773, -73.981115 });
         router.setCallback(callback);
         router.fetch();
-        router.runner.join();
+        router.join();
         Mockito.verify(callback).success(route.capture());
         assertThat(route.getValue().foundRoute()).isTrue();
     }
@@ -140,13 +140,13 @@ public class DirectionTest {
         startServerAndEnqueue(new MockResponse().setResponseCode(500));
         Callback callback = Mockito.mock(Callback.class);
         String endpoint = server.getUrl("").toString();
-        Direction.Router router = Direction.getRouter()
+        Router router = Router.getRouter()
                 .setEndpoint(endpoint)
                 .setLocation(new double[] { 40.659241, -73.983776 })
                 .setLocation(new double[] { 40.671773, -73.981115 });
         router.setCallback(callback);
         router.fetch();
-        router.runner.join();
+        router.join();
         Mockito.verify(callback).failure(statusCode.capture());
         assertThat(statusCode.getValue()).isEqualTo(500);
     }
@@ -156,22 +156,37 @@ public class DirectionTest {
         startServerAndEnqueue(new MockResponse().setResponseCode(404));
         Callback callback = Mockito.mock(Callback.class);
         String endpoint = server.getUrl("").toString();
-        Direction.Router router = Direction.getRouter()
+        Router router = Router.getRouter()
                 .setEndpoint(endpoint)
                 .setLocation(new double[] { 40.659241, -73.983776 })
                 .setLocation(new double[] { 40.671773, -73.981115 });
         router.setCallback(callback);
         router.fetch();
-        router.runner.join();
+        router.join();
         Mockito.verify(callback).failure(statusCode.capture());
         assertThat(statusCode.getValue()).isEqualTo(404);
+    }
+
+    @Test
+    public void shouldGetRouteNotFound() throws Exception {
+        startServerAndEnqueue(new MockResponse().setBody(getFixture("unsuccessful")));
+        Callback callback = Mockito.mock(Callback.class);
+        String endpoint = server.getUrl("").toString();
+        Router router = Router.getRouter()
+                .setEndpoint(endpoint)
+                .setLocation(new double[] { 40.659241, -73.983776 })
+                .setLocation(new double[] { 40.671773, -73.981115 });
+        router.setCallback(callback);
+        router.fetch();
+        router.join();
+        Mockito.verify(callback).failure(statusCode.capture());
+        assertThat(statusCode.getValue()).isEqualTo(207);
     }
 
     private void startServerAndEnqueue(MockResponse response) throws Exception {
         server.enqueue(response);
         server.play();
     }
-
 
     public static String getFixture(String name) {
         String basedir = System.getProperty("user.dir");

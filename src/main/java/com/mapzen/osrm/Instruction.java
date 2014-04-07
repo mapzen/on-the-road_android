@@ -57,6 +57,7 @@ public class Instruction {
     /**
      * Used for testing. Do not remove.
      */
+    @SuppressWarnings("unused")
     protected Instruction() {
     }
 
