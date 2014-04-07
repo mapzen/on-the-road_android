@@ -13,7 +13,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Router extends Thread {
+public class Router implements Runnable {
     private Router() {
     }
 
@@ -101,7 +101,7 @@ public class Router extends Thread {
         if (callback == null) {
             return;
         }
-        start();
+        new Thread(this).start();
     }
 
     @Override

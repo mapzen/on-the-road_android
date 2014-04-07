@@ -16,6 +16,8 @@ import org.mockito.MockitoAnnotations;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
@@ -122,65 +124,85 @@ public class RouterTest {
     @Test
     public void shouldGetRoute() throws Exception {
         startServerAndEnqueue(new MockResponse().setBody(getFixture("brooklyn")));
-        String endpoint = server.getUrl("").toString();
-        Callback callback = Mockito.mock(Callback.class);
-        Router router = Router.getRouter()
-                .setEndpoint(endpoint)
-                .setLocation(new double[] { 40.659241, -73.983776 })
-                .setLocation(new double[] { 40.671773, -73.981115 });
-        router.setCallback(callback);
-        router.fetch();
-        router.join();
-        Mockito.verify(callback).success(route.capture());
-        assertThat(route.getValue().foundRoute()).isTrue();
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                String endpoint = server.getUrl("").toString();
+                Callback callback = Mockito.mock(Callback.class);
+                Router router = Router.getRouter()
+                        .setEndpoint(endpoint)
+                        .setLocation(new double[] { 40.659241, -73.983776 })
+                        .setLocation(new double[] { 40.671773, -73.981115 });
+                router.setCallback(callback);
+                router.fetch();
+                Mockito.verify(callback).success(route.capture());
+                assertThat(route.getValue().foundRoute()).isTrue();
+            }
+        });
     }
 
     @Test
     public void shouldGetError() throws Exception {
         startServerAndEnqueue(new MockResponse().setResponseCode(500));
-        Callback callback = Mockito.mock(Callback.class);
-        String endpoint = server.getUrl("").toString();
-        Router router = Router.getRouter()
-                .setEndpoint(endpoint)
-                .setLocation(new double[] { 40.659241, -73.983776 })
-                .setLocation(new double[] { 40.671773, -73.981115 });
-        router.setCallback(callback);
-        router.fetch();
-        router.join();
-        Mockito.verify(callback).failure(statusCode.capture());
-        assertThat(statusCode.getValue()).isEqualTo(500);
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                Callback callback = Mockito.mock(Callback.class);
+                String endpoint = server.getUrl("").toString();
+                Router router = Router.getRouter()
+                        .setEndpoint(endpoint)
+                        .setLocation(new double[] { 40.659241, -73.983776 })
+                        .setLocation(new double[] { 40.671773, -73.981115 });
+                router.setCallback(callback);
+                router.fetch();
+                Mockito.verify(callback).failure(statusCode.capture());
+                assertThat(statusCode.getValue()).isEqualTo(500);
+            }
+        });
     }
 
     @Test
     public void shouldGetNotFound() throws Exception {
         startServerAndEnqueue(new MockResponse().setResponseCode(404));
-        Callback callback = Mockito.mock(Callback.class);
-        String endpoint = server.getUrl("").toString();
-        Router router = Router.getRouter()
-                .setEndpoint(endpoint)
-                .setLocation(new double[] { 40.659241, -73.983776 })
-                .setLocation(new double[] { 40.671773, -73.981115 });
-        router.setCallback(callback);
-        router.fetch();
-        router.join();
-        Mockito.verify(callback).failure(statusCode.capture());
-        assertThat(statusCode.getValue()).isEqualTo(404);
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                Callback callback = Mockito.mock(Callback.class);
+                String endpoint = server.getUrl("").toString();
+                Router router = Router.getRouter()
+                        .setEndpoint(endpoint)
+                        .setLocation(new double[] { 40.659241, -73.983776 })
+                        .setLocation(new double[] { 40.671773, -73.981115 });
+                router.setCallback(callback);
+                router.fetch();
+                Mockito.verify(callback).failure(statusCode.capture());
+                assertThat(statusCode.getValue()).isEqualTo(404);
+            }
+        });
     }
 
     @Test
     public void shouldGetRouteNotFound() throws Exception {
         startServerAndEnqueue(new MockResponse().setBody(getFixture("unsuccessful")));
-        Callback callback = Mockito.mock(Callback.class);
-        String endpoint = server.getUrl("").toString();
-        Router router = Router.getRouter()
-                .setEndpoint(endpoint)
-                .setLocation(new double[] { 40.659241, -73.983776 })
-                .setLocation(new double[] { 40.671773, -73.981115 });
-        router.setCallback(callback);
-        router.fetch();
-        router.join();
-        Mockito.verify(callback).failure(statusCode.capture());
-        assertThat(statusCode.getValue()).isEqualTo(207);
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                Callback callback = Mockito.mock(Callback.class);
+                String endpoint = server.getUrl("").toString();
+                Router router = Router.getRouter()
+                        .setEndpoint(endpoint)
+                        .setLocation(new double[] { 40.659241, -73.983776 })
+                        .setLocation(new double[] { 40.671773, -73.981115 });
+                router.setCallback(callback);
+                router.fetch();
+                Mockito.verify(callback).failure(statusCode.capture());
+                assertThat(statusCode.getValue()).isEqualTo(207);
+            }
+        });
     }
 
     private void startServerAndEnqueue(MockResponse response) throws Exception {
