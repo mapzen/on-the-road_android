@@ -14,17 +14,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Direction {
-
     static public Router getRouter() {
         return new Direction.Router();
     }
 
-    protected static class Router {
+    protected static class Router implements Runnable {
+        protected Thread runner;
         private String endpoint = "http://osrm.test.mapzen.com";
         private OkHttpClient client = new OkHttpClient();
         private Type type = Type.DRIVING;
         private List<double[]> locations = new ArrayList<double[]>();
         private int zoomLevel = 17;
+        private Callback callback;
 
         public enum Type {
             WALKING("foot"), BIKING("bike"), DRIVING("car");
@@ -85,7 +86,20 @@ public class Direction {
             return new URL(String.format(template, endpoint, type, zoomLevel, loc));
         }
 
-        public void fetch(Callback callback) throws IOException {
+        public void setCallback(Callback callback) {
+            this.callback = callback;
+        }
+
+        public void fetch() throws Exception {
+            if (callback == null) {
+                throw new Exception("missing callback");
+            }
+            runner = new Thread(this);
+            runner.start();
+        }
+
+        @Override
+        public void run() {
             InputStream in = null;
             try {
                 HttpURLConnection connection = client.open(getRouteUrl());
@@ -97,12 +111,19 @@ public class Direction {
                 final String responseText = readInputStream(in);
                 Route route = new Route(responseText);
                 callback.success(route);
+            } catch (IOException e) {
+                e.printStackTrace();
             } finally {
                 if (in != null) {
-                    in.close();
+                    try {
+                        in.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
+
     }
 }
 

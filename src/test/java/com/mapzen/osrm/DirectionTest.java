@@ -107,11 +107,14 @@ public class DirectionTest {
     @Test
     public void shouldGetRoute() throws Exception {
         Callback callback = Mockito.mock(Callback.class);
-        Direction.getRouter().setLocation(new double[] {
+        Direction.Router router = Direction.getRouter().setLocation(new double[] {
                 40.659241, -73.983776
         }).setLocation(new double[] {
                 40.671773, -73.981115
-        }).fetch(callback);
+        });
+        router.setCallback(callback);
+        router.fetch();
+        router.runner.join();
         Mockito.verify(callback).success(route.capture());
         assertThat(route.getValue().foundRoute()).isTrue();
     }
@@ -119,11 +122,14 @@ public class DirectionTest {
     @Test
     public void shouldGetNotError() throws Exception {
         Callback callback = Mockito.mock(Callback.class);
-        Direction.getRouter().setEndpoint("http://snitchmedia.com").setLocation(new double[] {
+        Direction.Router router = Direction.getRouter().setEndpoint("http://snitchmedia.com").setLocation(new double[] {
                 40.659241, -73.983776
         }).setLocation(new double[] {
                 40.671773, -73.981115
-        }).fetch(callback);
+        });
+        router.setCallback(callback);
+        router.fetch();
+        router.runner.join();
         Mockito.verify(callback).failure(statusCode.capture());
         assertThat(statusCode.getValue()).isEqualTo(500);
     }
@@ -131,11 +137,14 @@ public class DirectionTest {
     @Test
     public void shouldGetNotFound() throws Exception {
         Callback callback = Mockito.mock(Callback.class);
-        Direction.getRouter().setEndpoint("http://example.com").setLocation(new double[] {
+        Direction.Router router = Direction.getRouter().setEndpoint("http://example.com").setLocation(new double[] {
                 40.659241, -73.983776
         }).setLocation(new double[] {
                 40.671773, -73.981115
-        }).fetch(callback);
+        });
+        router.setCallback(callback);
+        router.fetch();
+        router.runner.join();
         Mockito.verify(callback).failure(statusCode.capture());
         assertThat(statusCode.getValue()).isEqualTo(404);
     }
