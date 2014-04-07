@@ -1,5 +1,11 @@
 package com.mapzen.osrm;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
+import com.squareup.okhttp.mockwebserver.MockResponse;
+import com.squareup.okhttp.mockwebserver.MockWebServer;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -7,6 +13,7 @@ import org.mockito.Captor;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -27,11 +34,19 @@ public class DirectionTest {
 
     Direction.Router validRouter;
 
+    MockWebServer server;
+
     @Before
     public void setup() throws Exception {
+        server = new MockWebServer();
         MockitoAnnotations.initMocks(this);
         double[] loc = new double[] {1.0, 2.0};
         validRouter = Direction.getRouter().setLocation(loc).setLocation(loc);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        server.shutdown();
     }
 
     @Test
@@ -106,12 +121,13 @@ public class DirectionTest {
 
     @Test
     public void shouldGetRoute() throws Exception {
+        startServerAndEnqueue(new MockResponse().setBody(getFixture("brooklyn")));
+        String endpoint = server.getUrl("").toString();
         Callback callback = Mockito.mock(Callback.class);
-        Direction.Router router = Direction.getRouter().setLocation(new double[] {
-                40.659241, -73.983776
-        }).setLocation(new double[] {
-                40.671773, -73.981115
-        });
+        Direction.Router router = Direction.getRouter()
+                .setEndpoint(endpoint)
+                .setLocation(new double[] { 40.659241, -73.983776 })
+                .setLocation(new double[] { 40.671773, -73.981115 });
         router.setCallback(callback);
         router.fetch();
         router.runner.join();
@@ -120,13 +136,14 @@ public class DirectionTest {
     }
 
     @Test
-    public void shouldGetNotError() throws Exception {
+    public void shouldGetError() throws Exception {
+        startServerAndEnqueue(new MockResponse().setResponseCode(500));
         Callback callback = Mockito.mock(Callback.class);
-        Direction.Router router = Direction.getRouter().setEndpoint("http://snitchmedia.com").setLocation(new double[] {
-                40.659241, -73.983776
-        }).setLocation(new double[] {
-                40.671773, -73.981115
-        });
+        String endpoint = server.getUrl("").toString();
+        Direction.Router router = Direction.getRouter()
+                .setEndpoint(endpoint)
+                .setLocation(new double[] { 40.659241, -73.983776 })
+                .setLocation(new double[] { 40.671773, -73.981115 });
         router.setCallback(callback);
         router.fetch();
         router.runner.join();
@@ -136,16 +153,35 @@ public class DirectionTest {
 
     @Test
     public void shouldGetNotFound() throws Exception {
+        startServerAndEnqueue(new MockResponse().setResponseCode(404));
         Callback callback = Mockito.mock(Callback.class);
-        Direction.Router router = Direction.getRouter().setEndpoint("http://example.com").setLocation(new double[] {
-                40.659241, -73.983776
-        }).setLocation(new double[] {
-                40.671773, -73.981115
-        });
+        String endpoint = server.getUrl("").toString();
+        Direction.Router router = Direction.getRouter()
+                .setEndpoint(endpoint)
+                .setLocation(new double[] { 40.659241, -73.983776 })
+                .setLocation(new double[] { 40.671773, -73.981115 });
         router.setCallback(callback);
         router.fetch();
         router.runner.join();
         Mockito.verify(callback).failure(statusCode.capture());
         assertThat(statusCode.getValue()).isEqualTo(404);
+    }
+
+    private void startServerAndEnqueue(MockResponse response) throws Exception {
+        server.enqueue(response);
+        server.play();
+    }
+
+
+    public static String getFixture(String name) {
+        String basedir = System.getProperty("user.dir");
+        File file = new File(basedir + "/src/test/fixtures/" + name + ".route");
+        String fixture = "";
+        try {
+            fixture = Files.toString(file, Charsets.UTF_8);
+        } catch (Exception e) {
+            fixture = "not found";
+        }
+        return fixture;
     }
 }
