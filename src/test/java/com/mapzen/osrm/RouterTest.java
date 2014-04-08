@@ -119,6 +119,7 @@ public class RouterTest {
         URL url = router.getRouteUrl();
         assertThat(url.toString()).doesNotContain("1.0,2.0");
         assertThat(url.toString()).contains("3.0,4.0");
+        assertThat(url.toString()).contains("5.0,6.0");
     }
 
     @Test(expected=MalformedURLException.class)
