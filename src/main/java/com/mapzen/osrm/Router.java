@@ -138,6 +138,11 @@ public class Router implements Runnable {
             }
         }
     }
+
+    public static interface Callback {
+        void success(Route route);
+        void failure(int statusCode);
+    }
 }
 
 
