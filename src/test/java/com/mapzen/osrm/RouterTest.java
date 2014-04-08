@@ -24,7 +24,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 public class RouterTest {
     @Captor
     @SuppressWarnings("unused")
-    ArgumentCaptor<Callback> callback;
+    ArgumentCaptor<Router.Callback> callback;
 
     @Captor
     @SuppressWarnings("unused")
@@ -152,7 +152,7 @@ public class RouterTest {
             @Override
             public void run() {
                 String endpoint = server.getUrl("").toString();
-                Callback callback = Mockito.mock(Callback.class);
+                Router.Callback callback = Mockito.mock(Router.Callback.class);
                 Router router = Router.getRouter()
                         .setEndpoint(endpoint)
                         .setLocation(new double[] { 40.659241, -73.983776 })
@@ -172,7 +172,7 @@ public class RouterTest {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                Callback callback = Mockito.mock(Callback.class);
+                Router.Callback callback = Mockito.mock(Router.Callback.class);
                 String endpoint = server.getUrl("").toString();
                 Router router = Router.getRouter()
                         .setEndpoint(endpoint)
@@ -193,7 +193,7 @@ public class RouterTest {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                Callback callback = Mockito.mock(Callback.class);
+                Router.Callback callback = Mockito.mock(Router.Callback.class);
                 String endpoint = server.getUrl("").toString();
                 Router router = Router.getRouter()
                         .setEndpoint(endpoint)
@@ -214,7 +214,7 @@ public class RouterTest {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                Callback callback = Mockito.mock(Callback.class);
+                Router.Callback callback = Mockito.mock(Router.Callback.class);
                 String endpoint = server.getUrl("").toString();
                 Router router = Router.getRouter()
                         .setEndpoint(endpoint)
@@ -236,7 +236,7 @@ public class RouterTest {
             @Override
             public void run() {
                 String endpoint = server.getUrl("").toString();
-                Callback callback = Mockito.mock(Callback.class);
+                Router.Callback callback = Mockito.mock(Router.Callback.class);
                 Router router = Router.getRouter()
                         .setEndpoint(endpoint)
                         .setLocation(new double[] { 40.659241, -73.983776 })
@@ -244,7 +244,8 @@ public class RouterTest {
                 router.setCallback(callback);
                 router.fetch();
                 Mockito.verify(callback).success(route.capture());
-                assertThat(route.getValue().getRawRoute()).isEqualTo(getFixture("brooklyn"));
+                assertThat(route.getValue().getRawRoute().toString())
+                        .isEqualTo(getFixture("brooklyn"));
             }
         });
     }

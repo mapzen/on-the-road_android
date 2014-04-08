@@ -18,20 +18,17 @@ public class Route {
     private JSONObject jsonObject;
     private int currentLeg = 0;
     static final Logger log = Logger.getLogger("RouteLogger");
-    private String rawRoute;
 
 
-    public String getRawRoute() {
-        return rawRoute;
+    public JSONObject getRawRoute() {
+        return jsonObject;
     }
 
     public Route(String jsonString) {
-        this.rawRoute = jsonString;
         setJsonObject(new JSONObject(jsonString));
     }
 
     public Route(JSONObject jsonObject) {
-        this.rawRoute = jsonObject.toString();
         setJsonObject(jsonObject);
     }
 
