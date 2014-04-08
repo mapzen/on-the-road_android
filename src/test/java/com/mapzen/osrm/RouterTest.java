@@ -105,6 +105,22 @@ public class RouterTest {
         assertThat(url.toString()).contains("foot/viaroute");
     }
 
+    @Test
+    public void shouldClearLocations() throws Exception {
+        double[] loc1 = { 1.0, 2.0 };
+        double[] loc2 = { 3.0, 4.0 };
+        double[] loc3 = { 5.0, 6.0 };
+        Router router = Router.getRouter()
+                .setLocation(loc1)
+                .setLocation(loc2);
+        router.clearLocations();
+        router.setLocation(loc2);
+        router.setLocation(loc3);
+        URL url = router.getRouteUrl();
+        assertThat(url.toString()).doesNotContain("1.0,2.0");
+        assertThat(url.toString()).contains("3.0,4.0");
+    }
+
     @Test(expected=MalformedURLException.class)
     public void shouldThrowErrorWhenNoLocation() throws Exception {
         Router.getRouter().getRouteUrl();

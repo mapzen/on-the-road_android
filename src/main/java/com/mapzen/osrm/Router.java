@@ -66,6 +66,11 @@ public class Router implements Runnable {
         return this;
     }
 
+    public Router clearLocations() {
+        this.locations.clear();
+        return this;
+    }
+
     public Router setZoomLevel(int zoomLevel) {
         this.zoomLevel = zoomLevel;
         return this;
