@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/mapzen/on-the-road.svg?branch=master)](https://travis-ci.org/mapzen/on-the-road)
 
 This library has two main responsibilities, it acts as a java client [The Open Source Routing Machine (OSRM)][2] and it
-handles client side location correction. By default the endpoint is pointed at Mapzen hosted services but this can be configured
+handles client side location correction. By default the endpoint is pointed at Mapzen's hosted services but this can be configured
 to use your own hosted version as well. [Learn how to host your own][6] or use the service provided by [osrm at http://router.project-osrm.org][5].
 Keep in mind that this library focuses on our hosted version.
 
