@@ -2,8 +2,7 @@
 
 [![Build Status](https://travis-ci.org/mapzen/on-the-road.svg?branch=master)](https://travis-ci.org/mapzen/on-the-road)
 
-This library has two main responsibilities, it acts as a java client [The Open Source Routing Machine (OSRM)][2] and it
-handles client side location correction. By default the endpoint is pointed at Mapzen's hosted services but this can be configured
+This library has two main responsibilities, it acts as a java client for [The Open Source Routing Machine (OSRM)][2] and it handles client side location correction, specifically snapping the client’s location along road. By default the endpoint is pointed at Mapzen's hosted services but this can be configured
 to use your own hosted version as well. [Learn how to host your own][6] or use the service provided by [osrm at http://router.project-osrm.org][5].
 Keep in mind that this library focuses on our hosted version.
 
@@ -20,7 +19,7 @@ Router.getRouter().setEndpoint("http://example.com") //defaults to http://osrm.t
 	.setDriving() // Driving is default (setBiking, setWalking also available)
 	.setLocation(new double[]{lat, lng}) // required
 	.setLocation(new double[]{lat, lng}) // required
-	.setZoomLever(17) // defaults to 17
+	.setZoomLevel(17) // defaults to 17
 	.setCallback(new Callback() {
 		@Override
 		public void success(Route route) {
@@ -69,13 +68,12 @@ increased stability and self documentation.
 
 #### Client side magic
 
-This part we are still trying to figure out but the gist of the matter is that once you get location on your
-device it is not at all accurate especially in cities. To combat this we mathematically manipulate the
-location we receive from the location service ... slight plug you can use our [player services][3].
+Device GPS accuracy is almost never perfect, especially in cities. Being off by several feet becomes a very apparent problem in routing. Your user could be driving their car in a straight line down the street but your app could be displaying them 20 feet off the road. To combat this we mathematically manipulate the
+location we receive from the location service and snap it to the road. Slight plug: you can use our [player services][3].
 
-Best way to describe the problem is by looking at two illustration:
+The best way to describe the problem is by looking at two illustrations:
 
-This is what happens before correction you'll have a road (- and \)  and your location the (x);
+This is what happens before correction, you'll have a road (- and \)  and your location the (x);
 
 ```
 x    x
@@ -104,7 +102,7 @@ o-oo-o--o-o--o-- x
                    o  x
 ```
 
-This is done by finding the intersection of two beams one the beginning of the route leg and the other the location with +90 or -90
+This is done by finding the intersection of two beams, one the beginning of the route leg and the other the location with +90 or -90
 bearing compared to the bearing of the route leg. The math formulas we use were translated from [Chris Veness scripts][4]
 his examples are written in javascript and we translated the formulas we needed to java.
 
