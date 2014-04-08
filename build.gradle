@@ -26,10 +26,15 @@ repositories {
 }
 
 dependencies {
+    compile 'com.squareup.okhttp:okhttp:1.5.2'
     compile 'org.json:json:20131018'
+    compile 'org.apache.commons:commons-io:1.3.2'
+    compile 'com.google.guava:guava:16.0.1'
     testCompile 'junit:junit:4.10'
     testCompile 'org.apache.commons:commons-io:1.3.2'
     testCompile 'org.easytesting:fest-assert-core:2.0M10'
+    testCompile 'org.mockito:mockito-all:1.9.5'
+    testCompile 'com.squareup.okhttp:mockwebserver:1.5.2'
 }
 
 def defaultEncoding = 'UTF-8'

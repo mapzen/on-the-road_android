@@ -1,6 +1,7 @@
 package com.mapzen.osrm;
 
 import com.mapzen.helpers.DistanceFormatter;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,22 +25,22 @@ public class Instruction {
     public static final String STAY_ON_ROUND_ABOUT = "Stay on round about"; // 13;
     public static final String START_AT_END_OF_STREET = "Start at end of street"; // 14;
     public static final String YOU_HAVE_ARRIVED = "You have arrived"; // 15;
-    public static final String ENTER_AGAINST_ALLOWED_DIRECTION = "Enter against allowed direction"; // 16;
-    public static final String LEAVE_AGAINST_ALLOWED_DIRECTION = "Leave against allowed direction"; // 17;
+    public static final String ENTER_AGAINST_ALLOWED_DIRECTION =
+            "Enter against allowed direction"; //16;
+    public static final String LEAVE_AGAINST_ALLOWED_DIRECTION =
+            "Leave against allowed direction"; //17;
+    public static String[] decodedInstructions = {
+            NO_TURN, GO_STRAIGHT, TURN_SLIGHT_RIGHT, TURN_RIGHT, TURN_SHARP_RIGHT, U_TURN,
+            TURN_SHARP_LEFT, TURN_LEFT, TURN_SLIGHT_LEFT, REACH_VIA_POINT, HEAD_ON,
+            ENTER_ROUND_ABOUT, LEAVE_ROUND_ABOUT, STAY_ON_ROUND_ABOUT, START_AT_END_OF_STREET,
+            YOU_HAVE_ARRIVED, ENTER_AGAINST_ALLOWED_DIRECTION, LEAVE_AGAINST_ALLOWED_DIRECTION
+    };
     public static final String GEAR_JSON_INSTRUCTION = "instruction";
     public static final String GEAR_JSON_NAME = "street";
     public static final String GEAR_JSON_DISTANCE = "distance";
-
-    public static String[] decodedInstructions = {NO_TURN, GO_STRAIGHT, TURN_SLIGHT_RIGHT,
-            TURN_RIGHT, TURN_SHARP_RIGHT, U_TURN, TURN_SHARP_LEFT, TURN_LEFT, TURN_SLIGHT_LEFT,
-            REACH_VIA_POINT, HEAD_ON, ENTER_ROUND_ABOUT, LEAVE_ROUND_ABOUT, STAY_ON_ROUND_ABOUT,
-            START_AT_END_OF_STREET, YOU_HAVE_ARRIVED, ENTER_AGAINST_ALLOWED_DIRECTION,
-            LEAVE_AGAINST_ALLOWED_DIRECTION
-    };
-
     private JSONArray json;
     private int turn, distanceInMeters;
-    private double[] point = {};
+    private double[] point = { };
 
     public Instruction(JSONArray json) {
         if (json.length() < 8) {
@@ -53,15 +54,16 @@ public class Instruction {
     /**
      * Used for testing. Do not remove.
      */
+    @SuppressWarnings("unused")
     protected Instruction() {
-    }
-
-    public void setTurnInstruction(int turn) {
-        this.turn = turn;
     }
 
     public int getTurnInstruction() {
         return turn;
+    }
+
+    public void setTurnInstruction(int turn) {
+        this.turn = turn;
     }
 
     public String getHumanTurnInstruction() {
@@ -72,12 +74,12 @@ public class Instruction {
         return json.getString(1);
     }
 
-    public void setDistance(int distanceInMeters) {
-        this.distanceInMeters = distanceInMeters;
-    }
-
     public int getDistance() {
         return distanceInMeters;
+    }
+
+    public void setDistance(int distanceInMeters) {
+        this.distanceInMeters = distanceInMeters;
     }
 
     public String getFormattedDistance() {
@@ -127,11 +129,11 @@ public class Instruction {
 
     private String getFullInstructionBeforePattern() {
         String controllingGluePhrase = "and continue on for";
-        String pattern = "%s %s "+ controllingGluePhrase + " %s";
+        String pattern = "%s %s " + controllingGluePhrase + " %s";
         if (getHumanTurnInstruction().equals(HEAD_ON) ||
                 getHumanTurnInstruction().equals(GO_STRAIGHT)) {
             controllingGluePhrase = "for";
-            pattern = "%s %s "+ controllingGluePhrase + " %s";
+            pattern = "%s %s " + controllingGluePhrase + " %s";
         } else if (getHumanTurnInstruction().equals(YOU_HAVE_ARRIVED)) {
             pattern = "%s %s";
         }
@@ -187,9 +189,9 @@ public class Instruction {
         }
         Instruction other = (Instruction) obj;
         return (getTurnInstruction() == other.getTurnInstruction()
-            && getBearing() == other.getBearing()
-            && getPoint()[0] == other.getPoint()[0]
-            && getPoint()[1] == other.getPoint()[1]);
+                && getBearing() == other.getBearing()
+                && getPoint()[0] == other.getPoint()[0]
+                && getPoint()[1] == other.getPoint()[1]);
     }
 
     private int parseTurnInstruction(JSONArray json) {
