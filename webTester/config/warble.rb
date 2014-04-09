@@ -3,7 +3,7 @@
 require 'fileutils'
 dirname = File.dirname(__FILE__)
 expandedpath = File.expand_path("#{dirname}/../../build/libs/")
-FileUtils.cp("#{expandedpath}/OnTheRoad-0.1-SNAPSHOT.jar", "#{dirname}/../lib/")
+FileUtils.cp("#{expandedpath}/on-the-road-0.1-SNAPSHOT.jar", "#{dirname}/../lib/")
 
 # Disable Rake-environment-task framework detection by uncommenting/setting to false
 # Warbler.framework_detection = false
@@ -18,7 +18,7 @@ Warbler::Config.new do |config|
   config.features = %w(executable)
 
   # Application directories to be included in the webapp.
-  config.dirs = %w(db views lib)
+  config.dirs = %w(db views lib conf)
 
   # Additional files/directories to include, above those in config.dirs
   config.includes = FileList["app.rb"]
@@ -115,7 +115,7 @@ Warbler::Config.new do |config|
 
   # Files to be included in the root of the webapp.  Note that files in public
   # will have the leading 'public/' part of the path stripped during staging.
-  config.public_html = FileList["static/**/*", "doc/**/*"]
+  config.public_html = FileList["static/*", "static/**/*", "doc/**/*"]
 
   # Pathmaps for controlling how public HTML files are copied into the .war
   # config.pathmaps.public_html = ["%{public/,}p"]
