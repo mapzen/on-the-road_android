@@ -69,7 +69,7 @@ increased stability and self documentation.
 #### Client side magic
 
 Device GPS accuracy is almost never perfect, especially in cities. Being off by several feet becomes a very apparent problem in routing. Your user could be driving their car in a straight line down the street but your app could be displaying them 20 feet off the road. To combat this we mathematically manipulate the
-location we receive from the location service and snap it to the road. Slight plug: you can use our [player services][3].
+location we receive from the location service and snap it to the road. You can use our project [LOST][3] if you would like an open source alternative to the Fused Location Provider.
 
 The best way to describe the problem is by looking at two illustrations:
 
