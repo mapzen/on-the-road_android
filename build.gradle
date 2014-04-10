@@ -105,6 +105,20 @@ uploadArchives {
           }
         }
 
+        developers {
+          developer {
+            id 'baldur'
+            name 'Baldur Gudbjornsson'
+            email 'baldur@mapzen.com'
+          }
+
+          developer {
+            id 'ecgreb'
+            name 'Chuck Greb'
+            email 'chuck@mapzen.com'
+          }
+        }
+
         organization {
           name 'Mapzen'
           url 'http://mapzen.com'
