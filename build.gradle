@@ -71,12 +71,18 @@ javadoc {
     options.encoding = defaultEncoding
 }
 
+if (version.contains("SNAPSHOT")) {
+  sonatypeRepositoryUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+} else {
+  sonatypeRepositoryUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+}
+
 uploadArchives {
   repositories {
     mavenDeployer {
       beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-      repository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+      repository(url: sonatypeRepositoryUrl) {
         authentication(userName: sonatypeUsername, password: sonatypePassword)
       }
 
