@@ -14,12 +14,32 @@ apply plugin: 'fatjar'
 apply plugin: 'java'
 apply plugin: 'java-library-distribution'
 apply plugin: 'maven'
-apply plugin: 'nexus'
+apply plugin: 'signing'
 
 group = 'com.mapzen'
 version = '0.1-SNAPSHOT'
 
 defaultTasks = ['clean', 'test', 'install']
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+  classifier = 'javadoc'
+  from 'build/docs/javadoc'
+}
+
+task sourcesJar(type: Jar) {
+  from sourceSets.main.allSource
+  classifier = 'sources'
+}
+
+artifacts {
+  archives jar
+  archives javadocJar
+  archives sourcesJar
+}
+
+signing {
+  sign configurations.archives
+}
 
 repositories {
     maven { url 'http://repo.maven.apache.org/maven2' }
@@ -51,15 +71,39 @@ javadoc {
     options.encoding = defaultEncoding
 }
 
-install {
-    repositories.mavenInstaller {
-        pom.artifactId = 'on-the-road'
-    }
-}
-
 uploadArchives {
-    repositories.mavenDeployer {
-        pom.artifactId = 'on-the-road'
-    }
-}
+  repositories {
+    mavenDeployer {
+      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
+      repository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+        authentication(userName: sonatypeUsername, password: sonatypePassword)
+      }
+
+      pom.project {
+        name 'On The Road'
+        packaging 'jar'
+        description 'Open Source Routing Machine wrapper and route location utilities'
+        url 'http://github.com/mapzen/on-the-road'
+
+        scm {
+          url 'http://github.com/mapzen/on-the-road'
+          connection 'scm:git:git://github.com/mapzen/on-the-road.git'
+          developerConnection 'scm:git:ssh://git@github.com/mapzen/on-the-road.git'
+        }
+
+        licenses {
+          license {
+            name 'The Apache Software License, Version 2.0'
+            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+          }
+        }
+
+        organization {
+          name 'Mapzen'
+          url 'http://mapzen.com'
+        }
+      }
+    }
+  }
+}
