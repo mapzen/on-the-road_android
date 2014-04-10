@@ -18,10 +18,10 @@ Warbler::Config.new do |config|
   config.features = %w(executable)
 
   # Application directories to be included in the webapp.
-  config.dirs = %w(db views lib conf)
+  config.dirs = %w(db views lib settings)
 
   # Additional files/directories to include, above those in config.dirs
-  config.includes = FileList["app.rb"]
+  config.includes = FileList["deps.rb", "models.rb", "app.rb"]
 
   # Additional files/directories to exclude
   # config.excludes = FileList["lib/tasks/*"]

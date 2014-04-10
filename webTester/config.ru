@@ -1,15 +1,7 @@
-root = File.dirname(__FILE__)
-$:.unshift File.expand_path('../lib', root) 
-$:.unshift File.expand_path('../build/libs/', root) 
-
-require "rubygems"
-require "bundler"
-require 'active_record'
-require 'digest/md5'
-
+require File.join( File.dirname(__FILE__), 'deps' )
 Bundler.require :default, (ENV["RACK_ENV"] || "development").to_sym
 
-CONF = YAML.load_file('conf/settings.yml')
+CONF = YAML.load_file('settings/settings.yml')
 
 ActiveRecord::Base.establish_connection(
   :adapter => CONF[:adapter],   # 'mysql2',
@@ -18,8 +10,8 @@ ActiveRecord::Base.establish_connection(
   :password => CONF[:password]  # "test"
 )
 
-set :public_folder, Proc.new { File.join(root, "static") }
-
 require File.join( File.dirname(__FILE__), 'app' )
+
+set :public_folder, Proc.new { File.join(root, "static") }
 
 run WebApp::App
