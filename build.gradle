@@ -17,7 +17,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 group = 'com.mapzen'
-version = '0.1'
+version = '0.2-SNAPSHOT'
 
 defaultTasks = ['clean', 'test', 'install']
 
