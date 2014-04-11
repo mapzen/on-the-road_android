@@ -8,6 +8,7 @@ module WebApp
       file = File.new("#{CONF[:upload_path]}/database-#{filename}.db", "w") 
       file.puts raw
       file.close
+      ImportDataWorker.new.async.perform("database-#{filename}.db")
       "success"
     end
 

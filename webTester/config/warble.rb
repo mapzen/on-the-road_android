@@ -21,7 +21,7 @@ Warbler::Config.new do |config|
   config.dirs = %w(db views lib settings)
 
   # Additional files/directories to include, above those in config.dirs
-  config.includes = FileList["deps.rb", "models.rb", "app.rb"]
+  config.includes = FileList["import_data_worker.rb", "deps.rb", "models.rb", "app.rb"]
 
   # Additional files/directories to exclude
   # config.excludes = FileList["lib/tasks/*"]

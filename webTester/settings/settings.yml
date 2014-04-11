@@ -2,4 +2,4 @@
 :database: on_the_road
 :username: test
 :password: test
-:upload_path: db_tests/
+:upload_path: /tmp/
