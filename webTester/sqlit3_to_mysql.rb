@@ -3,6 +3,7 @@ require File.join( File.dirname(__FILE__), 'deps')
 CONF = YAML.load_file('settings/settings.yml')
 
 Dir["#{CONF[:upload_path]}/*.db"].each do |database|
+  puts database
   all_data = {}
   ActiveRecord::Base.establish_connection(
     adapter: 'sqlite3',
@@ -27,10 +28,21 @@ Dir["#{CONF[:upload_path]}/*.db"].each do |database|
   )
 
   all_data.each do |key, value|
-    begin
-      key.constantize.create!(value)
-    rescue ActiveRecord::RecordNotUnique => e
-      puts "duplicated #{key}: value #{value}"
+    value.each do |stuff|
+      record = key.constantize.new(stuff) 
+      if record.valid?
+        begin
+          record.save!
+        rescue ActiveRecord::RecordNotUnique => e
+          puts "duplicate record skipping"
+        rescue StandardError => bang
+          puts "something terrible happened"
+          puts bang.to_s
+        end
+      else
+        puts "this record is not valid:"
+        puts record.errors.to_s
+      end 
     end
   end
 end
