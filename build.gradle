@@ -37,10 +37,6 @@ artifacts {
   archives sourcesJar
 }
 
-signing {
-  sign configurations.archives
-}
-
 repositories {
     maven { url 'http://repo.maven.apache.org/maven2' }
 }
@@ -75,6 +71,24 @@ if (version.contains("SNAPSHOT")) {
   sonatypeRepositoryUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
 } else {
   sonatypeRepositoryUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+}
+
+if (project.hasProperty('singing.keyId')) {
+  signing {
+    sign configurations.archives
+  }
+} else {
+  task signArchives {
+    // Do nothing.
+  }
+}
+
+if (!project.hasProperty('sontypeUsername')) {
+  sonatypeUsername = ""
+}
+
+if (!project.hasProperty('sonatypePassword')) {
+  sonatypePassword = ""
 }
 
 uploadArchives {
