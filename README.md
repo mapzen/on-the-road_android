@@ -132,7 +132,7 @@ $ java -jar webTester.war
 
 Download the [latest JAR][1].
 
-#### Maven (Pending)
+#### Maven
 
 Include dependency using Maven.
 
@@ -140,19 +140,19 @@ Include dependency using Maven.
 <dependency>
   <groupId>com.mapzen.android</groupId>
   <artifactId>on-the-road</artifactId>
-  <version>1.0.0</version>
+  <version>0.1</version>
 </dependency>
 ```
 
-#### Gradle (Pending)
+#### Gradle
 
 Include dependency using Gradle.
 
 ```groovy
-compile 'com.mapzen.android:on-the-road:1.0.0'
+compile 'com.mapzen.android:on-the-road:0.1'
 ```
 
-[1]: https://github.com/mapzen/on-the-road 
+[1]: http://search.maven.org/remotecontent?filepath=com/mapzen/on-the-road/0.1/on-the-road-0.1.jar
 [2]: http://project-osrm.org/ 
 [3]: https://github.com/mapzen/player-services
 [4]: http://www.movable-type.co.uk/scripts/latlong.html
