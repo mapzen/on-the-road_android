@@ -2,6 +2,7 @@ require 'sinatra/base'
 
 module WebApp
   class App < Sinatra::Base
+    after { ActiveRecord::Base.connection.close }
     post "/upload" do
       raw = request.body.read
       filename = Digest::MD5.hexdigest(raw)

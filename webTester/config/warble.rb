@@ -3,7 +3,7 @@
 require 'fileutils'
 dirname = File.dirname(__FILE__)
 expandedpath = File.expand_path("#{dirname}/../../build/libs/")
-FileUtils.cp("#{expandedpath}/on-the-road-0.1-SNAPSHOT.jar", "#{dirname}/../lib/")
+FileUtils.cp("#{expandedpath}/on-the-road-0.2-SNAPSHOT.jar", "#{dirname}/../lib/")
 
 # Disable Rake-environment-task framework detection by uncommenting/setting to false
 # Warbler.framework_detection = false
@@ -15,7 +15,7 @@ Warbler::Config.new do |config|
   # - gemjar: package the gem repository in a jar file in WEB-INF/lib
   # - executable: embed a web server and make the war executable
   # - compiled: compile .rb files to .class files
-  config.features = %w(executable)
+  config.features = %w(gemjar)
 
   # Application directories to be included in the webapp.
   config.dirs = %w(db views lib settings)
