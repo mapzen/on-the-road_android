@@ -7,7 +7,8 @@ ActiveRecord::Base.establish_connection(
   :adapter => CONF[:adapter],   # 'mysql2',
   :database => CONF[:database], # "on_the_road",
   :username => CONF[:username], # "test",
-  :password => CONF[:password]  # "test"
+  :password => CONF[:password],  # "test"
+  :host => CONF[:host]  # "localhost"
 )
 
 require File.join( File.dirname(__FILE__), 'app' )

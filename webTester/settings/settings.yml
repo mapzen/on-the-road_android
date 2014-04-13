@@ -2,5 +2,6 @@
 :database: on_the_road
 :username: test
 :password: test
+:host: localhost
 :pool: 40
 :upload_path: /tmp/
