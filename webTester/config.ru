@@ -1,7 +1,7 @@
 require File.join( File.dirname(__FILE__), 'deps' )
 Bundler.require :default, (ENV["RACK_ENV"] || "development").to_sym
 
-CONF = YAML.load_file('settings/settings.yml')
+CONF = YAML.load_file('/etc/on_the_road/settings.yml')
 
 ActiveRecord::Base.establish_connection(
   :adapter => CONF[:adapter],   # 'mysql2',
