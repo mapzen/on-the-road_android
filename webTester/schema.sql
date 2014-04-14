@@ -13,13 +13,15 @@ CREATE TABLE locations (
   acc integer not null,
   time double not null,
   route_id varchar(100) not null,
-  dump varchar(500) not null
+  dump varchar(500) not null,
+  ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) DEFAULT CHARACTER SET utf8
   DEFAULT COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `routes`;
 CREATE TABLE routes (
   _id varchar(100) primary key,
+  ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   raw varchar(5000) not null
 ) DEFAULT CHARACTER SET utf8
   DEFAULT COLLATE utf8_general_ci;
@@ -28,7 +30,8 @@ DROP TABLE IF EXISTS `log_entries`;
 CREATE TABLE log_entries (
   _id varchar(100) primary key,
   tag varchar(50) not null,
-  msg varchar(500) not null
+  msg varchar(500) not null,
+  ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) DEFAULT CHARACTER SET utf8
   DEFAULT COLLATE utf8_general_ci;
 
@@ -38,7 +41,8 @@ CREATE TABLE route_geometry (
   route_id varchar(100) not null,
   position integer not null,
   lat text not null,
-  lng text not null
+  lng text not null,
+  ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) DEFAULT CHARACTER SET utf8
   DEFAULT COLLATE utf8_general_ci;
 
