@@ -31,7 +31,7 @@
       <ul>
         <% Route.all.each do |route| %>
           <% full_route = com.mapzen.osrm.Route.new(route.raw) %>
-          <li><a href=?route_id=<%= route.id %>><%= route.id %> (<%= full_route.route_instructions.to_a[-2].get_simple_instruction %>)</a></li>
+          <li><a href=?route_id=<%= route.id %>><%= route.ts %> (<%= full_route.route_instructions.to_a[-2].get_simple_instruction %>)</a></li>
         <% end %>
       </ul>
     </div>
