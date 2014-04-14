@@ -17,10 +17,15 @@ var addDot = function(theMap) {
 }
 
 $(function() {
-	var initialLocation = new L.LatLng(window.locs[0][0], window.locs[0][1]);
+        var initialLocation;
+        if(window.locs.length) {
+	    initialLocation = new L.LatLng(window.locs[0][0], window.locs[0][1]);
+        } else {
+	  initialLocation = new L.LatLng(window.linePoints[0][0], window.linePoints[0][1]);
+        }
 
 	var map = L.mapbox.map('map', 'randyme.gajlngfe')
-		.setView([window.locs[0][0], window.locs[0][1]], 18);
+		.setView([initialLocation.lat, initialLocation.lng], 18);
 	var polyline = L.polyline([], {color: '#000'}).addTo(map);
 	$.each(linePoints, function(index,value) {
 		polyline.addLatLng(new L.LatLng(value[0], value[1]));
