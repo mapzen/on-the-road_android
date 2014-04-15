@@ -1,5 +1,7 @@
 package com.mapzen.osrm;
 
+import com.mapzen.Location;
+import com.mapzen.MapzenLocation;
 import com.mapzen.helpers.DistanceFormatter;
 
 import org.json.JSONArray;
@@ -292,14 +294,14 @@ public class InstructionTest {
 
     @Test
     public void hasPointCoordinates() throws Exception {
-        assertThat(instruction.getPoint()).isNotNull();
+        assertThat(instruction.getLocation()).isNotNull();
     }
 
     @Test
     public void canSetCoordinates() throws Exception {
-        double[] expected = {3.3, 4.4};
-        instruction.setPoint(expected);
-        assertThat(instruction.getPoint()).isEqualTo(expected);
+        Location expected = new MapzenLocation(3.3, 4.4);
+        instruction.setLocation(expected);
+        assertThat(instruction.getLocation()).isEqualTo(expected);
 
     }
 
@@ -409,17 +411,17 @@ public class InstructionTest {
     @Test
     public void shouldBeEqual() throws Exception {
         Instruction instruction = new Instruction(NON_INT_TURN_JSON);
-        instruction.setPoint(new double[] {0,0});
+        instruction.setLocation(new MapzenLocation(0, 0));
         Instruction other = new Instruction(NON_INT_TURN_JSON);
-        other.setPoint(new double[] {0,0});
+        other.setLocation(new MapzenLocation(0, 0));
         assertThat(instruction).isEqualTo(other);
     }
 
     @Test
     public void shouldNotBeEqual() throws Exception {
-        instruction.setPoint(new double[] {0,0});
+        instruction.setLocation(new MapzenLocation(0, 0));
         Instruction other = new Instruction(NON_INT_TURN_JSON);
-        other.setPoint(new double[] { 0, 0 });
+        other.setLocation(new MapzenLocation(0, 0));
         assertThat(instruction).isNotEqualTo(other);
     }
 

@@ -1,5 +1,8 @@
 package com.mapzen.osrm;
 
+import com.mapzen.Location;
+import com.mapzen.MapzenLocation;
+
 public class Node {
     private double lat, lng, totalDistance, bearing, legDistance;
 
@@ -40,7 +43,7 @@ public class Node {
         this.legDistance = legDistance;
     }
 
-    public double[] getPoint() {
-        return new double[] { lat, lng };
+    public Location getLocation() {
+        return new MapzenLocation(lat, lng);
     }
 }

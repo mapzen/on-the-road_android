@@ -1,5 +1,8 @@
 package com.mapzen.osrm;
 
+import com.mapzen.Location;
+import com.mapzen.MapzenLocation;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -68,11 +71,11 @@ public class Route {
         Node pre = null;
         double distance = 0;
         double totalDistance = 0;
-        double[] markerPoint = { 0, 0 };
+        Location markerPoint = new MapzenLocation(0, 0);
 
         int marker = 1;
         // set initial point to first instruction
-        instructions.get(0).setPoint(poly.get(0).getPoint());
+        instructions.get(0).setLocation(poly.get(0).getLocation());
         for(int i = 0; i < poly.size(); i++) {
             Node node = poly.get(i);
             if(marker == instructions.size()) {
@@ -85,36 +88,32 @@ public class Route {
             }
             // this needs the previous distance marker hence minus one
             if(Math.floor(totalDistance) > instructions.get(marker-1).getDistance()) {
-                instruction.setPoint(markerPoint);
+                instruction.setLocation(markerPoint);
                 marker++;
                 totalDistance = distance;
             }
-            markerPoint = node.getPoint();
+            markerPoint = node.getLocation();
             pre = node;
 
             // setting the last one to the destination
             if(poly.size() - 1 == i) {
-                instructions.get(marker).setPoint(markerPoint);
+                instructions.get(marker).setLocation(markerPoint);
             }
         }
         return instructions;
     }
 
-    public ArrayList<double[]> getGeometry() {
-        ArrayList<double[]> geometry = new ArrayList<double[]>();
+    public ArrayList<Location> getGeometry() {
+        ArrayList<Location> geometry = new ArrayList<Location>();
         for(Node node : poly) {
-            geometry.add(node.getPoint());
+            geometry.add(node.getLocation());
         }
         return geometry;
     }
 
-    public double[] getStartCoordinates() {
+    public Location getStartCoordinates() {
         JSONArray points = getViaPoints().getJSONArray(0);
-        double[] coordinates = {
-                points.getDouble(0),
-                points.getDouble(1)
-        };
-        return coordinates;
+        return new MapzenLocation(points.getDouble(0), points.getDouble(1));
     }
 
     private JSONArray getViaPoints() {
@@ -155,12 +154,12 @@ public class Route {
                 Node node = new Node(x,y);
                 if (!poly.isEmpty()) {
                     Node lastElement = poly.get(poly.size()-1);
-                    double distance = distanceBetweenPoints(node.getPoint(),
-                            lastElement.getPoint());
+                    double distance = distanceBetweenPoints(node.getLocation(),
+                            lastElement.getLocation());
                     double totalDistance = distance + lastElement.getTotalDistance();
                     node.setTotalDistance(totalDistance);
                     if(lastNode != null) {
-                        lastNode.setBearing(getBearing(lastNode.getPoint(), node.getPoint()));
+                        lastNode.setBearing(getBearing(lastNode.getLocation(), node.getLocation()));
                     }
                     lastNode.setLegDistance(distance);
                 }
@@ -184,11 +183,11 @@ public class Route {
         currentLeg = 0;
     }
 
-    public double[] snapToRoute(double[] originalPoint) {
+    public Location snapToRoute(Location originalPoint) {
         log.info("Snapping => currentLeg: " + String.valueOf(currentLeg));
         log.info("Snapping => originalPoint: "
-                + String.valueOf(originalPoint[0]) + ", "
-                + String.valueOf(originalPoint[1]));
+                + String.valueOf(originalPoint.getLatitude()) + ", "
+                + String.valueOf(originalPoint.getLongitude()));
 
         int sizeOfPoly = poly.size();
 
@@ -200,20 +199,20 @@ public class Route {
         Node destination = poly.get(sizeOfPoly-1);
 
         // if close to destination
-        double distanceToDestination = distanceBetweenPoints(destination.getPoint(), originalPoint);
+        double distanceToDestination = distanceBetweenPoints(destination.getLocation(), originalPoint);
         log.info("Snapping => distance to destination: " + String.valueOf(distanceToDestination));
         if (Math.floor(distanceToDestination) < 20) {
-            return destination.getPoint();
+            return destination.getLocation();
         }
 
         Node current = poly.get(currentLeg);
-        double[] fixedPoint = snapTo(current, originalPoint);
+        Location fixedPoint = snapTo(current, originalPoint);
         if (fixedPoint == null) {
-            fixedPoint = current.getPoint();
+            fixedPoint = current.getLocation();
         } else {
-            double distance = distanceBetweenPoints(current.getPoint(), fixedPoint);
+            double distance = distanceBetweenPoints(current.getLocation(), fixedPoint);
             log.info("Snapping => distance between current and fixed: " + String.valueOf(distance));
-            double bearingToOriginal = getBearing(current.getPoint(), originalPoint);
+            double bearingToOriginal = getBearing(current.getLocation(), originalPoint);
             log.info("Snapping => bearing to original: " + String.valueOf(bearingToOriginal));
                                                /// UGH somewhat arbritrary
             double bearingDiff = Math.abs(bearingToOriginal - current.getBearing());
@@ -235,8 +234,8 @@ public class Route {
         }
     }
 
-    private double[] snapTo(Node turnPoint, double[] location) {
-        double[] correctedLocation = snapTo(turnPoint, location, 90);
+    private Location snapTo(Node turnPoint, Location location) {
+        Location correctedLocation = snapTo(turnPoint, location, 90);
         if (correctedLocation == null) {
             correctedLocation = snapTo(turnPoint, location, -90);
         }
@@ -251,11 +250,11 @@ public class Route {
         return correctedLocation;
     }
 
-    private double[] snapTo(Node turnPoint, double[] location, int offset) {
+    private Location snapTo(Node turnPoint, Location location, int offset) {
         double lat1 = toRadians(turnPoint.getLat());
         double lon1 = toRadians(turnPoint.getLng());
-        double lat2 = toRadians(location[0]);
-        double lon2 = toRadians(location[1]);
+        double lat2 = toRadians(location.getLatitude());
+        double lon2 = toRadians(location.getLongitude());
 
         double brng13 = toRadians(turnPoint.getBearing());
         double brng23 = toRadians(turnPoint.getBearing() + offset);
@@ -308,7 +307,6 @@ public class Route {
         double lon3 = ((lon1 + dLon13) + 3 * Math.PI) % (2 * Math.PI)
                 - Math.PI;  // normalise to -180..+180º
 
-        double[] point = { Math.toDegrees(lat3), Math.toDegrees(lon3) };
-        return point;
+        return new MapzenLocation(Math.toDegrees(lat3), Math.toDegrees(lon3));
     }
 }
