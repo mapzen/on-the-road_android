@@ -24,7 +24,7 @@ module WebApp
     end
 
     get "/snap" do
-      route = Route.where(:_id => params[:route_id].try(:to_i)).first
+      route = Route.where(:_id => params[:route_id]).first
       osrm_route = com.mapzen.osrm.Route.new(route.raw)  
       if osrm_route.nil?
         puts "boom"
