@@ -1,17 +1,20 @@
 package com.mapzen.osrm;
 
-import com.mapzen.Location;
-import com.mapzen.MapzenLocation;
 import com.mapzen.helpers.DistanceFormatter;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+
+import android.location.Location;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
+import static com.mapzen.TestUtils.getLocation;
 import static com.mapzen.osrm.Instruction.ENTER_AGAINST_ALLOWED_DIRECTION;
 import static com.mapzen.osrm.Instruction.ENTER_ROUND_ABOUT;
 import static com.mapzen.osrm.Instruction.GEAR_JSON_DISTANCE;
@@ -35,8 +38,8 @@ import static com.mapzen.osrm.Instruction.TURN_SLIGHT_RIGHT;
 import static com.mapzen.osrm.Instruction.U_TURN;
 import static com.mapzen.osrm.Instruction.decodedInstructions;
 import static org.fest.assertions.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
 
+@RunWith(RobolectricTestRunner.class)
 public class InstructionTest {
     private static final JSONArray JSON = new JSONArray("[\n" +
             "\"10\",\n" +
@@ -299,7 +302,9 @@ public class InstructionTest {
 
     @Test
     public void canSetCoordinates() throws Exception {
-        Location expected = new MapzenLocation(3.3, 4.4);
+        Location expected = new Location("snap");
+        expected.setLatitude(3.3);
+        expected.setLongitude(4.4);
         instruction.setLocation(expected);
         assertThat(instruction.getLocation()).isEqualTo(expected);
 
@@ -411,17 +416,17 @@ public class InstructionTest {
     @Test
     public void shouldBeEqual() throws Exception {
         Instruction instruction = new Instruction(NON_INT_TURN_JSON);
-        instruction.setLocation(new MapzenLocation(0, 0));
+        instruction.setLocation(getLocation(0, 0));
         Instruction other = new Instruction(NON_INT_TURN_JSON);
-        other.setLocation(new MapzenLocation(0, 0));
+        other.setLocation(getLocation(0, 0));
         assertThat(instruction).isEqualTo(other);
     }
 
     @Test
     public void shouldNotBeEqual() throws Exception {
-        instruction.setLocation(new MapzenLocation(0, 0));
+        instruction.setLocation(getLocation(0, 0));
         Instruction other = new Instruction(NON_INT_TURN_JSON);
-        other.setLocation(new MapzenLocation(0, 0));
+        other.setLocation(getLocation(0, 0));
         assertThat(instruction).isNotEqualTo(other);
     }
 

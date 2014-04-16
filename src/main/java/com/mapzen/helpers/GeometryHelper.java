@@ -1,6 +1,6 @@
 package com.mapzen.helpers;
 
-import com.mapzen.Location;
+import android.location.Location;
 
 import static java.lang.Math.toRadians;
 

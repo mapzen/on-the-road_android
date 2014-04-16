@@ -1,19 +1,22 @@
 package com.mapzen.osrm;
 
-import com.mapzen.Location;
-import com.mapzen.MapzenLocation;
-
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+
+import android.location.Location;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
+import static com.mapzen.TestUtils.*;
 import static java.lang.System.*;
 import static org.fest.assertions.api.Assertions.assertThat;
 
+@RunWith(RobolectricTestRunner.class)
 public class RouteTest {
     private Route route;
 
@@ -68,12 +71,12 @@ public class RouteTest {
     @Test
     public void hasCorrectTurnByTurnCordinatesInBrooklyn() throws Exception {
         ArrayList<Location> points = new ArrayList<Location>();
-        points.add(new MapzenLocation(40.66071, -73.98933));
-        points.add(new MapzenLocation(40.65982, -73.98784));
-        points.add(new MapzenLocation(40.65925, -73.98843));
-        points.add(new MapzenLocation(40.66325, -73.99504));
-        points.add(new MapzenLocation(40.66732, -73.99117));
-        points.add(new MapzenLocation(40.66631, -73.98909));
+        points.add(getLocation(40.66071, -73.98933));
+        points.add(getLocation(40.65982, -73.98784));
+        points.add(getLocation(40.65925, -73.98843));
+        points.add(getLocation(40.66325, -73.99504));
+        points.add(getLocation(40.66732, -73.99117));
+        points.add(getLocation(40.66631, -73.98909));
         Route brooklynRoute = getRoute("brooklyn");
 
         ListIterator<Location> expectedPoints = points.listIterator();
@@ -131,7 +134,7 @@ public class RouteTest {
     @Test
     public void shouldHaveStartCoordinates() throws Exception {
         route = getRoute("brooklyn");
-        Location expected = new MapzenLocation(40.660708, -73.989332);
+        Location expected = getLocation(40.660708, -73.989332);
         assertThat(route.getStartCoordinates()).isEqualsToByComparingFields(expected);
     }
 
@@ -145,7 +148,7 @@ public class RouteTest {
     @Test
     public void snapToRoute_shouldStayOnLeg() throws Exception {
         Route myroute = getRoute("greenpoint_around_the_block");
-        Location stayOnRoute = new MapzenLocation(40.660250, -73.988105);
+        Location stayOnRoute = getLocation(40.660250, -73.988105);
         Location snapped = myroute.snapToRoute(stayOnRoute);
         assertThat(myroute.getCurrentLeg()).isEqualTo(0);
         assertThat(snapped).isNotNull();
@@ -155,7 +158,7 @@ public class RouteTest {
     @Test
     public void snapToRoute_shouldSnapToBeginning() throws Exception {
         Route myroute = getRoute("greenpoint_around_the_block");
-        Location snapToBeginning = new MapzenLocation(40.661060, -73.990004);
+        Location snapToBeginning = getLocation(40.661060, -73.990004);
         assertThat(myroute.snapToRoute(snapToBeginning)).isEqualsToByComparingFields(myroute.getStartCoordinates());
     }
 
@@ -164,25 +167,25 @@ public class RouteTest {
         // these points are behind the new line
         Route myroute = getRoute("greenpoint_around_the_block");
         Location expected = myroute.getGeometry().get(1);
-        Location snapToNextLeg1 = new MapzenLocation(40.659740, -73.987802);
+        Location snapToNextLeg1 = getLocation(40.659740, -73.987802);
         assertThat(myroute.snapToRoute(snapToNextLeg1)).isEqualsToByComparingFields(expected);
         myroute.rewind();
-        Location snapToNextLeg2 = new MapzenLocation(40.659762, -73.987821);
+        Location snapToNextLeg2 = getLocation(40.659762, -73.987821);
         assertThat(myroute.snapToRoute(snapToNextLeg2)).isEqualsToByComparingFields(expected);
         myroute.rewind();
-        Location snapToNextLeg3 = new MapzenLocation(40.659781, -73.987890);
+        Location snapToNextLeg3 = getLocation(40.659781, -73.987890);
         assertThat(myroute.snapToRoute(snapToNextLeg3)).isEqualsToByComparingFields(expected);
     }
 
     @Test
     public void snapToRoute_shouldAdvanceToNextLegButNotSnapToThatBeginning() throws Exception {
         Route myroute = getRoute("greenpoint_around_the_block");
-        Location justAroundTheCorner1 = new MapzenLocation(40.659826, -73.987838);
+        Location justAroundTheCorner1 = getLocation(40.659826, -73.987838);
         Location snappedTo1 = myroute.snapToRoute(justAroundTheCorner1);
         assertThat(snappedTo1).isNotEqualTo(route.getGeometry().get(1));
         assertThat(myroute.getCurrentLeg()).isEqualTo(1);
         myroute.rewind();
-        Location justAroundTheCorner2 = new MapzenLocation(40.659847, -73.987835);
+        Location justAroundTheCorner2 = getLocation(40.659847, -73.987835);
         Location snappedTo2 = myroute.snapToRoute(justAroundTheCorner2);
         assertThat(snappedTo2).isNotEqualTo(myroute.getGeometry().get(1));
         assertThat(myroute.getCurrentLeg()).isEqualTo(1);
@@ -191,7 +194,7 @@ public class RouteTest {
     @Test
     public void snapToRoute_shouldFindFutureLegs() throws Exception {
         Route myroute = getRoute("greenpoint_around_the_block");
-        Location point = new MapzenLocation(40.660785, -73.987878);
+        Location point = getLocation(40.660785, -73.987878);
         Location snapped = myroute.snapToRoute(point);
         assertThat(snapped).isNotNull();
         assertThat(myroute.getCurrentLeg()).isEqualTo(4);
@@ -201,14 +204,14 @@ public class RouteTest {
     public void snapToRoute_shouldRealizeItsLost() throws Exception {
         Location lost;
         Route myroute = getRoute("greenpoint_around_the_block");
-        lost = new MapzenLocation(40.662046, -73.987089);
+        lost = getLocation(40.662046, -73.987089);
         assertThat(myroute.snapToRoute(lost)).isNull();
     }
 
     @Test
     public void snapToRoute_shouldBeFinalDestination() throws Exception {
         Route myroute = getRoute("greenpoint_around_the_block");
-        Location foundIt = new MapzenLocation(40.661434, -73.989030);
+        Location foundIt = getLocation(40.661434, -73.989030);
         Location snapped = myroute.snapToRoute(foundIt);
         ArrayList<Location> geometry = myroute.getGeometry();
         Location expected = geometry.get(geometry.size()-1);
@@ -218,7 +221,7 @@ public class RouteTest {
     @Test
     public void snapToRoute_shouldHandleSharpTurn() throws Exception {
         Route myroute = getRoute("sharp_turn");
-        Location aroundSharpTurn = new MapzenLocation(40.687052, -73.976300);
+        Location aroundSharpTurn = getLocation(40.687052, -73.976300);
         Location snapped = myroute.snapToRoute(aroundSharpTurn);
         // TODO ... handle this case
         //assertThat(myroute.getCurrentLeg()).isEqualTo(2);

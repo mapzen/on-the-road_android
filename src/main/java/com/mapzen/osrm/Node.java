@@ -1,7 +1,6 @@
 package com.mapzen.osrm;
 
-import com.mapzen.Location;
-import com.mapzen.MapzenLocation;
+import android.location.Location;
 
 public class Node {
     private double lat, lng, totalDistance, bearing, legDistance;
@@ -44,6 +43,9 @@ public class Node {
     }
 
     public Location getLocation() {
-        return new MapzenLocation(lat, lng);
+        Location loc = new Location("snap");
+        loc.setLatitude(lat);
+        loc.setLongitude(lng);
+        return loc;
     }
 }

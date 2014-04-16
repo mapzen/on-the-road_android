@@ -1,12 +1,12 @@
 package com.mapzen.osrm;
 
-import com.mapzen.Location;
-import com.mapzen.MapzenLocation;
 import com.mapzen.helpers.DistanceFormatter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.location.Location;
 
 import java.util.Locale;
 
@@ -42,7 +42,7 @@ public class Instruction {
     public static final String GEAR_JSON_DISTANCE = "distance";
     private JSONArray json;
     private int turn, distanceInMeters;
-    private Location location = new MapzenLocation(0,0);
+    private Location location = new Location("snap");
 
     public Instruction(JSONArray json) {
         if (json.length() < 8) {

@@ -1,11 +1,10 @@
 package com.mapzen.osrm;
 
-import com.mapzen.Location;
-import com.mapzen.MapzenLocation;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.location.Location;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
@@ -71,7 +70,7 @@ public class Route {
         Node pre = null;
         double distance = 0;
         double totalDistance = 0;
-        Location markerPoint = new MapzenLocation(0, 0);
+        Location markerPoint = new Location("snap");
 
         int marker = 1;
         // set initial point to first instruction
@@ -113,7 +112,10 @@ public class Route {
 
     public Location getStartCoordinates() {
         JSONArray points = getViaPoints().getJSONArray(0);
-        return new MapzenLocation(points.getDouble(0), points.getDouble(1));
+        Location location = new Location("snap");
+        location.setLatitude(points.getDouble(0));
+        location.setLongitude(points.getDouble(1));
+        return location;
     }
 
     private JSONArray getViaPoints() {
@@ -307,6 +309,9 @@ public class Route {
         double lon3 = ((lon1 + dLon13) + 3 * Math.PI) % (2 * Math.PI)
                 - Math.PI;  // normalise to -180..+180º
 
-        return new MapzenLocation(Math.toDegrees(lat3), Math.toDegrees(lon3));
+        Location loc = new Location("snap");
+        loc.setLatitude(Math.toDegrees(lat3));
+        loc.setLongitude(Math.toDegrees(lon3));
+        return loc;
     }
 }
