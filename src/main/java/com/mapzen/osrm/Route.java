@@ -7,6 +7,8 @@ import org.json.JSONObject;
 import android.location.Location;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import static com.mapzen.helpers.GeometryHelper.getBearing;
@@ -19,7 +21,7 @@ public class Route {
     private JSONObject jsonObject;
     private int currentLeg = 0;
     static final Logger log = Logger.getLogger("RouteLogger");
-
+    private Set<Instruction> seenInstructions = new HashSet<Instruction>();
 
     public JSONObject getRawRoute() {
         return jsonObject;
@@ -311,5 +313,13 @@ public class Route {
         loc.setLatitude(Math.toDegrees(lat3));
         loc.setLongitude(Math.toDegrees(lon3));
         return loc;
+    }
+
+    public Set<Instruction> getSeenInstructions() {
+        return seenInstructions;
+    }
+
+    public void addSeenInstruction(Instruction instruction) {
+        seenInstructions.add(instruction);
     }
 }

@@ -226,4 +226,23 @@ public class RouteTest {
         // TODO ... handle this case
         //assertThat(myroute.getCurrentLeg()).isEqualTo(2);
     }
+
+    @Test
+    public void getSeenInstructions_shouldBeEmpty() throws Exception {
+        assertThat(route.getSeenInstructions()).hasSize(0);
+    }
+
+    @Test
+    public void addSeenInstruction_shouldNotBeEmpty() throws Exception {
+        ArrayList<Instruction> instructions = route.getRouteInstructions();
+        route.addSeenInstruction(instructions.get(0));
+        assertThat(route.getSeenInstructions()).isNotEmpty();
+    }
+
+    @Test
+    public void addSeenInstruction_shouldAddInstruction() throws Exception {
+        ArrayList<Instruction> instructions = route.getRouteInstructions();
+        route.addSeenInstruction(instructions.get(0));
+        assertThat(route.getSeenInstructions()).contains(instructions.get(0));
+    }
 }
