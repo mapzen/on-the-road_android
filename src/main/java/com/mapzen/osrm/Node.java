@@ -1,5 +1,9 @@
 package com.mapzen.osrm;
 
+import android.location.Location;
+
+import static com.mapzen.osrm.Route.SNAP_PROVIDER;
+
 public class Node {
     private double lat, lng, totalDistance, bearing, legDistance;
 
@@ -40,7 +44,10 @@ public class Node {
         this.legDistance = legDistance;
     }
 
-    public double[] getPoint() {
-        return new double[] { lat, lng };
+    public Location getLocation() {
+        Location loc = new Location(SNAP_PROVIDER);
+        loc.setLatitude(lat);
+        loc.setLongitude(lng);
+        return loc;
     }
 }

@@ -6,7 +6,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.location.Location;
+
 import java.util.Locale;
+
+import static com.mapzen.osrm.Route.SNAP_PROVIDER;
 
 public class Instruction {
     public static final String NO_TURN = "No turn"; // 0; (Give no instruction at all)
@@ -40,7 +44,7 @@ public class Instruction {
     public static final String GEAR_JSON_DISTANCE = "distance";
     private JSONArray json;
     private int turn, distanceInMeters;
-    private double[] point = { };
+    private Location location = new Location(SNAP_PROVIDER);
 
     public Instruction(JSONArray json) {
         if (json.length() < 8) {
@@ -119,12 +123,12 @@ public class Instruction {
         return json.getInt(7);
     }
 
-    public double[] getPoint() {
-        return point;
+    public Location getLocation() {
+        return location;
     }
 
-    public void setPoint(double[] point) {
-        this.point = point;
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
     private String getFullInstructionBeforePattern() {
@@ -168,7 +172,8 @@ public class Instruction {
     @Override
     public String toString() {
         return String.format(Locale.US, "Instruction: (%.5f, %.5f) %s %s",
-                point[0], point[1], getHumanTurnInstruction(), getName());
+                location.getLatitude(), location.getLongitude(), getHumanTurnInstruction(),
+                getName());
     }
 
     public JSONObject getGearJson() {
@@ -190,8 +195,8 @@ public class Instruction {
         Instruction other = (Instruction) obj;
         return (getTurnInstruction() == other.getTurnInstruction()
                 && getBearing() == other.getBearing()
-                && getPoint()[0] == other.getPoint()[0]
-                && getPoint()[1] == other.getPoint()[1]);
+                && getLocation().getLatitude() == other.getLocation().getLatitude()
+                && getLocation().getLongitude() == other.getLocation().getLongitude());
     }
 
     private int parseTurnInstruction(JSONArray json) {

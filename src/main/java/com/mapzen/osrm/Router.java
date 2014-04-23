@@ -31,6 +31,7 @@ public class Router implements Runnable {
     public enum Type {
         WALKING("foot"), BIKING("bike"), DRIVING("car");
         private String type;
+
         Type(String type) {
             this.type = type;
         }
@@ -91,7 +92,7 @@ public class Router implements Runnable {
         }
         String loc = "";
         for (double[] point : locations) {
-            loc += "&loc="+String.valueOf(point[0])+","+String.valueOf(point[1]);
+            loc += "&loc=" + String.valueOf(point[0]) + "," + String.valueOf(point[1]);
         }
         String template = "%s/%s/viaroute?z=%d&output=json&instructions=true&%s";
         return new URL(String.format(template, endpoint, type, zoomLevel, loc));
@@ -141,6 +142,7 @@ public class Router implements Runnable {
 
     public static interface Callback {
         void success(Route route);
+
         void failure(int statusCode);
     }
 }

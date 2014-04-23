@@ -4,21 +4,25 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.location.Location;
+
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 
-import static com.mapzen.helpers.GeometryHelper.distanceBetweenPoints;
 import static com.mapzen.helpers.GeometryHelper.getBearing;
 import static java.lang.Math.toRadians;
 
 public class Route {
+    public static final String SNAP_PROVIDER = "snap";
     public static final int LOST_THRESHOLD = 100;
     private ArrayList<Node> poly = null;
     private ArrayList<Instruction> instructions = null;
     private JSONObject jsonObject;
     private int currentLeg = 0;
     static final Logger log = Logger.getLogger("RouteLogger");
-
+    private Set<Instruction> seenInstructions = new HashSet<Instruction>();
 
     public JSONObject getRawRoute() {
         return jsonObject;
@@ -68,53 +72,52 @@ public class Route {
         Node pre = null;
         double distance = 0;
         double totalDistance = 0;
-        double[] markerPoint = { 0, 0 };
+        Location markerPoint = new Location(SNAP_PROVIDER);
 
         int marker = 1;
         // set initial point to first instruction
-        instructions.get(0).setPoint(poly.get(0).getPoint());
-        for(int i = 0; i < poly.size(); i++) {
+        instructions.get(0).setLocation(poly.get(0).getLocation());
+        for (int i = 0; i < poly.size(); i++) {
             Node node = poly.get(i);
-            if(marker == instructions.size()) {
+            if (marker == instructions.size()) {
                 continue;
             }
             Instruction instruction = instructions.get(marker);
-            if(pre != null) {
+            if (pre != null) {
                 distance = node.getTotalDistance() - pre.getTotalDistance();
                 totalDistance += distance;
             }
             // this needs the previous distance marker hence minus one
-            if(Math.floor(totalDistance) > instructions.get(marker-1).getDistance()) {
-                instruction.setPoint(markerPoint);
+            if (Math.floor(totalDistance) > instructions.get(marker - 1).getDistance()) {
+                instruction.setLocation(markerPoint);
                 marker++;
                 totalDistance = distance;
             }
-            markerPoint = node.getPoint();
+            markerPoint = node.getLocation();
             pre = node;
 
             // setting the last one to the destination
-            if(poly.size() - 1 == i) {
-                instructions.get(marker).setPoint(markerPoint);
+            if (poly.size() - 1 == i) {
+                instructions.get(marker).setLocation(markerPoint);
             }
         }
         return instructions;
     }
 
-    public ArrayList<double[]> getGeometry() {
-        ArrayList<double[]> geometry = new ArrayList<double[]>();
-        for(Node node : poly) {
-            geometry.add(node.getPoint());
+    public ArrayList<Location> getGeometry() {
+        ArrayList<Location> geometry = new ArrayList<Location>();
+        for (Node node : poly) {
+            geometry.add(node.getLocation());
         }
         return geometry;
     }
 
-    public double[] getStartCoordinates() {
+    public Location getStartCoordinates() {
         JSONArray points = getViaPoints().getJSONArray(0);
-        double[] coordinates = {
-                points.getDouble(0),
-                points.getDouble(1)
-        };
-        return coordinates;
+        Location location = new Location(SNAP_PROVIDER);
+        location.setLatitude(points.getDouble(0));
+        location.setLongitude(points.getDouble(1));
+        return location;
     }
 
     private JSONArray getViaPoints() {
@@ -152,15 +155,14 @@ public class Route {
                 lng += dlng;
                 double x = (double) lat / 1E6;
                 double y = (double) lng / 1E6;
-                Node node = new Node(x,y);
+                Node node = new Node(x, y);
                 if (!poly.isEmpty()) {
-                    Node lastElement = poly.get(poly.size()-1);
-                    double distance = distanceBetweenPoints(node.getPoint(),
-                            lastElement.getPoint());
+                    Node lastElement = poly.get(poly.size() - 1);
+                    double distance = node.getLocation().distanceTo(lastElement.getLocation());
                     double totalDistance = distance + lastElement.getTotalDistance();
                     node.setTotalDistance(totalDistance);
-                    if(lastNode != null) {
-                        lastNode.setBearing(getBearing(lastNode.getPoint(), node.getPoint()));
+                    if (lastNode != null) {
+                        lastNode.setBearing(getBearing(lastNode.getLocation(), node.getLocation()));
                     }
                     lastNode.setLegDistance(distance);
                 }
@@ -184,11 +186,11 @@ public class Route {
         currentLeg = 0;
     }
 
-    public double[] snapToRoute(double[] originalPoint) {
+    public Location snapToRoute(Location originalPoint) {
         log.info("Snapping => currentLeg: " + String.valueOf(currentLeg));
         log.info("Snapping => originalPoint: "
-                + String.valueOf(originalPoint[0]) + ", "
-                + String.valueOf(originalPoint[1]));
+                + String.valueOf(originalPoint.getLatitude()) + ", "
+                + String.valueOf(originalPoint.getLongitude()));
 
         int sizeOfPoly = poly.size();
 
@@ -197,25 +199,25 @@ public class Route {
             return null;
         }
 
-        Node destination = poly.get(sizeOfPoly-1);
+        Node destination = poly.get(sizeOfPoly - 1);
 
         // if close to destination
-        double distanceToDestination = distanceBetweenPoints(destination.getPoint(), originalPoint);
+        double distanceToDestination = destination.getLocation().distanceTo(originalPoint);
         log.info("Snapping => distance to destination: " + String.valueOf(distanceToDestination));
         if (Math.floor(distanceToDestination) < 20) {
-            return destination.getPoint();
+            return destination.getLocation();
         }
 
         Node current = poly.get(currentLeg);
-        double[] fixedPoint = snapTo(current, originalPoint);
+        Location fixedPoint = snapTo(current, originalPoint);
         if (fixedPoint == null) {
-            fixedPoint = current.getPoint();
+            fixedPoint = current.getLocation();
         } else {
-            double distance = distanceBetweenPoints(current.getPoint(), fixedPoint);
+            double distance = current.getLocation().distanceTo(fixedPoint);
             log.info("Snapping => distance between current and fixed: " + String.valueOf(distance));
-            double bearingToOriginal = getBearing(current.getPoint(), originalPoint);
+            double bearingToOriginal = getBearing(current.getLocation(), originalPoint);
             log.info("Snapping => bearing to original: " + String.valueOf(bearingToOriginal));
-                                               /// UGH somewhat arbritrary
+            /// UGH somewhat arbritrary
             double bearingDiff = Math.abs(bearingToOriginal - current.getBearing());
             if (distance > current.getLegDistance() - 5 || (distance > 30 && bearingDiff > 20.0)) {
                 ++currentLeg;
@@ -225,7 +227,7 @@ public class Route {
             }
         }
 
-        double correctionDistance = distanceBetweenPoints(originalPoint, fixedPoint);
+        double correctionDistance = originalPoint.distanceTo(fixedPoint);
         log.info("Snapping => correctionDistance: " + String.valueOf(correctionDistance));
         log.info("Snapping => Lost Threshold: " + String.valueOf(LOST_THRESHOLD));
         if (correctionDistance < LOST_THRESHOLD) {
@@ -235,14 +237,14 @@ public class Route {
         }
     }
 
-    private double[] snapTo(Node turnPoint, double[] location) {
-        double[] correctedLocation = snapTo(turnPoint, location, 90);
+    private Location snapTo(Node turnPoint, Location location) {
+        Location correctedLocation = snapTo(turnPoint, location, 90);
         if (correctedLocation == null) {
             correctedLocation = snapTo(turnPoint, location, -90);
         }
         double distance;
         if (correctedLocation != null) {
-            distance = distanceBetweenPoints(correctedLocation, location);
+            distance = correctedLocation.distanceTo(location);
             if (Math.round(distance) > 1000) {
                 return null;
             }
@@ -251,11 +253,11 @@ public class Route {
         return correctedLocation;
     }
 
-    private double[] snapTo(Node turnPoint, double[] location, int offset) {
+    private Location snapTo(Node turnPoint, Location location, int offset) {
         double lat1 = toRadians(turnPoint.getLat());
         double lon1 = toRadians(turnPoint.getLng());
-        double lat2 = toRadians(location[0]);
-        double lon2 = toRadians(location[1]);
+        double lat2 = toRadians(location.getLatitude());
+        double lon2 = toRadians(location.getLongitude());
 
         double brng13 = toRadians(turnPoint.getBearing());
         double brng23 = toRadians(turnPoint.getBearing() + offset);
@@ -308,7 +310,32 @@ public class Route {
         double lon3 = ((lon1 + dLon13) + 3 * Math.PI) % (2 * Math.PI)
                 - Math.PI;  // normalise to -180..+180º
 
-        double[] point = { Math.toDegrees(lat3), Math.toDegrees(lon3) };
-        return point;
+        Location loc = new Location(SNAP_PROVIDER);
+        loc.setLatitude(Math.toDegrees(lat3));
+        loc.setLongitude(Math.toDegrees(lon3));
+        return loc;
+    }
+
+    public Set<Instruction> getSeenInstructions() {
+        return seenInstructions;
+    }
+
+    public void addSeenInstruction(Instruction instruction) {
+        seenInstructions.add(instruction);
+    }
+
+    public Instruction getClosestInstruction(Location location) {
+        Instruction closestInstruction = null;
+        int closestDistance = (int) 1e8;
+        for (Instruction instruction : instructions) {
+            Location temporaryLocationObj = instruction.getLocation();
+            final int distanceToTurn =
+                    (int) Math.floor(location.distanceTo(temporaryLocationObj));
+            if (distanceToTurn < closestDistance) {
+                closestDistance = distanceToTurn;
+                closestInstruction = instruction;
+            }
+        }
+        return closestInstruction;
     }
 }
