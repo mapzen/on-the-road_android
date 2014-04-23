@@ -245,4 +245,13 @@ public class RouteTest {
         route.addSeenInstruction(instructions.get(0));
         assertThat(route.getSeenInstructions()).contains(instructions.get(0));
     }
+
+    @Test
+    public void getClosestInstruction_shouldReturnClosest() throws Exception {
+        Route myroute = getRoute("greenpoint_around_the_block");
+        ArrayList<Instruction> instructions = myroute.getRouteInstructions();
+        Location tmp = getLocation(40.660015, -73.988173); // corner of 19th and 7th
+        Instruction instruction = myroute.getClosestInstruction(tmp);
+        assertThat(instruction).isEqualsToByComparingFields(myroute.getRouteInstructions().get(1));
+    }
 }

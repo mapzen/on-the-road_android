@@ -322,4 +322,19 @@ public class Route {
     public void addSeenInstruction(Instruction instruction) {
         seenInstructions.add(instruction);
     }
+
+    public Instruction getClosestInstruction(Location location) {
+        Instruction closestInstruction = null;
+        int closestDistance = (int) 1e8;
+        for (Instruction instruction : instructions) {
+            Location temporaryLocationObj = instruction.getLocation();
+            final int distanceToTurn =
+                    (int) Math.floor(location.distanceTo(temporaryLocationObj));
+            if (distanceToTurn < closestDistance) {
+                closestDistance = distanceToTurn;
+                closestInstruction = instruction;
+            }
+        }
+        return closestInstruction;
+    }
 }
