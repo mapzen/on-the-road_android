@@ -18,7 +18,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>on-the-road</artifactId>
-    <groupId>com.mapzen.android</groupId>
+    <groupId>com.mapzen</groupId>
     <version>0.2-SNAPSHOT</version>
 
     <dependencies>
