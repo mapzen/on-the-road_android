@@ -38,12 +38,12 @@ public class GeometryHelperTest {
         List<Location> l4 = new ArrayList<Location>();
         l4.add(getLocation(40.660735, -73.987878));
         l4.add(getLocation(40.661404, -73.988983));
-        collection.put(309, l4);
+        collection.put(308, l4);
 
         List<Location> l5 = new ArrayList<Location>();
         l5.add(getLocation(40.661404, -73.988983));
         l5.add(getLocation(40.660713, -73.989341));
-        collection.put(201, l5);
+        collection.put(202, l5);
 
         Iterator it = collection.entrySet().iterator();
         while (it.hasNext()) {

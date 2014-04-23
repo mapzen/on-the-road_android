@@ -9,7 +9,6 @@ import android.location.Location;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-import static com.mapzen.helpers.GeometryHelper.distanceBetweenPoints;
 import static com.mapzen.helpers.GeometryHelper.getBearing;
 import static java.lang.Math.toRadians;
 
@@ -156,8 +155,7 @@ public class Route {
                 Node node = new Node(x,y);
                 if (!poly.isEmpty()) {
                     Node lastElement = poly.get(poly.size()-1);
-                    double distance = distanceBetweenPoints(node.getLocation(),
-                            lastElement.getLocation());
+                    double distance = node.getLocation().distanceTo(lastElement.getLocation());
                     double totalDistance = distance + lastElement.getTotalDistance();
                     node.setTotalDistance(totalDistance);
                     if(lastNode != null) {
@@ -201,7 +199,7 @@ public class Route {
         Node destination = poly.get(sizeOfPoly-1);
 
         // if close to destination
-        double distanceToDestination = distanceBetweenPoints(destination.getLocation(), originalPoint);
+        double distanceToDestination = destination.getLocation().distanceTo(originalPoint);
         log.info("Snapping => distance to destination: " + String.valueOf(distanceToDestination));
         if (Math.floor(distanceToDestination) < 20) {
             return destination.getLocation();
@@ -212,7 +210,7 @@ public class Route {
         if (fixedPoint == null) {
             fixedPoint = current.getLocation();
         } else {
-            double distance = distanceBetweenPoints(current.getLocation(), fixedPoint);
+            double distance = current.getLocation().distanceTo(fixedPoint);
             log.info("Snapping => distance between current and fixed: " + String.valueOf(distance));
             double bearingToOriginal = getBearing(current.getLocation(), originalPoint);
             log.info("Snapping => bearing to original: " + String.valueOf(bearingToOriginal));
@@ -226,7 +224,7 @@ public class Route {
             }
         }
 
-        double correctionDistance = distanceBetweenPoints(originalPoint, fixedPoint);
+        double correctionDistance = originalPoint.distanceTo(fixedPoint);
         log.info("Snapping => correctionDistance: " + String.valueOf(correctionDistance));
         log.info("Snapping => Lost Threshold: " + String.valueOf(LOST_THRESHOLD));
         if (correctionDistance < LOST_THRESHOLD) {
@@ -243,7 +241,7 @@ public class Route {
         }
         double distance;
         if (correctedLocation != null) {
-            distance = distanceBetweenPoints(correctedLocation, location);
+            distance = correctedLocation.distanceTo(location);
             if (Math.round(distance) > 1000) {
                 return null;
             }
