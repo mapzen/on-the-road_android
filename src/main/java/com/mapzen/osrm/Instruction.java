@@ -10,6 +10,8 @@ import android.location.Location;
 
 import java.util.Locale;
 
+import static com.mapzen.osrm.Route.SNAP_PROVIDER;
+
 public class Instruction {
     public static final String NO_TURN = "No turn"; // 0; (Give no instruction at all)
     public static final String GO_STRAIGHT = "Continue on"; //1; (Tell user to go straight!)
@@ -42,7 +44,7 @@ public class Instruction {
     public static final String GEAR_JSON_DISTANCE = "distance";
     private JSONArray json;
     private int turn, distanceInMeters;
-    private Location location = new Location("snap");
+    private Location location = new Location(SNAP_PROVIDER);
 
     public Instruction(JSONArray json) {
         if (json.length() < 8) {
@@ -170,7 +172,8 @@ public class Instruction {
     @Override
     public String toString() {
         return String.format(Locale.US, "Instruction: (%.5f, %.5f) %s %s",
-                location.getLatitude(), location.getLongitude(), getHumanTurnInstruction(), getName());
+                location.getLatitude(), location.getLongitude(), getHumanTurnInstruction(),
+                getName());
     }
 
     public JSONObject getGearJson() {

@@ -37,6 +37,7 @@ import static com.mapzen.osrm.Instruction.TURN_SLIGHT_LEFT;
 import static com.mapzen.osrm.Instruction.TURN_SLIGHT_RIGHT;
 import static com.mapzen.osrm.Instruction.U_TURN;
 import static com.mapzen.osrm.Instruction.decodedInstructions;
+import static com.mapzen.osrm.Route.SNAP_PROVIDER;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
@@ -302,7 +303,7 @@ public class InstructionTest {
 
     @Test
     public void canSetCoordinates() throws Exception {
-        Location expected = new Location("snap");
+        Location expected = new Location(SNAP_PROVIDER);
         expected.setLatitude(3.3);
         expected.setLongitude(4.4);
         instruction.setLocation(expected);

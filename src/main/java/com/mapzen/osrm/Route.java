@@ -15,6 +15,7 @@ import static com.mapzen.helpers.GeometryHelper.getBearing;
 import static java.lang.Math.toRadians;
 
 public class Route {
+    public static final String SNAP_PROVIDER = "snap";
     public static final int LOST_THRESHOLD = 100;
     private ArrayList<Node> poly = null;
     private ArrayList<Instruction> instructions = null;
@@ -71,23 +72,23 @@ public class Route {
         Node pre = null;
         double distance = 0;
         double totalDistance = 0;
-        Location markerPoint = new Location("snap");
+        Location markerPoint = new Location(SNAP_PROVIDER);
 
         int marker = 1;
         // set initial point to first instruction
         instructions.get(0).setLocation(poly.get(0).getLocation());
-        for(int i = 0; i < poly.size(); i++) {
+        for (int i = 0; i < poly.size(); i++) {
             Node node = poly.get(i);
-            if(marker == instructions.size()) {
+            if (marker == instructions.size()) {
                 continue;
             }
             Instruction instruction = instructions.get(marker);
-            if(pre != null) {
+            if (pre != null) {
                 distance = node.getTotalDistance() - pre.getTotalDistance();
                 totalDistance += distance;
             }
             // this needs the previous distance marker hence minus one
-            if(Math.floor(totalDistance) > instructions.get(marker-1).getDistance()) {
+            if (Math.floor(totalDistance) > instructions.get(marker - 1).getDistance()) {
                 instruction.setLocation(markerPoint);
                 marker++;
                 totalDistance = distance;
@@ -96,7 +97,7 @@ public class Route {
             pre = node;
 
             // setting the last one to the destination
-            if(poly.size() - 1 == i) {
+            if (poly.size() - 1 == i) {
                 instructions.get(marker).setLocation(markerPoint);
             }
         }
@@ -105,7 +106,7 @@ public class Route {
 
     public ArrayList<Location> getGeometry() {
         ArrayList<Location> geometry = new ArrayList<Location>();
-        for(Node node : poly) {
+        for (Node node : poly) {
             geometry.add(node.getLocation());
         }
         return geometry;
@@ -113,7 +114,7 @@ public class Route {
 
     public Location getStartCoordinates() {
         JSONArray points = getViaPoints().getJSONArray(0);
-        Location location = new Location("snap");
+        Location location = new Location(SNAP_PROVIDER);
         location.setLatitude(points.getDouble(0));
         location.setLongitude(points.getDouble(1));
         return location;
@@ -154,13 +155,13 @@ public class Route {
                 lng += dlng;
                 double x = (double) lat / 1E6;
                 double y = (double) lng / 1E6;
-                Node node = new Node(x,y);
+                Node node = new Node(x, y);
                 if (!poly.isEmpty()) {
-                    Node lastElement = poly.get(poly.size()-1);
+                    Node lastElement = poly.get(poly.size() - 1);
                     double distance = node.getLocation().distanceTo(lastElement.getLocation());
                     double totalDistance = distance + lastElement.getTotalDistance();
                     node.setTotalDistance(totalDistance);
-                    if(lastNode != null) {
+                    if (lastNode != null) {
                         lastNode.setBearing(getBearing(lastNode.getLocation(), node.getLocation()));
                     }
                     lastNode.setLegDistance(distance);
@@ -198,7 +199,7 @@ public class Route {
             return null;
         }
 
-        Node destination = poly.get(sizeOfPoly-1);
+        Node destination = poly.get(sizeOfPoly - 1);
 
         // if close to destination
         double distanceToDestination = destination.getLocation().distanceTo(originalPoint);
@@ -216,7 +217,7 @@ public class Route {
             log.info("Snapping => distance between current and fixed: " + String.valueOf(distance));
             double bearingToOriginal = getBearing(current.getLocation(), originalPoint);
             log.info("Snapping => bearing to original: " + String.valueOf(bearingToOriginal));
-                                               /// UGH somewhat arbritrary
+            /// UGH somewhat arbritrary
             double bearingDiff = Math.abs(bearingToOriginal - current.getBearing());
             if (distance > current.getLegDistance() - 5 || (distance > 30 && bearingDiff > 20.0)) {
                 ++currentLeg;
@@ -309,7 +310,7 @@ public class Route {
         double lon3 = ((lon1 + dLon13) + 3 * Math.PI) % (2 * Math.PI)
                 - Math.PI;  // normalise to -180..+180º
 
-        Location loc = new Location("snap");
+        Location loc = new Location(SNAP_PROVIDER);
         loc.setLatitude(Math.toDegrees(lat3));
         loc.setLongitude(Math.toDegrees(lon3));
         return loc;
