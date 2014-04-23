@@ -19,7 +19,7 @@
 
     <artifactId>on-the-road</artifactId>
     <groupId>com.mapzen.android</groupId>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.2-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
