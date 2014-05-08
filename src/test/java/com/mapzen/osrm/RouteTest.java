@@ -205,7 +205,9 @@ public class RouteTest {
         Location lost;
         Route myroute = getRoute("greenpoint_around_the_block");
         lost = getLocation(40.662046, -73.987089);
-        assertThat(myroute.snapToRoute(lost)).isNull();
+        Location snapped = myroute.snapToRoute(lost);
+        assertThat(snapped).isNull();
+        assertThat(myroute.isLost()).isTrue();
     }
 
     @Test

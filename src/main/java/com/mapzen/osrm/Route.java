@@ -23,6 +23,7 @@ public class Route {
     private int currentLeg = 0;
     static final Logger log = Logger.getLogger("RouteLogger");
     private Set<Instruction> seenInstructions = new HashSet<Instruction>();
+    private boolean lost = false;
 
     public JSONObject getRawRoute() {
         return jsonObject;
@@ -120,6 +121,10 @@ public class Route {
         return location;
     }
 
+    public boolean isLost() {
+        return lost;
+    }
+
     private JSONArray getViaPoints() {
         return jsonObject.getJSONArray("via_points");
     }
@@ -196,6 +201,7 @@ public class Route {
 
         // we have exhausted options
         if (currentLeg >= sizeOfPoly) {
+            lost = true;
             return null;
         }
 
@@ -233,6 +239,7 @@ public class Route {
         if (correctionDistance < LOST_THRESHOLD) {
             return fixedPoint;
         } else {
+            lost = true;
             return null;
         }
     }
