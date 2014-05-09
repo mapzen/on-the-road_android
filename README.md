@@ -1,6 +1,6 @@
 # On The Road
 
-[![Build Status](https://travis-ci.org/mapzen/on-the-road.svg?branch=master)](https://travis-ci.org/mapzen/on-the-road)
+[![Circle CI Build Status](https://circleci.com/gh/mapzen/on-the-road.png?circle-token=cfd8a71bc5d58302f87abaec91a89a0ffd871d1e)](https://circleci.com/gh/mapzen/on-the-road)
 
 This library has two main responsibilities, it acts as a java client for [The Open Source Routing Machine (OSRM)][2] and it handles client side location correction, specifically snapping the client’s location along road. By default the endpoint is pointed at Mapzen's hosted services but this can be configured
 to use your own hosted version as well. [Learn how to host your own][6] or use the service provided by [osrm at http://router.project-osrm.org][5].
