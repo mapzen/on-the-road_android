@@ -207,6 +207,15 @@ public class RouteTest {
         lost = getLocation(40.662046, -73.987089);
         Location snapped = myroute.snapToRoute(lost);
         assertThat(snapped).isNull();
+    }
+
+    @Test
+    public void snapToRoute_shouldRealizeLostTooFarFromRoute() throws Exception {
+        Location lost;
+        Route myroute = getRoute("greenpoint_around_the_block");
+        lost = getLocation(40.658742, -73.987235);
+        Location snapped = myroute.snapToRoute(lost);
+        assertThat(snapped).isNull();
         assertThat(myroute.isLost()).isTrue();
     }
 

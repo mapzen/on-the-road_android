@@ -201,7 +201,6 @@ public class Route {
 
         // we have exhausted options
         if (currentLeg >= sizeOfPoly) {
-            lost = true;
             return null;
         }
 
