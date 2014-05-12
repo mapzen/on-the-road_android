@@ -1,0 +1,118 @@
+{
+    "alternative_geometries": [],
+    "alternative_indices": [],
+    "alternative_instructions": [],
+    "alternative_names": [
+        [
+            "",
+            ""
+        ]
+    ],
+    "alternative_summaries": [],
+    "hint_data": {
+        "checksum": 0,
+        "locations": [
+            "S2VlASYWBAAaAAAA____f4QYlYQN6bs_9rVtAmr-lvs",
+            "SWVlATwwAAAvAAAA____f5iqQbkX6us_0rNtAoAEl_s"
+        ]
+    },
+    "route_geometry": "k~yulAjx_clCt|@grCli@ybBqe@c[ii@|bBe\\deAdg@tF",
+    "route_instructions": [
+        [
+            "10",
+            "West 26th Street",
+            226,
+            0,
+            3,
+            "226m",
+            "SE",
+            119
+        ],
+        [
+            "1",
+            "East 26th Street",
+            154,
+            1,
+            24,
+            "154m",
+            "SE",
+            119
+        ],
+        [
+            "7",
+            "Madison Avenue",
+            78,
+            2,
+            7,
+            "78m",
+            "NE",
+            29
+        ],
+        [
+            "7",
+            "East 27th Street",
+            154,
+            3,
+            24,
+            "154m",
+            "NW",
+            299
+        ],
+        [
+            "1",
+            "West 27th Street",
+            107,
+            4,
+            17,
+            "107m",
+            "NW",
+            299
+        ],
+        [
+            "7",
+            "Broadway",
+            72,
+            5,
+            0,
+            "72m",
+            "S",
+            188
+        ],
+        [
+            "15",
+            "",
+            0,
+            6,
+            0,
+            "",
+            "N",
+            0.0
+        ]
+    ],
+    "route_name": [
+        "West 26th Street",
+        "East 26th Street"
+    ],
+    "route_summary": {
+        "end_point": "Broadway",
+        "start_point": "West 26th Street",
+        "total_distance": 794,
+        "total_time": 108
+    },
+    "status": 0,
+    "status_message": "Found route between points",
+    "via_indices": [
+        0,
+        7
+    ],
+    "via_points": [
+        [
+            40.744438,
+            -73.99055
+        ],
+        [
+            40.74389,
+            -73.988992
+        ]
+    ]
+}

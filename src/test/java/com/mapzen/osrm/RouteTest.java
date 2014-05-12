@@ -265,4 +265,12 @@ public class RouteTest {
         Instruction instruction = myroute.getClosestInstruction(tmp);
         assertThat(instruction).isEqualsToByComparingFields(myroute.getRouteInstructions().get(1));
     }
+
+    @Test
+    public void getRouteInstructions_shouldPopulateLastInstruction() throws Exception {
+        Route myroute = getRoute("last_instruction_at_last_point");
+        ArrayList<Instruction> instructions = myroute.getRouteInstructions();
+        assertThat(instructions.get(instructions.size() - 1).getHumanTurnInstruction())
+                .isEqualTo("You have arrived");
+    }
 }
