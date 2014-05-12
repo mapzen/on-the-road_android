@@ -99,7 +99,7 @@ public class Route {
 
             // setting the last one to the destination
             if (poly.size() - 1 == i) {
-                instructions.get(marker).setLocation(markerPoint);
+                instruction.setLocation(markerPoint);
             }
         }
         return instructions;
