@@ -3,6 +3,7 @@ package com.mapzen.helpers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import android.location.Location;
 
@@ -15,6 +16,7 @@ import java.util.Map;
 import static com.mapzen.TestUtils.getLocation;
 import static org.fest.assertions.api.Assertions.assertThat;
 
+@Config(manifest=Config.NONE)
 @RunWith(RobolectricTestRunner.class)
 public class GeometryHelperTest {
     @Test

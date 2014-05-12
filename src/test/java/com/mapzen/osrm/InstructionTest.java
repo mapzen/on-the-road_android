@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import android.location.Location;
 
@@ -40,6 +41,7 @@ import static com.mapzen.osrm.Instruction.decodedInstructions;
 import static com.mapzen.osrm.Route.SNAP_PROVIDER;
 import static org.fest.assertions.api.Assertions.assertThat;
 
+@Config(manifest=Config.NONE)
 @RunWith(RobolectricTestRunner.class)
 public class InstructionTest {
     private static final JSONArray JSON = new JSONArray("[\n" +

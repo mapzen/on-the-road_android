@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import android.location.Location;
 
@@ -16,6 +17,7 @@ import static com.mapzen.TestUtils.*;
 import static java.lang.System.*;
 import static org.fest.assertions.api.Assertions.assertThat;
 
+@Config(manifest=Config.NONE)
 @RunWith(RobolectricTestRunner.class)
 public class RouteTest {
     private Route route;
