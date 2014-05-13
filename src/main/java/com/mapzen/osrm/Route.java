@@ -1,5 +1,7 @@
 package com.mapzen.osrm;
 
+import com.f2prateek.ln.Ln;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -9,7 +11,6 @@ import android.location.Location;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import static com.mapzen.helpers.GeometryHelper.getBearing;
 import static java.lang.Math.toRadians;
@@ -21,7 +22,6 @@ public class Route {
     private ArrayList<Instruction> instructions = null;
     private JSONObject jsonObject;
     private int currentLeg = 0;
-    static final Logger log = Logger.getLogger("RouteLogger");
     private Set<Instruction> seenInstructions = new HashSet<Instruction>();
     private boolean lost = false;
 
@@ -192,8 +192,8 @@ public class Route {
     }
 
     public Location snapToRoute(Location originalPoint) {
-        log.info("Snapping => currentLeg: " + String.valueOf(currentLeg));
-        log.info("Snapping => originalPoint: "
+        Ln.d("Snapping => currentLeg: " + String.valueOf(currentLeg));
+        Ln.d("Snapping => originalPoint: "
                 + String.valueOf(originalPoint.getLatitude()) + ", "
                 + String.valueOf(originalPoint.getLongitude()));
 
@@ -208,7 +208,7 @@ public class Route {
 
         // if close to destination
         double distanceToDestination = destination.getLocation().distanceTo(originalPoint);
-        log.info("Snapping => distance to destination: " + String.valueOf(distanceToDestination));
+        Ln.d("Snapping => distance to destination: " + String.valueOf(distanceToDestination));
         if (Math.floor(distanceToDestination) < 20) {
             return destination.getLocation();
         }
@@ -219,22 +219,22 @@ public class Route {
             fixedPoint = current.getLocation();
         } else {
             double distance = current.getLocation().distanceTo(fixedPoint);
-            log.info("Snapping => distance between current and fixed: " + String.valueOf(distance));
+            Ln.d("Snapping => distance between current and fixed: " + String.valueOf(distance));
             double bearingToOriginal = getBearing(current.getLocation(), originalPoint);
-            log.info("Snapping => bearing to original: " + String.valueOf(bearingToOriginal));
+            Ln.d("Snapping => bearing to original: " + String.valueOf(bearingToOriginal));
             /// UGH somewhat arbritrary
             double bearingDiff = Math.abs(bearingToOriginal - current.getBearing());
             if (distance > current.getLegDistance() - 5 || (distance > 30 && bearingDiff > 20.0)) {
                 ++currentLeg;
-                log.info("Snapping => incrementing and trying again");
-                log.info("Snapping => currentLeg: " + String.valueOf(currentLeg));
+                Ln.d("Snapping => incrementing and trying again");
+                Ln.d("Snapping => currentLeg: " + String.valueOf(currentLeg));
                 return snapToRoute(originalPoint);
             }
         }
 
         double correctionDistance = originalPoint.distanceTo(fixedPoint);
-        log.info("Snapping => correctionDistance: " + String.valueOf(correctionDistance));
-        log.info("Snapping => Lost Threshold: " + String.valueOf(LOST_THRESHOLD));
+        Ln.d("Snapping => correctionDistance: " + String.valueOf(correctionDistance));
+        Ln.d("Snapping => Lost Threshold: " + String.valueOf(LOST_THRESHOLD));
         if (correctionDistance < LOST_THRESHOLD) {
             return fixedPoint;
         } else {

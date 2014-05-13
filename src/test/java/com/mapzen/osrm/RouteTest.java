@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import android.location.Location;
 
@@ -16,6 +17,7 @@ import static com.mapzen.TestUtils.*;
 import static java.lang.System.*;
 import static org.fest.assertions.api.Assertions.assertThat;
 
+@Config(manifest=Config.NONE)
 @RunWith(RobolectricTestRunner.class)
 public class RouteTest {
     private Route route;
@@ -260,7 +262,7 @@ public class RouteTest {
     @Test
     public void getClosestInstruction_shouldReturnClosest() throws Exception {
         Route myroute = getRoute("greenpoint_around_the_block");
-        ArrayList<Instruction> instructions = myroute.getRouteInstructions();
+        myroute.getRouteInstructions();
         Location tmp = getLocation(40.660015, -73.988173); // corner of 19th and 7th
         Instruction instruction = myroute.getClosestInstruction(tmp);
         assertThat(instruction).isEqualsToByComparingFields(myroute.getRouteInstructions().get(1));
