@@ -12,15 +12,25 @@ public class ZoomController {
     public static final int DEFAULT_ZOOM_BIKING = 19;
     public static final int DEFAULT_ZOOM_DRIVING = 17;
 
+    public static final int DEFAULT_TURN_RADIUS = 50;
+    public static final int DEFAULT_TURN_RADIUS_WALKING = 10;
+    public static final int DEFAULT_TURN_RADIUS_BIKING = 20;
+    public static final int DEFAULT_TURN_RADIUS_DRIVING = 50;
+
     private static final float ONE_METER_PER_SECOND_IN_MILES_PER_HOUR = 2.23694f;
 
     private int walkingZoom = DEFAULT_ZOOM_WALKING;
     private int bikingZoom = DEFAULT_ZOOM_BIKING;
     private int drivingZoom = DEFAULT_ZOOM_DRIVING;
 
+    private int walkingTurnRadius = DEFAULT_TURN_RADIUS_WALKING;
+    private int bikingTurnRadius = DEFAULT_TURN_RADIUS_BIKING;
+    private int drivingTurnRadius = DEFAULT_TURN_RADIUS_DRIVING;
+
     private Router.Type transitMode = DRIVING;
     private DrivingSpeed currentDrivingSpeed = null;
-    private HashMap<DrivingSpeed, Integer> speedMap = new HashMap<DrivingSpeed, Integer>();
+    private HashMap<DrivingSpeed, Integer> zoomMap = new HashMap<DrivingSpeed, Integer>();
+    private HashMap<DrivingSpeed, Integer> turnRadiusMap = new HashMap<DrivingSpeed, Integer>();
 
     public int getZoom() {
         switch (transitMode) {
@@ -35,13 +45,35 @@ public class ZoomController {
         }
     }
 
+    public int getTurnRadius() {
+        switch (transitMode) {
+            case WALKING:
+                return walkingTurnRadius;
+            case BIKING:
+                return bikingTurnRadius;
+            case DRIVING:
+                return getTurnRadiusForCurrentDrivingSpeed();
+            default:
+                return DEFAULT_TURN_RADIUS;
+        }
+    }
+
     private int getZoomForCurrentDrivingSpeed() {
-        Integer zoomLevelForCurrentSpeed = speedMap.get(currentDrivingSpeed);
+        Integer zoomLevelForCurrentSpeed = zoomMap.get(currentDrivingSpeed);
         if (zoomLevelForCurrentSpeed != null) {
             return zoomLevelForCurrentSpeed;
         }
 
         return drivingZoom;
+    }
+
+    private int getTurnRadiusForCurrentDrivingSpeed() {
+        Integer turnRadiusForCurrentSpeed = turnRadiusMap.get(currentDrivingSpeed);
+        if (turnRadiusForCurrentSpeed != null) {
+            return turnRadiusForCurrentSpeed;
+        }
+
+        return drivingTurnRadius;
     }
 
     public void setTransitMode(Router.Type transitMode) {
@@ -61,7 +93,23 @@ public class ZoomController {
     }
 
     public void setDrivingZoom(int zoom, DrivingSpeed speed) {
-        speedMap.put(speed, zoom);
+        zoomMap.put(speed, zoom);
+    }
+
+    public void setWalkingTurnRadius(int meters) {
+        walkingTurnRadius = meters;
+    }
+
+    public void setBikingTurnRadius(int meters) {
+        bikingTurnRadius = meters;
+    }
+
+    public void setDrivingTurnRadius(int meters) {
+        drivingTurnRadius = meters;
+    }
+
+    public void setDrivingTurnRadius(int meters, DrivingSpeed speed) {
+        turnRadiusMap.put(speed, meters);
     }
 
     public void setCurrentSpeed(float metersPerSecond) {
