@@ -3,6 +3,10 @@ package com.mapzen.helpers;
 import org.junit.Before;
 import org.junit.Test;
 
+import static com.mapzen.helpers.ZoomController.DEFAULT_TURN_RADIUS;
+import static com.mapzen.helpers.ZoomController.DEFAULT_TURN_RADIUS_BIKING;
+import static com.mapzen.helpers.ZoomController.DEFAULT_TURN_RADIUS_DRIVING;
+import static com.mapzen.helpers.ZoomController.DEFAULT_TURN_RADIUS_WALKING;
 import static com.mapzen.helpers.ZoomController.DEFAULT_ZOOM_BIKING;
 import static com.mapzen.helpers.ZoomController.DEFAULT_ZOOM_DRIVING;
 import static com.mapzen.helpers.ZoomController.DEFAULT_ZOOM_WALKING;
@@ -117,5 +121,89 @@ public class ZoomControllerTest {
         controller.setTransitMode(DRIVING);
         controller.setDrivingZoom(11, MPH_OVER_50);
         assertThat(controller.getZoom()).isEqualTo(11);
+    }
+
+    @Test
+    public void shouldReturnDefaultTurnRadius() throws Exception {
+        assertThat(controller.getTurnRadius()).isEqualTo(DEFAULT_TURN_RADIUS);
+    }
+
+    @Test
+    public void shouldReturnDefaultTurnRadiusWhileWalking() throws Exception {
+        controller.setTransitMode(WALKING);
+        assertThat(controller.getTurnRadius()).isEqualTo(DEFAULT_TURN_RADIUS_WALKING);
+    }
+
+    @Test
+    public void shouldReturnDefaultTurnRadiusWhileBiking() throws Exception {
+        controller.setTransitMode(BIKING);
+        assertThat(controller.getTurnRadius()).isEqualTo(DEFAULT_TURN_RADIUS_BIKING);
+    }
+
+    @Test
+    public void shouldReturnDefaultTurnRadiusWhileDriving() throws Exception {
+        controller.setTransitMode(DRIVING);
+        assertThat(controller.getTurnRadius()).isEqualTo(DEFAULT_TURN_RADIUS_DRIVING);
+    }
+
+    @Test
+    public void shouldReturnNewTurnRadiusWhileWalking() throws Exception {
+        controller.setWalkingTurnRadius(5);
+        controller.setTransitMode(WALKING);
+        assertThat(controller.getTurnRadius()).isEqualTo(5);
+    }
+
+    @Test
+    public void shouldReturnNewTurnRadiusWhileBiking() throws Exception {
+        controller.setBikingTurnRadius(10);
+        controller.setTransitMode(BIKING);
+        assertThat(controller.getTurnRadius()).isEqualTo(10);
+    }
+
+    @Test
+    public void shouldReturnNewTurnRadiusWhileDriving() throws Exception {
+        controller.setDrivingTurnRadius(15);
+        controller.setTransitMode(DRIVING);
+        assertThat(controller.getTurnRadius()).isEqualTo(15);
+    }
+
+    @Test
+    public void currentDrivingSpeedZero_shouldReturnTurnRadiusForZeroTo15Mph() throws Exception {
+        controller.setCurrentSpeed(0);
+        controller.setTransitMode(DRIVING);
+        controller.setDrivingTurnRadius(60, MPH_0_TO_15);
+        assertThat(controller.getTurnRadius()).isEqualTo(60);
+    }
+
+    @Test
+    public void currentDrivingSpeed20_shouldReturnTurnRadiusFor15To25Mph() throws Exception {
+        controller.setCurrentSpeed(milesPerHourToMetersPerSecond(20));
+        controller.setTransitMode(DRIVING);
+        controller.setDrivingTurnRadius(70, MPH_15_TO_25);
+        assertThat(controller.getTurnRadius()).isEqualTo(70);
+    }
+
+    @Test
+    public void currentDrivingSpeed30_shouldReturnTurnRadiusFor25To35Mph() throws Exception {
+        controller.setCurrentSpeed(milesPerHourToMetersPerSecond(30));
+        controller.setTransitMode(DRIVING);
+        controller.setDrivingTurnRadius(80, MPH_25_TO_35);
+        assertThat(controller.getTurnRadius()).isEqualTo(80);
+    }
+
+    @Test
+    public void currentDrivingSpeed40_shouldReturnTurnRadiusFor35To50Mph() throws Exception {
+        controller.setCurrentSpeed(milesPerHourToMetersPerSecond(40));
+        controller.setTransitMode(DRIVING);
+        controller.setDrivingTurnRadius(90, MPH_35_TO_50);
+        assertThat(controller.getTurnRadius()).isEqualTo(90);
+    }
+
+    @Test
+    public void currentDrivingSpeed50_shouldReturnTurnRadiusForOver50Mph() throws Exception {
+        controller.setCurrentSpeed(milesPerHourToMetersPerSecond(50));
+        controller.setTransitMode(DRIVING);
+        controller.setDrivingTurnRadius(100, MPH_OVER_50);
+        assertThat(controller.getTurnRadius()).isEqualTo(100);
     }
 }
