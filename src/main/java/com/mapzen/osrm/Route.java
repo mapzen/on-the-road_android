@@ -183,6 +183,10 @@ public class Route {
         return currentLeg;
     }
 
+    public double getCurrentRotationBearing() {
+        return 360 - poly.get(currentLeg).getBearing();
+    }
+
     public void setCurrentLeg(int currentLeg) {
         this.currentLeg = currentLeg;
     }

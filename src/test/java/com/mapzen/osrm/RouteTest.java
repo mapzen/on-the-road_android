@@ -232,6 +232,13 @@ public class RouteTest {
     }
 
     @Test
+    public void getCurrentRotationBearing_shouldBeSameAsInstruction() throws Exception {
+        Route myroute = getRoute("greenpoint_around_the_block");
+        assertThat(Math.round(myroute.getCurrentRotationBearing())).
+                isEqualTo(myroute.getRouteInstructions().get(0).getRotationBearing());
+    }
+
+    @Test
     public void snapToRoute_shouldHandleSharpTurn() throws Exception {
         Route myroute = getRoute("sharp_turn");
         Location aroundSharpTurn = getLocation(40.687052, -73.976300);
