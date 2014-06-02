@@ -46,7 +46,7 @@ public class Route {
     }
 
     public int getTotalDistance() {
-        return getSumary().getInt("total_distance");
+        return getSummary().getInt("total_distance");
     }
 
     public int getStatus() {
@@ -58,7 +58,7 @@ public class Route {
     }
 
     public int getTotalTime() {
-        return getSumary().getInt("total_time");
+        return getSummary().getInt("total_time");
     }
 
     private void initializeTurnByTurn(JSONArray instructions) {
@@ -129,7 +129,7 @@ public class Route {
         return jsonObject.getJSONArray("via_points");
     }
 
-    private JSONObject getSumary() throws JSONException {
+    private JSONObject getSummary() throws JSONException {
         return jsonObject.getJSONObject("route_summary");
     }
 
