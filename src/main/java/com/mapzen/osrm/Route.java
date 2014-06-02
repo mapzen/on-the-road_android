@@ -187,10 +187,6 @@ public class Route {
         return 360 - poly.get(currentLeg).getBearing();
     }
 
-    public void setCurrentLeg(int currentLeg) {
-        this.currentLeg = currentLeg;
-    }
-
     public void rewind() {
         currentLeg = 0;
     }
