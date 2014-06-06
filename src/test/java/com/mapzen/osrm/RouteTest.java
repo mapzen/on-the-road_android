@@ -71,7 +71,7 @@ public class RouteTest {
     }
 
     @Test
-    public void hasCorrectTurnByTurnCordinatesInBrooklyn() throws Exception {
+    public void hasCorrectTurnByTurnCoordinatesInBrooklyn() throws Exception {
         ArrayList<Location> points = new ArrayList<Location>();
         points.add(getLocation(40.66071, -73.98933));
         points.add(getLocation(40.65982, -73.98784));
@@ -86,9 +86,11 @@ public class RouteTest {
             Location expectedPoint = expectedPoints.next();
             Location instructionPoint = instruction.getLocation();
 
-            // ceiling it as the percision of the double is not identical on the sixth digit
-            assertThat(Math.ceil(instructionPoint.getLatitude())).isEqualTo(Math.ceil(expectedPoint.getLatitude()));
-            assertThat(Math.ceil(instructionPoint.getLongitude())).isEqualTo(Math.ceil(expectedPoint.getLongitude()));
+            // ceiling it as the precision of the double is not identical on the sixth digit
+            assertThat(Math.ceil(instructionPoint.getLatitude()))
+                    .isEqualTo(Math.ceil(expectedPoint.getLatitude()));
+            assertThat(Math.ceil(instructionPoint.getLongitude()))
+                    .isEqualTo(Math.ceil(expectedPoint.getLongitude()));
         }
     }
 
@@ -161,7 +163,8 @@ public class RouteTest {
     public void snapToRoute_shouldSnapToBeginning() throws Exception {
         Route myroute = getRoute("greenpoint_around_the_block");
         Location snapToBeginning = getLocation(40.661060, -73.990004);
-        assertThat(myroute.snapToRoute(snapToBeginning)).isEqualsToByComparingFields(myroute.getStartCoordinates());
+        assertThat(myroute.snapToRoute(snapToBeginning))
+                .isEqualsToByComparingFields(myroute.getStartCoordinates());
     }
 
     @Test

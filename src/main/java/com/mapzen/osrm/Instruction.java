@@ -4,7 +4,6 @@ import com.mapzen.helpers.DistanceFormatter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.location.Location;
 
@@ -39,9 +38,6 @@ public class Instruction {
             ENTER_ROUND_ABOUT, LEAVE_ROUND_ABOUT, STAY_ON_ROUND_ABOUT, START_AT_END_OF_STREET,
             YOU_HAVE_ARRIVED, ENTER_AGAINST_ALLOWED_DIRECTION, LEAVE_AGAINST_ALLOWED_DIRECTION
     };
-    public static final String GEAR_JSON_INSTRUCTION = "instruction";
-    public static final String GEAR_JSON_NAME = "street";
-    public static final String GEAR_JSON_DISTANCE = "distance";
     private JSONArray json;
     private int turn, distanceInMeters;
     private Location location = new Location(SNAP_PROVIDER);
@@ -187,17 +183,6 @@ public class Instruction {
         return String.format(Locale.US, "Instruction: (%.5f, %.5f) %s %s",
                 location.getLatitude(), location.getLongitude(), getHumanTurnInstruction(),
                 getName());
-    }
-
-    public JSONObject getGearJson() {
-        JSONObject gearJson = new JSONObject();
-        gearJson.put(GEAR_JSON_INSTRUCTION, getTurnInstruction());
-        gearJson.put(GEAR_JSON_NAME, getName());
-        gearJson.put(GEAR_JSON_DISTANCE, getFormattedDistance());
-        if (getHumanTurnInstruction().equals(YOU_HAVE_ARRIVED)) {
-            return gearJson.put(GEAR_JSON_NAME, YOU_HAVE_ARRIVED);
-        }
-        return gearJson;
     }
 
     @Override
