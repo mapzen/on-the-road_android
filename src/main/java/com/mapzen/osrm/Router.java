@@ -29,7 +29,7 @@ public class Router implements Runnable {
     private Callback callback;
 
     public enum Type {
-        WALKING("foot"), BIKING("bike"), DRIVING("car");
+        WALKING("foot"), BIKING("bicycle"), DRIVING("car");
         private String type;
 
         Type(String type) {
