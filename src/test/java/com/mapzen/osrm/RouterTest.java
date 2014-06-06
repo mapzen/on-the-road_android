@@ -96,7 +96,7 @@ public class RouterTest {
     @Test
     public void shouldSetToBike() throws Exception {
         URL url = validRouter.setBiking().getRouteUrl();
-        assertThat(url.toString()).contains("bike/viaroute");
+        assertThat(url.toString()).contains("bicycle/viaroute");
     }
 
     @Test
