@@ -13,8 +13,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-import static com.mapzen.TestUtils.*;
-import static java.lang.System.*;
+import static com.mapzen.TestUtils.getLocation;
+import static java.lang.System.getProperty;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 @Config(manifest=Config.NONE)
@@ -284,5 +284,15 @@ public class RouteTest {
         ArrayList<Instruction> instructions = myroute.getRouteInstructions();
         assertThat(instructions.get(instructions.size() - 1).getHumanTurnInstruction())
                 .isEqualTo("You have arrived");
+    }
+
+    @Test
+    public void getRouteInstructions_shouldNotDuplicateLocations() throws Exception {
+        Route myroute = getRoute("last_instruction_at_last_point");
+        ArrayList<Instruction> instructions = myroute.getRouteInstructions();
+        for (int i = 0; i < instructions.size() - 1; i++) {
+            assertThat(instructions.get(i).getLocation())
+                    .isNotEqualTo(instructions.get(i + 1).getLocation());
+        }
     }
 }

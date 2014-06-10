@@ -75,6 +75,10 @@ public class Route {
         double totalDistance = 0;
         Location markerPoint = new Location(SNAP_PROVIDER);
 
+        if (instructions.size() == poly.size()) {
+            return getSimpleRouteInstructions();
+        }
+
         int marker = 1;
         // set initial point to first instruction
         instructions.get(0).setLocation(poly.get(0).getLocation());
@@ -83,11 +87,13 @@ public class Route {
             if (marker == instructions.size()) {
                 continue;
             }
+
             Instruction instruction = instructions.get(marker);
             if (pre != null) {
                 distance = node.getTotalDistance() - pre.getTotalDistance();
                 totalDistance += distance;
             }
+
             // this needs the previous distance marker hence minus one
             if (Math.floor(totalDistance) > instructions.get(marker - 1).getDistance()) {
                 instruction.setLocation(markerPoint);
@@ -102,6 +108,20 @@ public class Route {
                 instruction.setLocation(markerPoint);
             }
         }
+        return instructions;
+    }
+
+    /**
+     * Populates location values for a simple set of route instructions where the number of
+     * instructions equals the number of nodes in the polyline.
+     *
+     * @return simple instruction list with location values.
+     */
+    private ArrayList<Instruction> getSimpleRouteInstructions() {
+        for (Instruction instruction : instructions) {
+            instruction.setLocation(poly.get(instructions.indexOf(instruction)).getLocation());
+        }
+
         return instructions;
     }
 
