@@ -357,7 +357,7 @@ public class Route {
             Location temporaryLocationObj = instruction.getLocation();
             final int distanceToTurn =
                     (int) Math.floor(location.distanceTo(temporaryLocationObj));
-            if (distanceToTurn < closestDistance) {
+            if (!seenInstructions.contains(instruction) && distanceToTurn < closestDistance) {
                 closestDistance = distanceToTurn;
                 closestInstruction = instruction;
             }

@@ -279,6 +279,17 @@ public class RouteTest {
     }
 
     @Test
+    public void getClosestInstruction_shouldNotReturnSeenInstruction() throws Exception {
+        Route myroute = getRoute("greenpoint_around_the_block");
+        myroute.getRouteInstructions();
+        Location tmp = getLocation(40.660015, -73.988173); // corner of 19th and 7th
+        myroute.addSeenInstruction(myroute.getRouteInstructions().get(1));
+        Instruction instruction = myroute.getClosestInstruction(tmp);
+        Instruction i = myroute.getRouteInstructions().get(1);
+        assertThat(instruction.getFullInstruction()).isNotEqualTo(i.getFullInstruction());
+    }
+
+    @Test
     public void getRouteInstructions_shouldPopulateLastInstruction() throws Exception {
         Route myroute = getRoute("last_instruction_at_last_point");
         ArrayList<Instruction> instructions = myroute.getRouteInstructions();
