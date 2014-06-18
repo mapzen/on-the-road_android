@@ -301,6 +301,17 @@ public class RouteTest {
     }
 
     @Test
+    public void getClosestInstruction_shouldReturnDestination() throws Exception {
+        Route myroute = getRoute("over_laps");
+        ArrayList<Instruction> instructions = myroute.getRouteInstructions();
+        myroute.addSeenInstruction(instructions.get(0));
+        Location tmp = getLocation(40.671968, -73.976338);
+        Instruction instruction = myroute.getClosestInstruction(tmp);
+        Instruction i = instructions.get(instructions.size() - 1);
+        assertThat(instruction.getFullInstruction()).isNotEqualTo(i.getFullInstruction());
+    }
+
+    @Test
     public void getRouteInstructions_shouldPopulateLastInstruction() throws Exception {
         Route myroute = getRoute("last_instruction_at_last_point");
         ArrayList<Instruction> instructions = myroute.getRouteInstructions();
