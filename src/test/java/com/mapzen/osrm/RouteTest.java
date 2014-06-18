@@ -272,8 +272,19 @@ public class RouteTest {
     @Test
     public void getClosestInstruction_shouldReturnClosest() throws Exception {
         Route myroute = getRoute("greenpoint_around_the_block");
-        myroute.getRouteInstructions();
+        ArrayList<Instruction> instructions = myroute.getRouteInstructions();
+        myroute.addSeenInstruction(instructions.get(0));
         Location tmp = getLocation(40.660015, -73.988173); // corner of 19th and 7th
+        Instruction instruction = myroute.getClosestInstruction(tmp);
+        assertThat(instruction).isEqualsToByComparingFields(myroute.getRouteInstructions().get(1));
+    }
+
+    @Test
+    public void getClosestInstruction_shouldReturnNextRelevantClosest() throws Exception {
+        Route myroute = getRoute("greenpoint_around_the_block");
+        ArrayList<Instruction> instructions = myroute.getRouteInstructions();
+        myroute.addSeenInstruction(instructions.get(0));
+        Location tmp = getLocation(40.660095, -73.987677); // closer to 18th and 7th but should get 19th and 7th instrution
         Instruction instruction = myroute.getClosestInstruction(tmp);
         assertThat(instruction).isEqualsToByComparingFields(myroute.getRouteInstructions().get(1));
     }

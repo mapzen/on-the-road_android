@@ -358,8 +358,11 @@ public class Route {
             final int distanceToTurn =
                     (int) Math.floor(location.distanceTo(temporaryLocationObj));
             if (!seenInstructions.contains(instruction) && distanceToTurn < closestDistance) {
-                closestDistance = distanceToTurn;
-                closestInstruction = instruction;
+                if (closestInstruction == null
+                        || instructions.indexOf(closestInstruction) > instructions.indexOf(instruction)) {
+                    closestDistance = distanceToTurn;
+                    closestInstruction = instruction;
+                }
             }
         }
         return closestInstruction;
