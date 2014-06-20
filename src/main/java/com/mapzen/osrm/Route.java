@@ -105,7 +105,8 @@ public class Route {
 
             // setting the last one to the destination
             if (poly.size() - 1 == i) {
-                instruction.setLocation(markerPoint);
+                Instruction lastInstruction = instructions.get(instructions.size() - 1);
+                lastInstruction.setLocation(markerPoint);
             }
         }
         return instructions;
