@@ -302,10 +302,11 @@ public class RouteTest {
 
     @Test
     public void getClosestInstruction_shouldReturnDestination() throws Exception {
-        Route myroute = getRoute("over_laps");
+        Route myroute = getRoute("to_the_armory");
         ArrayList<Instruction> instructions = myroute.getRouteInstructions();
         myroute.addSeenInstruction(instructions.get(0));
-        Location tmp = getLocation(40.671968, -73.976338);
+        myroute.addSeenInstruction(instructions.get(1));
+        Location tmp = getLocation(40.662447, -73.984604);
         Instruction instruction = myroute.getClosestInstruction(tmp);
         Instruction i = instructions.get(instructions.size() - 1);
         assertThat(instruction.getFullInstruction()).isNotEqualTo(i.getFullInstruction());

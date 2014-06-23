@@ -1,0 +1,203 @@
+{
+    "status": 0,
+    "status_message": "Found route between points",
+    "route_geometry": "s}yulApv_clC|{@mpCli@ybBwf[orSoi@rcBk^bjA",
+    "route_instructions": [
+        [
+            "10",
+            "West 26th Street",
+            224,
+            0,
+            4,
+            "224m",
+            "SE",
+            119
+        ],
+        [
+            "1",
+            "East 26th Street",
+            154,
+            1,
+            24,
+            "154m",
+            "SE",
+            119
+        ],
+        [
+            "7",
+            "Madison Avenue",
+            1837,
+            2,
+            165,
+            "1837m",
+            "NE",
+            29
+        ],
+        [
+            "7",
+            "East 49th Street",
+            155,
+            3,
+            12,
+            "155m",
+            "NW",
+            299
+        ],
+        [
+            "1",
+            "West 49th Street",
+            115,
+            4,
+            4,
+            "115m",
+            "NW",
+            299
+        ],
+        [
+            "15",
+            "",
+            0,
+            5,
+            0,
+            "",
+            "N",
+            0
+        ]
+    ],
+    "route_summary": {
+        "total_distance": 2487,
+        "total_time": 239,
+        "start_point": "West 26th Street",
+        "end_point": "West 49th Street"
+    },
+    "alternative_geometries": [
+        "s}yulApv_clC|{@mpCli@ybBsgF_hDvi@cdBulKmdHSmh@qlG{bDowA~pEk^bjA"
+    ],
+    "alternative_instructions": [
+        [
+            [
+                "10",
+                "West 26th Street",
+                224,
+                0,
+                4,
+                "224m",
+                "SE",
+                119
+            ],
+            [
+                "1",
+                "East 26th Street",
+                154,
+                1,
+                24,
+                "154m",
+                "SE",
+                119
+            ],
+            [
+                "7",
+                "Madison Avenue",
+                472,
+                2,
+                42,
+                "472m",
+                "NE",
+                29
+            ],
+            [
+                "3",
+                "East 32nd Street",
+                156,
+                3,
+                24,
+                "156m",
+                "SE",
+                119
+            ],
+            [
+                "7",
+                "Park Avenue",
+                1425,
+                4,
+                105,
+                "1425m",
+                "NE",
+                42
+            ],
+            [
+                "7",
+                "East 49th Street",
+                323,
+                7,
+                27,
+                "323m",
+                "NW",
+                299
+            ],
+            [
+                "1",
+                "West 49th Street",
+                115,
+                8,
+                4,
+                "115m",
+                "NW",
+                299
+            ],
+            [
+                "15",
+                "",
+                0,
+                9,
+                0,
+                "",
+                "N",
+                0
+            ]
+        ]
+    ],
+    "alternative_summaries": [
+        {
+            "total_distance": 2872,
+            "total_time": 261,
+            "start_point": "West 26th Street",
+            "end_point": "West 49th Street"
+        }
+    ],
+    "route_name": [
+        "West 26th Street",
+        "Madison Avenue"
+    ],
+    "alternative_names": [
+        [
+            "West 26th Street",
+            "Park Avenue"
+        ]
+    ],
+    "via_points": [
+        [
+            40.744426,
+            -73.990521
+        ],
+        [
+            40.758414,
+            -73.978857
+        ]
+    ],
+    "via_indices": [
+        0,
+        30
+    ],
+    "alternative_indices": [
+        0,
+        49
+    ],
+    "hint_data": {
+        "checksum": 0,
+        "locations": [
+            "S2VlASYWBAAeAAAA____fwsjFvqgGcA_6rVtAof-lvs",
+            "635lAeQUBAACAAAA____fza-FURHAdo_juxtAhcsl_s"
+        ]
+    }
+}

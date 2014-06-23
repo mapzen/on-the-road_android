@@ -1,0 +1,98 @@
+{
+    "status": 0,
+    "status_message": "Found route between points",
+    "route_geometry": "coyplArxublCmXgTjfAsrCud@i^o]~}@",
+    "route_instructions": [
+        [
+            "10",
+            "7th Avenue",
+            53,
+            0,
+            4,
+            "53m",
+            "NE",
+            32
+        ],
+        [
+            "3",
+            "16th Street",
+            236,
+            1,
+            34,
+            "236m",
+            "SE",
+            123
+        ],
+        [
+            "7",
+            "8th Avenue",
+            79,
+            2,
+            11,
+            "79m",
+            "NE",
+            32
+        ],
+        [
+            "7",
+            "15th Street",
+            100,
+            3,
+            0,
+            "100m",
+            "NW",
+            303
+        ],
+        [
+            "15",
+            "",
+            0,
+            4,
+            0,
+            "",
+            "N",
+            0
+        ]
+    ],
+    "route_summary": {
+        "total_distance": 470,
+        "total_time": 64,
+        "start_point": "7th Avenue",
+        "end_point": "15th Street"
+    },
+    "alternative_geometries": [],
+    "alternative_instructions": [],
+    "alternative_summaries": [],
+    "route_name": [
+        "16th Street",
+        "15th Street"
+    ],
+    "alternative_names": [
+        [
+            "",
+            ""
+        ]
+    ],
+    "via_points": [
+        [
+            40.662274,
+            -73.985434
+        ],
+        [
+            40.66263,
+            -73.983239
+        ]
+    ],
+    "via_indices": [
+        0,
+        4
+    ],
+    "alternative_indices": [],
+    "hint_data": {
+        "checksum": 0,
+        "locations": [
+            "OMlmAYKSAAAwAAAAFgAAAGxjuxh0suU_AnVsAmYSl_s",
+            "NslmAQ-iAACRAAAA____f7wqAJfkVts_ZnZsAvkal_s"
+        ]
+    }
+}
