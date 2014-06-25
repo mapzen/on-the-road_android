@@ -301,7 +301,7 @@ public class RouteTest {
     }
 
     @Test
-    public void getClosestInstruction_shouldReturnDestination() throws Exception {
+    public void getClosestInstruction_shouldNotReturnDestination() throws Exception {
         Route myroute = getRoute("to_the_armory");
         ArrayList<Instruction> instructions = myroute.getRouteInstructions();
         myroute.addSeenInstruction(instructions.get(0));
