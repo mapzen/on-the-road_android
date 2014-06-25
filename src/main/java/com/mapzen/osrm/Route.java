@@ -351,21 +351,13 @@ public class Route {
         seenInstructions.add(instruction);
     }
 
-    public Instruction getClosestInstruction(Location location) {
-        Instruction closestInstruction = null;
-        int closestDistance = (int) 1e8;
+    public Instruction getNextInstruction() {
         for (Instruction instruction : instructions) {
-            if (closestInstruction != null) {
-                break;
-            }
-            Location temporaryLocationObj = instruction.getLocation();
-            final int distanceToTurn =
-                    (int) Math.floor(location.distanceTo(temporaryLocationObj));
-            if (!seenInstructions.contains(instruction) && distanceToTurn < closestDistance) {
-                closestDistance = distanceToTurn;
-                closestInstruction = instruction;
+            if (!seenInstructions.contains(instruction)) {
+                return instruction;
             }
         }
-        return closestInstruction;
+
+        return null;
     }
 }

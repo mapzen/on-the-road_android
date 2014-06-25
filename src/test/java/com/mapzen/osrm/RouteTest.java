@@ -274,8 +274,7 @@ public class RouteTest {
         Route myroute = getRoute("greenpoint_around_the_block");
         ArrayList<Instruction> instructions = myroute.getRouteInstructions();
         myroute.addSeenInstruction(instructions.get(0));
-        Location tmp = getLocation(40.660015, -73.988173); // corner of 19th and 7th
-        Instruction instruction = myroute.getClosestInstruction(tmp);
+        Instruction instruction = myroute.getNextInstruction();
         assertThat(instruction).isEqualsToByComparingFields(myroute.getRouteInstructions().get(1));
     }
 
@@ -284,8 +283,7 @@ public class RouteTest {
         Route myroute = getRoute("greenpoint_around_the_block");
         ArrayList<Instruction> instructions = myroute.getRouteInstructions();
         myroute.addSeenInstruction(instructions.get(0));
-        Location tmp = getLocation(40.660095, -73.987677); // closer to 18th and 7th but should get 19th and 7th instrution
-        Instruction instruction = myroute.getClosestInstruction(tmp);
+        Instruction instruction = myroute.getNextInstruction();
         assertThat(instruction).isEqualsToByComparingFields(myroute.getRouteInstructions().get(1));
     }
 
@@ -293,9 +291,8 @@ public class RouteTest {
     public void getClosestInstruction_shouldNotReturnSeenInstruction() throws Exception {
         Route myroute = getRoute("greenpoint_around_the_block");
         myroute.getRouteInstructions();
-        Location tmp = getLocation(40.660015, -73.988173); // corner of 19th and 7th
         myroute.addSeenInstruction(myroute.getRouteInstructions().get(1));
-        Instruction instruction = myroute.getClosestInstruction(tmp);
+        Instruction instruction = myroute.getNextInstruction();
         Instruction i = myroute.getRouteInstructions().get(1);
         assertThat(instruction.getFullInstruction()).isNotEqualTo(i.getFullInstruction());
     }
@@ -306,8 +303,7 @@ public class RouteTest {
         ArrayList<Instruction> instructions = myroute.getRouteInstructions();
         myroute.addSeenInstruction(instructions.get(0));
         myroute.addSeenInstruction(instructions.get(1));
-        Location tmp = getLocation(40.662447, -73.984604);
-        Instruction instruction = myroute.getClosestInstruction(tmp);
+        Instruction instruction = myroute.getNextInstruction();
         Instruction i = instructions.get(instructions.size() - 1);
         assertThat(instruction.getFullInstruction()).isNotEqualTo(i.getFullInstruction());
     }
