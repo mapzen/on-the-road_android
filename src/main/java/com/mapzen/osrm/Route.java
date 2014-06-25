@@ -355,15 +355,15 @@ public class Route {
         Instruction closestInstruction = null;
         int closestDistance = (int) 1e8;
         for (Instruction instruction : instructions) {
+            if (closestInstruction != null) {
+                break;
+            }
             Location temporaryLocationObj = instruction.getLocation();
             final int distanceToTurn =
                     (int) Math.floor(location.distanceTo(temporaryLocationObj));
             if (!seenInstructions.contains(instruction) && distanceToTurn < closestDistance) {
-                if (closestInstruction == null
-                        || instructions.indexOf(closestInstruction) > instructions.indexOf(instruction)) {
-                    closestDistance = distanceToTurn;
-                    closestInstruction = instruction;
-                }
+                closestDistance = distanceToTurn;
+                closestInstruction = instruction;
             }
         }
         return closestInstruction;
