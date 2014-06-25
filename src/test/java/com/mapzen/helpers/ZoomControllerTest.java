@@ -83,41 +83,46 @@ public class ZoomControllerTest {
         controller.setCurrentSpeed(-1);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void averageDrivingSpeedLessThanZero_shouldThrowError() throws Exception {
+        controller.setAverageSpeed(-1);
+    }
+
     @Test
-    public void currentDrivingSpeedZero_shouldReturnZoomForZeroTo15Mph() throws Exception {
-        controller.setCurrentSpeed(0);
+    public void averageDrivingSpeedZero_shouldReturnZoomForZeroTo15Mph() throws Exception {
+        controller.setAverageSpeed(0);
         controller.setTransitMode(DRIVING);
         controller.setDrivingZoom(15, MPH_0_TO_15);
         assertThat(controller.getZoom()).isEqualTo(15);
     }
 
     @Test
-    public void currentDrivingSpeed20_shouldReturnZoomFor15To25Mph() throws Exception {
-        controller.setCurrentSpeed(milesPerHourToMetersPerSecond(20));
+    public void averageDrivingSpeed20_shouldReturnZoomFor15To25Mph() throws Exception {
+        controller.setAverageSpeed(milesPerHourToMetersPerSecond(20));
         controller.setTransitMode(DRIVING);
         controller.setDrivingZoom(14, MPH_15_TO_25);
         assertThat(controller.getZoom()).isEqualTo(14);
     }
 
     @Test
-    public void currentDrivingSpeed30_shouldReturnZoomFor25To35Mph() throws Exception {
-        controller.setCurrentSpeed(milesPerHourToMetersPerSecond(30));
+    public void averageDrivingSpeed30_shouldReturnZoomFor25To35Mph() throws Exception {
+        controller.setAverageSpeed(milesPerHourToMetersPerSecond(30));
         controller.setTransitMode(DRIVING);
         controller.setDrivingZoom(13, MPH_25_TO_35);
         assertThat(controller.getZoom()).isEqualTo(13);
     }
 
     @Test
-    public void currentDrivingSpeed40_shouldReturnZoomFor35To50Mph() throws Exception {
-        controller.setCurrentSpeed(milesPerHourToMetersPerSecond(40));
+    public void averageDrivingSpeed40_shouldReturnZoomFor35To50Mph() throws Exception {
+        controller.setAverageSpeed(milesPerHourToMetersPerSecond(40));
         controller.setTransitMode(DRIVING);
         controller.setDrivingZoom(12, MPH_35_TO_50);
         assertThat(controller.getZoom()).isEqualTo(12);
     }
 
     @Test
-    public void currentDrivingSpeed50_shouldReturnZoomForOver50Mph() throws Exception {
-        controller.setCurrentSpeed(milesPerHourToMetersPerSecond(50));
+    public void averageDrivingSpeed50_shouldReturnZoomForOver50Mph() throws Exception {
+        controller.setAverageSpeed(milesPerHourToMetersPerSecond(50));
         controller.setTransitMode(DRIVING);
         controller.setDrivingZoom(11, MPH_OVER_50);
         assertThat(controller.getZoom()).isEqualTo(11);

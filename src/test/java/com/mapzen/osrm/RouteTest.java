@@ -272,10 +272,40 @@ public class RouteTest {
     @Test
     public void getClosestInstruction_shouldReturnClosest() throws Exception {
         Route myroute = getRoute("greenpoint_around_the_block");
-        myroute.getRouteInstructions();
-        Location tmp = getLocation(40.660015, -73.988173); // corner of 19th and 7th
-        Instruction instruction = myroute.getClosestInstruction(tmp);
+        ArrayList<Instruction> instructions = myroute.getRouteInstructions();
+        myroute.addSeenInstruction(instructions.get(0));
+        Instruction instruction = myroute.getNextInstruction();
         assertThat(instruction).isEqualsToByComparingFields(myroute.getRouteInstructions().get(1));
+    }
+
+    @Test
+    public void getClosestInstruction_shouldReturnNextRelevantClosest() throws Exception {
+        Route myroute = getRoute("greenpoint_around_the_block");
+        ArrayList<Instruction> instructions = myroute.getRouteInstructions();
+        myroute.addSeenInstruction(instructions.get(0));
+        Instruction instruction = myroute.getNextInstruction();
+        assertThat(instruction).isEqualsToByComparingFields(myroute.getRouteInstructions().get(1));
+    }
+
+    @Test
+    public void getClosestInstruction_shouldNotReturnSeenInstruction() throws Exception {
+        Route myroute = getRoute("greenpoint_around_the_block");
+        myroute.getRouteInstructions();
+        myroute.addSeenInstruction(myroute.getRouteInstructions().get(1));
+        Instruction instruction = myroute.getNextInstruction();
+        Instruction i = myroute.getRouteInstructions().get(1);
+        assertThat(instruction.getFullInstruction()).isNotEqualTo(i.getFullInstruction());
+    }
+
+    @Test
+    public void getClosestInstruction_shouldNotReturnDestination() throws Exception {
+        Route myroute = getRoute("to_the_armory");
+        ArrayList<Instruction> instructions = myroute.getRouteInstructions();
+        myroute.addSeenInstruction(instructions.get(0));
+        myroute.addSeenInstruction(instructions.get(1));
+        Instruction instruction = myroute.getNextInstruction();
+        Instruction i = instructions.get(instructions.size() - 1);
+        assertThat(instruction.getFullInstruction()).isNotEqualTo(i.getFullInstruction());
     }
 
     @Test

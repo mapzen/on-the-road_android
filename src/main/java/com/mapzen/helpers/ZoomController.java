@@ -29,6 +29,7 @@ public class ZoomController {
 
     private Router.Type transitMode = DRIVING;
     private DrivingSpeed currentDrivingSpeed = null;
+    private DrivingSpeed averageDrivingSpeed = null;
     private HashMap<DrivingSpeed, Integer> zoomMap = new HashMap<DrivingSpeed, Integer>();
     private HashMap<DrivingSpeed, Integer> turnRadiusMap = new HashMap<DrivingSpeed, Integer>();
 
@@ -59,7 +60,7 @@ public class ZoomController {
     }
 
     private int getZoomForCurrentDrivingSpeed() {
-        Integer zoomLevelForCurrentSpeed = zoomMap.get(currentDrivingSpeed);
+        Integer zoomLevelForCurrentSpeed = zoomMap.get(averageDrivingSpeed);
         if (zoomLevelForCurrentSpeed != null) {
             return zoomLevelForCurrentSpeed;
         }
@@ -112,22 +113,30 @@ public class ZoomController {
         turnRadiusMap.put(speed, meters);
     }
 
+    public void setAverageSpeed(float metersPerSecond) {
+        averageDrivingSpeed = getDrivingSpeed(metersPerSecond);
+    }
+
     public void setCurrentSpeed(float metersPerSecond) {
+        currentDrivingSpeed = getDrivingSpeed(metersPerSecond);
+    }
+
+    private DrivingSpeed getDrivingSpeed(float metersPerSecond) {
         if (metersPerSecond < 0) {
             throw new IllegalArgumentException("Speed less than zero is not permitted.");
         }
 
         float mph = metersPerSecondToMilesPerHour(metersPerSecond);
         if (mph < 15) {
-            currentDrivingSpeed = DrivingSpeed.MPH_0_TO_15;
+            return DrivingSpeed.MPH_0_TO_15;
         } else if (mph < 25) {
-            currentDrivingSpeed = DrivingSpeed.MPH_15_TO_25;
+            return DrivingSpeed.MPH_15_TO_25;
         } else if (mph < 35) {
-            currentDrivingSpeed = DrivingSpeed.MPH_25_TO_35;
+            return DrivingSpeed.MPH_25_TO_35;
         } else if (mph < 50) {
-            currentDrivingSpeed = DrivingSpeed.MPH_35_TO_50;
+            return DrivingSpeed.MPH_35_TO_50;
         } else {
-            currentDrivingSpeed = DrivingSpeed.MPH_OVER_50;
+            return DrivingSpeed.MPH_OVER_50;
         }
     }
 

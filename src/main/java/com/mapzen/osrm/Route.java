@@ -105,7 +105,8 @@ public class Route {
 
             // setting the last one to the destination
             if (poly.size() - 1 == i) {
-                instruction.setLocation(markerPoint);
+                Instruction lastInstruction = instructions.get(instructions.size() - 1);
+                lastInstruction.setLocation(markerPoint);
             }
         }
         return instructions;
@@ -350,18 +351,13 @@ public class Route {
         seenInstructions.add(instruction);
     }
 
-    public Instruction getClosestInstruction(Location location) {
-        Instruction closestInstruction = null;
-        int closestDistance = (int) 1e8;
+    public Instruction getNextInstruction() {
         for (Instruction instruction : instructions) {
-            Location temporaryLocationObj = instruction.getLocation();
-            final int distanceToTurn =
-                    (int) Math.floor(location.distanceTo(temporaryLocationObj));
-            if (distanceToTurn < closestDistance) {
-                closestDistance = distanceToTurn;
-                closestInstruction = instruction;
+            if (!seenInstructions.contains(instruction)) {
+                return instruction;
             }
         }
-        return closestInstruction;
+
+        return null;
     }
 }
