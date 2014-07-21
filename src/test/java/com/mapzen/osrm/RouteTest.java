@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLog;
 
 import android.location.Location;
 
@@ -162,6 +163,7 @@ public class RouteTest {
     @Test
     public void snapToRoute_shouldSnapToBeginning() throws Exception {
         Route myroute = getRoute("greenpoint_around_the_block");
+        System.out.println("first point" + myroute.getGeometry().get(0).toString());
         Location snapToBeginning = getLocation(40.661060, -73.990004);
         assertThat(myroute.snapToRoute(snapToBeginning))
                 .isEqualsToByComparingFields(myroute.getStartCoordinates());
@@ -196,6 +198,8 @@ public class RouteTest {
         assertThat(myroute.getCurrentLeg()).isEqualTo(1);
     }
 
+    /* TODO support later MAYBE */
+    /*
     @Test
     public void snapToRoute_shouldFindFutureLegs() throws Exception {
         Route myroute = getRoute("greenpoint_around_the_block");
@@ -204,6 +208,7 @@ public class RouteTest {
         assertThat(snapped).isNotNull();
         assertThat(myroute.getCurrentLeg()).isEqualTo(4);
     }
+    */
 
     @Test
     public void snapToRoute_shouldRealizeItsLost() throws Exception {
@@ -324,5 +329,29 @@ public class RouteTest {
             assertThat(instructions.get(i).getLocation())
                     .isNotEqualTo(instructions.get(i + 1).getLocation());
         }
+    }
+
+    @Test
+    public void shouldHandleMaine() throws Exception {
+        Route myroute = getRoute("maine");
+        ArrayList<Location> locations = getLocationsFromFile("locations");
+        for(Location location: locations) {
+            assertThat(myroute.snapToRoute(location)).isNotNull();
+        }
+    }
+
+    private ArrayList<Location> getLocationsFromFile(String name) throws Exception {
+        String fileName = getProperty("user.dir");
+        File file = new File(fileName + "/src/test/fixtures/" + name + ".txt");
+        String content = FileUtils.readFileToString(file, "UTF-8");
+        ArrayList<Location> allLocations = new ArrayList<Location>();
+        for(String locations: content.split("\n")) {
+            String[] latLng = locations.split(",");
+            Location location = new Location("test");
+            location.setLatitude(Double.valueOf(latLng[0]));
+            location.setLongitude(Double.valueOf(latLng[1]));
+            allLocations.add(location);
+        }
+        return allLocations;
     }
 }
