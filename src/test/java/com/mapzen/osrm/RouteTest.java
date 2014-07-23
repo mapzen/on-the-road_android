@@ -198,18 +198,6 @@ public class RouteTest {
         assertThat(myroute.getCurrentLeg()).isEqualTo(1);
     }
 
-    /* TODO support later MAYBE */
-    /*
-    @Test
-    public void snapToRoute_shouldFindFutureLegs() throws Exception {
-        Route myroute = getRoute("greenpoint_around_the_block");
-        Location point = getLocation(40.660785, -73.987878);
-        Location snapped = myroute.snapToRoute(point);
-        assertThat(snapped).isNotNull();
-        assertThat(myroute.getCurrentLeg()).isEqualTo(4);
-    }
-    */
-
     @Test
     public void snapToRoute_shouldRealizeItsLost() throws Exception {
         Location lost;
