@@ -6,15 +6,21 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLog;
 
 import android.location.Location;
 
 import java.io.File;
+import java.nio.charset.Charset;
+import java.nio.file.FileSystem;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
 import static com.mapzen.TestUtils.getLocation;
 import static java.lang.System.getProperty;
+import static java.nio.charset.Charset.defaultCharset;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 @Config(manifest=Config.NONE)
@@ -162,6 +168,7 @@ public class RouteTest {
     @Test
     public void snapToRoute_shouldSnapToBeginning() throws Exception {
         Route myroute = getRoute("greenpoint_around_the_block");
+        System.out.println("first point" + myroute.getGeometry().get(0).toString());
         Location snapToBeginning = getLocation(40.661060, -73.990004);
         assertThat(myroute.snapToRoute(snapToBeginning))
                 .isEqualsToByComparingFields(myroute.getStartCoordinates());
@@ -194,15 +201,6 @@ public class RouteTest {
         Location snappedTo2 = myroute.snapToRoute(justAroundTheCorner2);
         assertThat(snappedTo2).isNotEqualTo(myroute.getGeometry().get(1));
         assertThat(myroute.getCurrentLeg()).isEqualTo(1);
-    }
-
-    @Test
-    public void snapToRoute_shouldFindFutureLegs() throws Exception {
-        Route myroute = getRoute("greenpoint_around_the_block");
-        Location point = getLocation(40.660785, -73.987878);
-        Location snapped = myroute.snapToRoute(point);
-        assertThat(snapped).isNotNull();
-        assertThat(myroute.getCurrentLeg()).isEqualTo(4);
     }
 
     @Test
@@ -324,5 +322,28 @@ public class RouteTest {
             assertThat(instructions.get(i).getLocation())
                     .isNotEqualTo(instructions.get(i + 1).getLocation());
         }
+    }
+
+    @Test
+    public void shouldHandleMaine() throws Exception {
+        Route myroute = getRoute("maine");
+        ArrayList<Location> locations = getLocationsFromFile("locations");
+        for(Location location: locations) {
+            assertThat(myroute.snapToRoute(location)).isNotNull();
+        }
+    }
+
+    private ArrayList<Location> getLocationsFromFile(String name) throws Exception {
+        String fileName = getProperty("user.dir");
+        File file = new File(fileName + "/src/test/fixtures/" + name + ".txt");
+        ArrayList<Location> allLocations = new ArrayList<Location>();
+        for(String locations: Files.readAllLines(file.toPath(), defaultCharset())) {
+            String[] latLng = locations.split(",");
+            Location location = new Location("test");
+            location.setLatitude(Double.valueOf(latLng[0]));
+            location.setLongitude(Double.valueOf(latLng[1]));
+            allLocations.add(location);
+        }
+        return allLocations;
     }
 }

@@ -17,7 +17,11 @@ import static java.lang.Math.toRadians;
 
 public class Route {
     public static final String SNAP_PROVIDER = "snap";
-    public static final int LOST_THRESHOLD = 100;
+    public static final int LOST_THRESHOLD = 50;
+    public static final int CLOCKWISE = 90;
+    public static final int COUNTERCLOCKWISE = -90;
+    public static final int CORRECTION_THRESHOLD = 1000;
+    public static final int REVERSE = 180;
     private ArrayList<Node> poly = null;
     private ArrayList<Instruction> instructions = null;
     private JSONObject jsonObject;
@@ -222,6 +226,7 @@ public class Route {
 
         // we have exhausted options
         if (currentLeg >= sizeOfPoly) {
+            lost = true;
             return null;
         }
 
@@ -239,13 +244,7 @@ public class Route {
         if (fixedPoint == null) {
             fixedPoint = current.getLocation();
         } else {
-            double distance = current.getLocation().distanceTo(fixedPoint);
-            Ln.d("Snapping => distance between current and fixed: " + String.valueOf(distance));
-            double bearingToOriginal = getBearing(current.getLocation(), originalPoint);
-            Ln.d("Snapping => bearing to original: " + String.valueOf(bearingToOriginal));
-            /// UGH somewhat arbritrary
-            double bearingDiff = Math.abs(bearingToOriginal - current.getBearing());
-            if (distance > current.getLegDistance() - 5 || (distance > 30 && bearingDiff > 20.0)) {
+            if (current.getLocation().distanceTo(fixedPoint) > current.getLegDistance() - 5) {
                 ++currentLeg;
                 Ln.d("Snapping => incrementing and trying again");
                 Ln.d("Snapping => currentLeg: " + String.valueOf(currentLeg));
@@ -256,6 +255,8 @@ public class Route {
         double correctionDistance = originalPoint.distanceTo(fixedPoint);
         Ln.d("Snapping => correctionDistance: " + String.valueOf(correctionDistance));
         Ln.d("Snapping => Lost Threshold: " + String.valueOf(LOST_THRESHOLD));
+        Ln.d("original point => " + originalPoint.getLatitude() + ", " + originalPoint.getLongitude());
+        Ln.d("fixed point => " + fixedPoint.getLatitude() + ", " + fixedPoint.getLongitude());
         if (correctionDistance < LOST_THRESHOLD) {
             return fixedPoint;
         } else {
@@ -265,15 +266,21 @@ public class Route {
     }
 
     private Location snapTo(Node turnPoint, Location location) {
-        Location correctedLocation = snapTo(turnPoint, location, 90);
+        Location correctedLocation = snapTo(turnPoint, location, CLOCKWISE);
         if (correctedLocation == null) {
-            correctedLocation = snapTo(turnPoint, location, -90);
+            correctedLocation = snapTo(turnPoint, location, COUNTERCLOCKWISE);
         }
-        double distance;
+
         if (correctedLocation != null) {
-            distance = correctedLocation.distanceTo(location);
-            if (Math.round(distance) > 1000) {
-                return null;
+            double distance = correctedLocation.distanceTo(location);
+            // check if results are on the otherside of the globe
+            if (Math.round(distance) > CORRECTION_THRESHOLD) {
+                Node tmpNode = new Node(turnPoint.getLat(), turnPoint.getLng());
+                tmpNode.setBearing(turnPoint.getBearing() - REVERSE);
+                correctedLocation = snapTo(tmpNode, location, CLOCKWISE);
+                if (correctedLocation == null) {
+                    correctedLocation = snapTo(tmpNode, location, COUNTERCLOCKWISE);
+                }
             }
         }
 

@@ -119,7 +119,7 @@ double[] onTheRoad = route.snapToRoute(new double[] { lat, lng });
 To build and run the test interface run
 
 ```bash
-$ gradle clean fatjar
+$ mvn clean compile assembly:single
 $ cd webTester
 $ jruby -S bundle exec warble
 $ java -jar webTester.war
