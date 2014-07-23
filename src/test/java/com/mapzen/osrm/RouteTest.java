@@ -11,11 +11,16 @@ import org.robolectric.shadows.ShadowLog;
 import android.location.Location;
 
 import java.io.File;
+import java.nio.charset.Charset;
+import java.nio.file.FileSystem;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
 import static com.mapzen.TestUtils.getLocation;
 import static java.lang.System.getProperty;
+import static java.nio.charset.Charset.defaultCharset;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 @Config(manifest=Config.NONE)
@@ -331,9 +336,8 @@ public class RouteTest {
     private ArrayList<Location> getLocationsFromFile(String name) throws Exception {
         String fileName = getProperty("user.dir");
         File file = new File(fileName + "/src/test/fixtures/" + name + ".txt");
-        String content = FileUtils.readFileToString(file, "UTF-8");
         ArrayList<Location> allLocations = new ArrayList<Location>();
-        for(String locations: content.split("\n")) {
+        for(String locations: Files.readAllLines(file.toPath(), defaultCharset())) {
             String[] latLng = locations.split(",");
             Location location = new Location("test");
             location.setLatitude(Double.valueOf(latLng[0]));
