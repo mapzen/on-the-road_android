@@ -116,41 +116,8 @@ double[] onTheRoad = route.snapToRoute(new double[] { lat, lng });
 
 #### To test this and reply route scenarios we have built a simple web app that communicates with the library
 
-To build and run the test interface run
+see https://github.com/mapzen/on-the-road_web-tester
 
-```bash
-$ mvn clean compile assembly:single
-$ cd webTester
-$ jruby -S bundle exec warble
-$ java -jar webTester.war
-
-```
-
-## Install
-
-#### Download Jar
-
-Download the [latest JAR][1].
-
-#### Maven
-
-Include dependency using Maven.
-
-```xml
-<dependency>
-  <groupId>com.mapzen.android</groupId>
-  <artifactId>on-the-road</artifactId>
-  <version>0.1</version>
-</dependency>
-```
-
-#### Gradle
-
-Include dependency using Gradle.
-
-```groovy
-compile 'com.mapzen.android:on-the-road:0.1'
-```
 
 [1]: http://search.maven.org/remotecontent?filepath=com/mapzen/on-the-road/0.1/on-the-road-0.1.jar
 [2]: http://project-osrm.org/ 
