@@ -25,7 +25,7 @@ public class Route {
     private ArrayList<Node> poly = null;
     private ArrayList<Instruction> instructions = null;
     private JSONObject jsonObject;
-    private int currentLeg = 0;
+    protected int currentLeg = 0;
     private Set<Instruction> seenInstructions = new HashSet<Instruction>();
     private boolean lost = false;
 
