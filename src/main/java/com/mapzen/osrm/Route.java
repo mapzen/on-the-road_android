@@ -266,6 +266,11 @@ public class Route {
     }
 
     private Location snapTo(Node turnPoint, Location location) {
+        if (Double.compare(turnPoint.getLat(), location.getLatitude()) == 0
+                && Double.compare(turnPoint.getLng(), location.getLongitude()) == 0) {
+            return location;
+        }
+
         Location correctedLocation = snapTo(turnPoint, location, CLOCKWISE);
         if (correctedLocation == null) {
             correctedLocation = snapTo(turnPoint, location, COUNTERCLOCKWISE);

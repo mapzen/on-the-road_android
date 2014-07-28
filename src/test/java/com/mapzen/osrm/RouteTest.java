@@ -166,6 +166,15 @@ public class RouteTest {
     }
 
     @Test
+    public void snapToRoute_shouldReturnSameLocationWhenItMatchesNode() throws Exception {
+        Route myroute = getRoute("greenpoint_around_the_block");
+        Location cornerLocation = myroute.getGeometry().get(0);
+        Location snapped = myroute.snapToRoute(cornerLocation);
+        assertThat(myroute.getCurrentLeg()).isEqualTo(0);
+        assertThat(snapped).isEqualTo(cornerLocation);
+    }
+
+    @Test
     public void snapToRoute_shouldSnapToBeginning() throws Exception {
         Route myroute = getRoute("greenpoint_around_the_block");
         System.out.println("first point" + myroute.getGeometry().get(0).toString());
