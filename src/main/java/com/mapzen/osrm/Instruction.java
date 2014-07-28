@@ -14,13 +14,13 @@ import static com.mapzen.osrm.Route.SNAP_PROVIDER;
 public class Instruction {
     public static final String NO_TURN = "No turn"; // 0; (Give no instruction at all)
     public static final String GO_STRAIGHT = "Continue on"; //1; (Tell user to go straight!)
-    public static final String TURN_SLIGHT_RIGHT = "Make a slight right on to"; //2;
-    public static final String TURN_RIGHT = "Make a right on to"; // 3;
-    public static final String TURN_SHARP_RIGHT = "Make a sharp right on to"; // 4;
+    public static final String TURN_SLIGHT_RIGHT = "Slight right on"; //2;
+    public static final String TURN_RIGHT = "Right on"; // 3;
+    public static final String TURN_SHARP_RIGHT = "Sharp right on"; // 4;
     public static final String U_TURN = "U Turn"; // 5;
-    public static final String TURN_SHARP_LEFT = "Make a sharp left on to"; // 6;
-    public static final String TURN_LEFT = "Make a left on to"; // 7;
-    public static final String TURN_SLIGHT_LEFT = "Make a slight left on to"; // 8;
+    public static final String TURN_SHARP_LEFT = "Sharp left on"; // 6;
+    public static final String TURN_LEFT = "Left on"; // 7;
+    public static final String TURN_SLIGHT_LEFT = "Slight left on"; // 8;
     public static final String REACH_VIA_POINT = "Reach via point"; // 9;
     public static final String HEAD_ON = "Head on"; // 10;
     public static final String ENTER_ROUND_ABOUT = "Enter round about"; // 11;
@@ -29,9 +29,9 @@ public class Instruction {
     public static final String START_AT_END_OF_STREET = "Start at end of street"; // 14;
     public static final String YOU_HAVE_ARRIVED = "You have arrived"; // 15;
     public static final String ENTER_AGAINST_ALLOWED_DIRECTION =
-            "Enter against allowed direction"; //16;
+            "Enter"; //16;
     public static final String LEAVE_AGAINST_ALLOWED_DIRECTION =
-            "Leave against allowed direction"; //17;
+            "Leave"; //17;
     public static String[] decodedInstructions = {
             NO_TURN, GO_STRAIGHT, TURN_SLIGHT_RIGHT, TURN_RIGHT, TURN_SHARP_RIGHT, U_TURN,
             TURN_SHARP_LEFT, TURN_LEFT, TURN_SLIGHT_LEFT, REACH_VIA_POINT, HEAD_ON,
