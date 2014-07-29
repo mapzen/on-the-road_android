@@ -453,6 +453,24 @@ public class InstructionTest {
         assertThat(actual).contains(expected);
     }
 
+    @Test
+    public void getFullInstructionAfterAction_shouldNotUseTermNow() throws Exception {
+        Location location = getLocation(0, 0);
+        instruction.setLocation(location);
+        instruction.setDistance(1);
+        String string = instruction.getFullInstructionAfterAction(location);
+        assertThat(string).doesNotContain("now");
+    }
+
+    @Test
+    public void getFullInstructionAfterActionWithLocation_shouldUseTermNow() throws Exception {
+        Location location = getLocation(0, 0);
+        instruction.setLocation(location);
+        instruction.setDistance(1);
+        String string = instruction.getFullInstructionAfterAction();
+        assertThat(string).doesNotContain("now");
+    }
+
     // Helper methods.
 
     private Instruction getInstructionWithTurn(String turn) {
