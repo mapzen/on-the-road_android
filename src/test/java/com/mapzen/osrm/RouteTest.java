@@ -104,10 +104,10 @@ public class RouteTest {
     public void hasCorrectTurnByTurnHumanInstructionsInBrooklyn() throws Exception {
         ArrayList<String> points = new ArrayList<String>();
         points.add("Head on");
-        points.add("Make a right on to");
-        points.add("Make a right on to");
-        points.add("Make a right on to");
-        points.add("Make a right on to");
+        points.add("Right on");
+        points.add("Right on");
+        points.add("Right on");
+        points.add("Right on");
         points.add("You have arrived");
         Route brooklynRoute = getRoute("brooklyn");
 
