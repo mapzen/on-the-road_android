@@ -162,7 +162,7 @@ public class Instruction {
         }
         String pattern = "Continue on %s for %s";
         return String.format(Locale.US, pattern, getName(), DistanceFormatter.format(getDistance(),
-                true));
+                false));
     }
 
     public String getFullInstructionAfterAction(Location currentLocation) {
@@ -171,7 +171,7 @@ public class Instruction {
         }
         String pattern = "Continue on %s for %s";
         return String.format(Locale.US, pattern, getName(),
-                DistanceFormatter.format(getRemainingDistance(currentLocation), true));
+                DistanceFormatter.format(getRemainingDistance(currentLocation), false));
     }
 
     public String getSimpleInstruction() {
