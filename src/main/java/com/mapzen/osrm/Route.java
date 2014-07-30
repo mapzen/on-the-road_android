@@ -289,6 +289,11 @@ public class Route {
             }
         }
 
+        double bearingDelta =
+                turnPoint.getBearing() - turnPoint.getLocation().bearingTo(correctedLocation);
+        if (Math.abs(bearingDelta) > 10 && Math.abs(bearingDelta) < 350) {
+            correctedLocation = turnPoint.getLocation();
+        }
         return correctedLocation;
     }
 

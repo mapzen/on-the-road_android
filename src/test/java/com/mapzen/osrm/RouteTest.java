@@ -6,15 +6,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLog;
 
 import android.location.Location;
 
 import java.io.File;
-import java.nio.charset.Charset;
-import java.nio.file.FileSystem;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
@@ -177,10 +173,9 @@ public class RouteTest {
     @Test
     public void snapToRoute_shouldSnapToBeginning() throws Exception {
         Route myroute = getRoute("greenpoint_around_the_block");
-        System.out.println("first point" + myroute.getGeometry().get(0).toString());
-        Location snapToBeginning = getLocation(40.661060, -73.990004);
-        assertThat(myroute.snapToRoute(snapToBeginning))
-                .isEqualsToByComparingFields(myroute.getStartCoordinates());
+        Location snapped = myroute.snapToRoute(getLocation(40.660860, -73.989602));
+        assertThat(snapped.getLatitude()).isEqualTo(myroute.getStartCoordinates().getLatitude());
+        assertThat(snapped.getLongitude()).isEqualTo(myroute.getStartCoordinates().getLongitude());
     }
 
     @Test
@@ -255,6 +250,16 @@ public class RouteTest {
         Location snapped = myroute.snapToRoute(aroundSharpTurn);
         // TODO ... handle this case
         //assertThat(myroute.getCurrentLeg()).isEqualTo(2);
+    }
+
+    @Test
+    public void snapToRoute_shouldNotGoAgainstBearing() throws Exception {
+        Route myroute = getRoute("greenpoint_around_the_block");
+        Location correctedLocation = myroute.snapToRoute(getLocation(40.660835, -73.989436));
+        assertThat(correctedLocation.getLatitude())
+                .isEqualTo(myroute.getGeometry().get(0).getLatitude());
+        assertThat(correctedLocation.getLongitude())
+                .isEqualTo(myroute.getGeometry().get(0).getLongitude());
     }
 
     @Test
