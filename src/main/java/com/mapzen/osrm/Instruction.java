@@ -202,4 +202,12 @@ public class Instruction {
         String[] split = turn.split("-");
         return Integer.valueOf(split[0]);
     }
+
+    public String getSimpleInstructionAfterAction() {
+        if (getHumanTurnInstruction().equals(YOU_HAVE_ARRIVED)) {
+            return getFullInstructionBeforeAction();
+        }
+        String pattern = "Continue on %s";
+        return String.format(Locale.US, pattern, getName(), false);
+    }
 }

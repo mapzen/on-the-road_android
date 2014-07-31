@@ -394,6 +394,11 @@ public class InstructionTest {
     }
 
     @Test
+    public void testSimpleInstructionAfterAction() {
+        assertThat(instruction.getSimpleInstructionAfterAction()).isEqualTo("Continue on 19th Street");
+    }
+
+    @Test
     public void getFormattedDistance_shouldReturnListViewDistance() throws Exception {
         instruction.setDistance(1);
         assertThat(instruction.getFormattedDistance()).isEqualTo("3 ft");
