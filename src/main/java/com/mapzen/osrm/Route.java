@@ -74,44 +74,8 @@ public class Route {
     }
 
     public ArrayList<Instruction> getRouteInstructions() {
-        Node pre = null;
-        double distance = 0;
-        double totalDistance = 0;
-        Location markerPoint = new Location(SNAP_PROVIDER);
-
-        if (instructions.size() == poly.size()) {
-            return getSimpleRouteInstructions();
-        }
-
-        int marker = 1;
-        // set initial point to first instruction
-        instructions.get(0).setLocation(poly.get(0).getLocation());
-        for (int i = 0; i < poly.size(); i++) {
-            Node node = poly.get(i);
-            if (marker == instructions.size()) {
-                continue;
-            }
-
-            Instruction instruction = instructions.get(marker);
-            if (pre != null) {
-                distance = node.getTotalDistance() - pre.getTotalDistance();
-                totalDistance += distance;
-            }
-
-            // this needs the previous distance marker hence minus one
-            if (Math.floor(totalDistance) > instructions.get(marker - 1).getDistance()) {
-                instruction.setLocation(markerPoint);
-                marker++;
-                totalDistance = distance;
-            }
-            markerPoint = node.getLocation();
-            pre = node;
-
-            // setting the last one to the destination
-            if (poly.size() - 1 == i) {
-                Instruction lastInstruction = instructions.get(instructions.size() - 1);
-                lastInstruction.setLocation(markerPoint);
-            }
+        for (Instruction instruction: instructions) {
+            instruction.setLocation(poly.get(instruction.getPolygonIndex()).getLocation());
         }
         return instructions;
     }
