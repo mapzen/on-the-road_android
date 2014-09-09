@@ -321,6 +321,19 @@ public class RouteTest {
     }
 
     @Test
+    public void getRouteInstructions_shouldAttachCorrectLocation() throws Exception {
+        Route myroute = getRoute("ny_to_vermount");
+        ArrayList<Location> locations = myroute.getGeometry();
+        ArrayList<Instruction> instructions = myroute.getRouteInstructions();
+        for(Instruction instruction: instructions) {
+            assertThat(instruction.getLocation().getLatitude())
+                    .isEqualTo(locations.get(instruction.getPolygonIndex()).getLatitude());
+            assertThat(instruction.getLocation().getLongitude())
+                    .isEqualTo(locations.get(instruction.getPolygonIndex()).getLongitude());
+        }
+    }
+
+    @Test
     public void getRouteInstructions_shouldPopulateLastInstruction() throws Exception {
         Route myroute = getRoute("last_instruction_at_last_point");
         ArrayList<Instruction> instructions = myroute.getRouteInstructions();

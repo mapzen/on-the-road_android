@@ -94,6 +94,10 @@ public class Instruction {
         return json.getString(6);
     }
 
+    public int getPolygonIndex() {
+        return json.getInt(3);
+    }
+
     public float getDirectionAngle() {
         String direction = getDirection();
         float angle = 0;

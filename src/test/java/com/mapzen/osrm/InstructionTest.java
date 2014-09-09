@@ -44,7 +44,7 @@ public class InstructionTest {
             "\"10\",\n" +
             "\"19th Street\",\n" +
             "1609,\n" +
-            "0,\n" +
+            "8,\n" +
             "0,\n" +
             "\"1609m\",\n" +
             "\"SE\",\n" +
@@ -55,7 +55,7 @@ public class InstructionTest {
             "\"11-1\",\n" +
             "\"19th Street\",\n" +
             "1609,\n" +
-            "0,\n" +
+            "8,\n" +
             "0,\n" +
             "\"1609m\",\n" +
             "\"SE\",\n" +
@@ -220,6 +220,12 @@ public class InstructionTest {
     @Test
     public void hasCorrectDirection() throws Exception {
         assertThat(instruction.getDirection()).isEqualTo("SE");
+    }
+
+
+    @Test
+    public void hasPolygonIndex() throws Exception {
+        assertThat(instruction.getPolygonIndex()).isEqualTo(JSON.getInt(3));
     }
 
     @Test
