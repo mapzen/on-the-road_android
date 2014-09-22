@@ -43,7 +43,7 @@ public class Instruction {
     private Location location = new Location(SNAP_PROVIDER);
     private int liveDistanceTo = -1;
 
-    public int getLiveDistanceTo() {
+    public int getLiveDistanceToNext() {
         return liveDistanceTo;
     }
 

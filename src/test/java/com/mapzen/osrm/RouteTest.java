@@ -1,6 +1,7 @@
 package com.mapzen.osrm;
 
 import org.apache.commons.io.FileUtils;
+import org.fest.assertions.data.Offset;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,6 +17,7 @@ import java.util.ListIterator;
 
 import static com.mapzen.TestUtils.getLocation;
 import static java.lang.System.getProperty;
+import static java.lang.System.in;
 import static java.nio.charset.Charset.defaultCharset;
 import static org.fest.assertions.api.Assertions.assertThat;
 
@@ -232,7 +234,7 @@ public class RouteTest {
         Location foundIt = getLocation(40.661434, -73.989030);
         Location snapped = myroute.snapToRoute(foundIt);
         ArrayList<Location> geometry = myroute.getGeometry();
-        Location expected = geometry.get(geometry.size()-1);
+        Location expected = geometry.get(geometry.size() - 1);
         assertThat(snapped).isEqualsToByComparingFields(expected);
     }
 
@@ -300,16 +302,6 @@ public class RouteTest {
     }
 
     @Test
-    public void getClosestInstruction_shouldNotReturnSeenInstruction() throws Exception {
-        Route myroute = getRoute("greenpoint_around_the_block");
-        myroute.getRouteInstructions();
-        myroute.addSeenInstruction(myroute.getRouteInstructions().get(1));
-        Instruction instruction = myroute.getNextInstruction();
-        Instruction i = myroute.getRouteInstructions().get(1);
-        assertThat(instruction.getFullInstruction()).isNotEqualTo(i.getFullInstruction());
-    }
-
-    @Test
     public void getClosestInstruction_shouldNotReturnDestination() throws Exception {
         Route myroute = getRoute("to_the_armory");
         ArrayList<Instruction> instructions = myroute.getRouteInstructions();
@@ -357,6 +349,145 @@ public class RouteTest {
         ArrayList<Location> locations = getLocationsFromFile("locations");
         for(Location location: locations) {
             assertThat(myroute.snapToRoute(location)).isNotNull();
+        }
+    }
+
+    @Test
+    public void getDistanceToNextInstruction_shouldBeEqualAtBeginning() throws Exception {
+        Route myroute = getRoute("ace_hotel");
+        Instruction beginning = myroute.getRouteInstructions().get(0);
+        myroute.snapToRoute(beginning.getLocation());
+        assertThat((double) myroute.getDistanceToNextInstruction())
+                .isEqualTo(beginning.getDistance(), Offset.offset(1.0));
+    }
+
+    @Test
+    public void getDistanceToNextInstruction_shouldbe78() throws Exception {
+        Route myroute = getRoute("ace_hotel");
+        myroute.getRouteInstructions();
+        Location loc = getLocation(40.743814, -73.989035);
+        myroute.snapToRoute(loc);
+        assertThat((double) myroute.getDistanceToNextInstruction())
+                .isEqualTo(78, Offset.offset(1.0));
+    }
+
+    @Test
+    public void getRemainingDistanceToDestination_shouldBeFullDistance() throws Exception {
+        Route myroute = getRoute("ace_hotel");
+        ArrayList<Instruction> instructions = myroute.getRouteInstructions();
+        myroute.snapToRoute(instructions.get(0).getLocation());
+        assertThat((double) myroute.getRemainingDistanceToDestination())
+                .isEqualTo((double) myroute.getTotalDistance(), Offset.offset(1.0));
+    }
+
+    @Test
+    public void getRemainingDistanceToDestination_shouldBeZero() throws Exception {
+        Route myroute = getRoute("ace_hotel");
+        ArrayList<Instruction> instructions = myroute.getRouteInstructions();
+        for (Instruction instruction : instructions) {
+            myroute.snapToRoute(instruction.getLocation());
+        }
+        assertThat(myroute.getRemainingDistanceToDestination()).isEqualTo(0);
+    }
+
+    @Test
+    public void getRemainingDistanceToDestination_shouldBeSyncUpWithTravelledDistance()
+            throws Exception {
+        Route myroute = getRoute("ace_hotel");
+        ArrayList<Instruction> instructions = myroute.getRouteInstructions();
+        for (Instruction instruction : instructions) {
+            myroute.snapToRoute(instruction.getLocation());
+            double total =
+                    myroute.getRemainingDistanceToDestination() + myroute.getTotaldistanceTravelled();
+            assertThat(total).isEqualTo(myroute.getTotalDistance(), Offset.offset(1.0));
+        }
+    }
+
+    @Test
+    public void getRouteInstructions_shouldPopulateAllLiveDistances() throws Exception {
+        Route myroute = getRoute("ace_hotel");
+        ArrayList<Instruction> instructions = myroute.getRouteInstructions();
+        for (Instruction instruction : instructions) {
+            assertThat(instruction.getLiveDistanceToNext()).isNotNull();
+            if (instructions.indexOf(instruction) != instructions.size() - 1) {
+                assertThat(instruction.getLiveDistanceToNext()).isNotZero();
+            }
+        }
+    }
+
+    @Test
+    public void getRouteInstructions_shouldNotStompOnPopulatedFields() throws Exception {
+        Route myroute = getRoute("ace_hotel");
+        ArrayList<Instruction> instructions = myroute.getRouteInstructions();
+        instructions.get(0).setLiveDistanceTo(4);
+        ArrayList<Instruction> secondSetOfInstructions = myroute.getRouteInstructions();
+        assertThat(secondSetOfInstructions.get(0).getLiveDistanceToNext()).isEqualTo(4);
+    }
+
+    @Test
+    public void getRouteInstruction_shouldTallyUpDistances() throws Exception {
+        Route myroute = getRoute("ace_hotel");
+        ArrayList<Instruction> instructions = myroute.getRouteInstructions();
+        int accumulatedDistance = 0;
+        for (Instruction instruction : instructions) {
+            accumulatedDistance += instruction.getDistance();
+            assertThat(instruction.getLiveDistanceToNext()).isEqualTo(accumulatedDistance);
+        }
+    }
+
+    @Test
+    public void getCurrentInstruction_shouldReturnOneThatHasntyetbeencompleted() throws Exception {
+        Route myroute = getRoute("ace_hotel");
+        ArrayList<Instruction> instructions = myroute.getRouteInstructions();
+        Location cornerOf26thAndBroadway = getLocation(40.743814, -73.989035);
+        myroute.snapToRoute(cornerOf26thAndBroadway);
+        assertThat(myroute.getCurrentInstruction()).isEqualTo(instructions.get(0));
+        Location cornerOf26thAnd5thAve = getLocation(40.743434, -73.988123);
+        myroute.snapToRoute(cornerOf26thAnd5thAve);
+        assertThat(myroute.getCurrentInstruction()).isEqualTo(instructions.get(1));
+        Location cornerOf26thAndMadison = getLocation(40.742790, -73.986547);
+        myroute.snapToRoute(cornerOf26thAndMadison);
+        assertThat(myroute.getCurrentInstruction()).isEqualTo(instructions.get(2));
+    }
+
+    @Test
+    public void shouldCoverTotalDistance() throws Exception {
+        Route myroute = getRoute("ace_hotel");
+        ArrayList<Instruction> instructions = myroute.getRouteInstructions();
+        for (Instruction instruction : instructions) {
+            myroute.snapToRoute(instruction.getLocation());
+        }
+        assertThat(myroute.getTotaldistanceTravelled())
+                .isEqualTo(myroute.getTotalDistance(), Offset.offset(1.0));
+    }
+
+    @Test
+    public void shouldKnowDistanceTravelled() throws Exception {
+        Route myroute = getRoute("ace_hotel");
+        ArrayList<Instruction> instructions = myroute.getRouteInstructions();
+        int accumulated = 0;
+        for (Instruction instruction : instructions) {
+            myroute.snapToRoute(instruction.getLocation());
+            assertThat(myroute.getTotaldistanceTravelled()).isEqualTo(accumulated,
+                    Offset.offset(1.0));
+            accumulated += instruction.getDistance();
+        }
+    }
+
+    @Test
+    public void snapToRoute_shouldUpdateAllLiveDistances() throws Exception {
+        Route myroute = getRoute("ace_hotel");
+        ArrayList<Instruction> instructions = myroute.getRouteInstructions();
+        Location cornerOf26thAndBroadway = getLocation(40.743814, -73.989035);
+        int[] before = new int[instructions.size()];
+        for (Instruction instruction : instructions) {
+            before[instructions.indexOf(instruction)] = instruction.getLiveDistanceToNext();
+        }
+
+        myroute.snapToRoute(cornerOf26thAndBroadway);
+        for (Instruction instruction : instructions) {
+            int expected = before[instructions.indexOf(instruction)] - (int) myroute.getTotaldistanceTravelled();
+            assertThat(instruction.getLiveDistanceToNext()).isEqualTo(expected);
         }
     }
 
