@@ -41,6 +41,15 @@ public class Instruction {
     private JSONArray json;
     private int turn, distanceInMeters;
     private Location location = new Location(SNAP_PROVIDER);
+    private int liveDistanceToNext = -1;
+
+    public int getLiveDistanceToNext() {
+        return liveDistanceToNext;
+    }
+
+    public void setLiveDistanceToNext(int liveDistanceToNext) {
+        this.liveDistanceToNext = liveDistanceToNext;
+    }
 
     public Instruction(JSONArray json) {
         if (json.length() < 8) {
@@ -184,9 +193,9 @@ public class Instruction {
 
     @Override
     public String toString() {
-        return String.format(Locale.US, "Instruction: (%.5f, %.5f) %s %s",
+        return String.format(Locale.US, "Instruction: (%.5f, %.5f) %s %s LiveDistanceTo: %d",
                 location.getLatitude(), location.getLongitude(), getHumanTurnInstruction(),
-                getName());
+                getName(), liveDistanceToNext);
     }
 
     @Override

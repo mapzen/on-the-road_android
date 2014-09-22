@@ -28,6 +28,9 @@ public class Route {
     protected int currentLeg = 0;
     private Set<Instruction> seenInstructions = new HashSet<Instruction>();
     private boolean lost = false;
+    private Location lastFixedPoint;
+    private int currentInstructionIndex = 0;
+    private double totalDistanceTravelled;
 
     public JSONObject getRawRoute() {
         return jsonObject;
@@ -49,6 +52,10 @@ public class Route {
         }
     }
 
+    public double getTotalDistanceTravelled() {
+        return totalDistanceTravelled;
+    }
+
     public int getTotalDistance() {
         return getSummary().getInt("total_distance");
     }
@@ -65,6 +72,14 @@ public class Route {
         return getSummary().getInt("total_time");
     }
 
+    public int getDistanceToNextInstruction() {
+        return getCurrentInstruction().getLiveDistanceToNext();
+    }
+
+    public int getRemainingDistanceToDestination() {
+        return instructions.get(instructions.size() - 1).getLiveDistanceToNext();
+    }
+
     private void initializeTurnByTurn(JSONArray instructions) {
         this.instructions = new ArrayList<Instruction>();
         for (int i = 0; i < instructions.length(); i++) {
@@ -74,23 +89,14 @@ public class Route {
     }
 
     public ArrayList<Instruction> getRouteInstructions() {
+        int accumulatedDistance = 0;
         for (Instruction instruction: instructions) {
             instruction.setLocation(poly.get(instruction.getPolygonIndex()).getLocation());
+            if (instruction.getLiveDistanceToNext() < 0) {
+                accumulatedDistance += instruction.getDistance();
+                instruction.setLiveDistanceToNext(accumulatedDistance);
+            }
         }
-        return instructions;
-    }
-
-    /**
-     * Populates location values for a simple set of route instructions where the number of
-     * instructions equals the number of nodes in the polyline.
-     *
-     * @return simple instruction list with location values.
-     */
-    private ArrayList<Instruction> getSimpleRouteInstructions() {
-        for (Instruction instruction : instructions) {
-            instruction.setLocation(poly.get(instructions.indexOf(instruction)).getLocation());
-        }
-
         return instructions;
     }
 
@@ -200,38 +206,69 @@ public class Route {
         double distanceToDestination = destination.getLocation().distanceTo(originalPoint);
         Ln.d("Snapping => distance to destination: " + String.valueOf(distanceToDestination));
         if (Math.floor(distanceToDestination) < 20) {
+            updateDistanceTravelled(destination);
             return destination.getLocation();
         }
 
         Node current = poly.get(currentLeg);
-        Location fixedPoint = snapTo(current, originalPoint);
-        if (fixedPoint == null) {
-            fixedPoint = current.getLocation();
+        lastFixedPoint = snapTo(current, originalPoint);
+        if (lastFixedPoint == null) {
+            lastFixedPoint = current.getLocation();
         } else {
-            if (current.getLocation().distanceTo(fixedPoint) > current.getLegDistance() - 5) {
+            if (current.getLocation().distanceTo(lastFixedPoint) > current.getLegDistance() - 5) {
                 ++currentLeg;
+                updateCurrentInstructionIndex();
                 Ln.d("Snapping => incrementing and trying again");
                 Ln.d("Snapping => currentLeg: " + String.valueOf(currentLeg));
                 return snapToRoute(originalPoint);
             }
         }
 
-        double correctionDistance = originalPoint.distanceTo(fixedPoint);
+        double correctionDistance = originalPoint.distanceTo(lastFixedPoint);
         Ln.d("Snapping => correctionDistance: " + String.valueOf(correctionDistance));
         Ln.d("Snapping => Lost Threshold: " + String.valueOf(LOST_THRESHOLD));
         Ln.d("original point => " + originalPoint.getLatitude() + ", " + originalPoint.getLongitude());
-        Ln.d("fixed point => " + fixedPoint.getLatitude() + ", " + fixedPoint.getLongitude());
+        Ln.d("fixed point => " + lastFixedPoint.getLatitude() + ", " + lastFixedPoint.getLongitude());
         if (correctionDistance < LOST_THRESHOLD) {
-            return fixedPoint;
+            updateDistanceTravelled(current);
+            return lastFixedPoint;
         } else {
             lost = true;
             return null;
         }
     }
 
+    private void updateDistanceTravelled(Node current) {
+        totalDistanceTravelled = 0;
+        double tempDist = 0;
+        for (int i = 0; i < currentLeg; i++) {
+            tempDist += poly.get(i).getLegDistance();
+        }
+        if (lastFixedPoint != null) {
+            totalDistanceTravelled =
+                    Math.ceil(tempDist + current.getLocation().distanceTo(lastFixedPoint));
+        }
+        updateAllInstructions();
+    }
+
+    public void updateAllInstructions() {
+        // this constructs a distance table
+        // and calculates from it
+        // 3 instruction has the distance of
+        // first 3 combined
+        int combined = 0;
+        for(Instruction instruction: instructions) {
+            combined += instruction.getDistance();
+            int remaining = (combined) - (int) Math.ceil(
+                    totalDistanceTravelled);
+            instruction.setLiveDistanceToNext(remaining);
+        }
+    }
+
     private Location snapTo(Node turnPoint, Location location) {
         if (Double.compare(turnPoint.getLat(), location.getLatitude()) == 0
                 && Double.compare(turnPoint.getLng(), location.getLongitude()) == 0) {
+            updateDistanceTravelled(turnPoint);
             return location;
         }
 
@@ -333,12 +370,24 @@ public class Route {
     }
 
     public Instruction getNextInstruction() {
-        for (Instruction instruction : instructions) {
-            if (!seenInstructions.contains(instruction)) {
-                return instruction;
-            }
+        int nextInstructionIndex = currentInstructionIndex + 1;
+        if (nextInstructionIndex >= instructions.size()) {
+            return null;
+        } else {
+            return instructions.get(nextInstructionIndex);
         }
+    }
 
-        return null;
+    public Instruction getCurrentInstruction() {
+        return instructions.get(currentInstructionIndex);
+    }
+
+    private void updateCurrentInstructionIndex() {
+        Instruction next = getNextInstruction();
+        if (next == null) {
+            return;
+        } else if (currentLeg >= next.getPolygonIndex()) {
+            currentInstructionIndex++;
+        }
     }
 }

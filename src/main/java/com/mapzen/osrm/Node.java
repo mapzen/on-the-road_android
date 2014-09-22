@@ -50,4 +50,10 @@ public class Node {
         loc.setLongitude(lng);
         return loc;
     }
+
+    @Override
+    public String toString() {
+        return "[" + String.valueOf(getLat()) + "," + String.valueOf(getLng()) + "]"
+                + " getLegDistance: " + String.valueOf(getLegDistance());
+    }
 }
