@@ -80,20 +80,6 @@ public class Route {
         return instructions;
     }
 
-    /**
-     * Populates location values for a simple set of route instructions where the number of
-     * instructions equals the number of nodes in the polyline.
-     *
-     * @return simple instruction list with location values.
-     */
-    private ArrayList<Instruction> getSimpleRouteInstructions() {
-        for (Instruction instruction : instructions) {
-            instruction.setLocation(poly.get(instructions.indexOf(instruction)).getLocation());
-        }
-
-        return instructions;
-    }
-
     public ArrayList<Location> getGeometry() {
         ArrayList<Location> geometry = new ArrayList<Location>();
         for (Node node : poly) {
