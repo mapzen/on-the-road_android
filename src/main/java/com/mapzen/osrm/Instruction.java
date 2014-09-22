@@ -41,14 +41,14 @@ public class Instruction {
     private JSONArray json;
     private int turn, distanceInMeters;
     private Location location = new Location(SNAP_PROVIDER);
-    private int liveDistanceTo = -1;
+    private int liveDistanceToNext = -1;
 
     public int getLiveDistanceToNext() {
-        return liveDistanceTo;
+        return liveDistanceToNext;
     }
 
-    public void setLiveDistanceTo(int liveDistanceTo) {
-        this.liveDistanceTo = liveDistanceTo;
+    public void setLiveDistanceToNext(int liveDistanceToNext) {
+        this.liveDistanceToNext = liveDistanceToNext;
     }
 
     public Instruction(JSONArray json) {
@@ -195,7 +195,7 @@ public class Instruction {
     public String toString() {
         return String.format(Locale.US, "Instruction: (%.5f, %.5f) %s %s LiveDistanceTo: %d",
                 location.getLatitude(), location.getLongitude(), getHumanTurnInstruction(),
-                getName(), liveDistanceTo);
+                getName(), liveDistanceToNext);
     }
 
     @Override

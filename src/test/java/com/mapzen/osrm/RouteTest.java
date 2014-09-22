@@ -17,7 +17,6 @@ import java.util.ListIterator;
 
 import static com.mapzen.TestUtils.getLocation;
 import static java.lang.System.getProperty;
-import static java.lang.System.in;
 import static java.nio.charset.Charset.defaultCharset;
 import static org.fest.assertions.api.Assertions.assertThat;
 
@@ -398,7 +397,7 @@ public class RouteTest {
         for (Instruction instruction : instructions) {
             myroute.snapToRoute(instruction.getLocation());
             double total =
-                    myroute.getRemainingDistanceToDestination() + myroute.getTotaldistanceTravelled();
+                    myroute.getRemainingDistanceToDestination() + myroute.getTotalDistanceTravelled();
             assertThat(total).isEqualTo(myroute.getTotalDistance(), Offset.offset(1.0));
         }
     }
@@ -419,7 +418,7 @@ public class RouteTest {
     public void getRouteInstructions_shouldNotStompOnPopulatedFields() throws Exception {
         Route myroute = getRoute("ace_hotel");
         ArrayList<Instruction> instructions = myroute.getRouteInstructions();
-        instructions.get(0).setLiveDistanceTo(4);
+        instructions.get(0).setLiveDistanceToNext(4);
         ArrayList<Instruction> secondSetOfInstructions = myroute.getRouteInstructions();
         assertThat(secondSetOfInstructions.get(0).getLiveDistanceToNext()).isEqualTo(4);
     }
@@ -457,7 +456,7 @@ public class RouteTest {
         for (Instruction instruction : instructions) {
             myroute.snapToRoute(instruction.getLocation());
         }
-        assertThat(myroute.getTotaldistanceTravelled())
+        assertThat(myroute.getTotalDistanceTravelled())
                 .isEqualTo(myroute.getTotalDistance(), Offset.offset(1.0));
     }
 
@@ -468,7 +467,7 @@ public class RouteTest {
         int accumulated = 0;
         for (Instruction instruction : instructions) {
             myroute.snapToRoute(instruction.getLocation());
-            assertThat(myroute.getTotaldistanceTravelled()).isEqualTo(accumulated,
+            assertThat(myroute.getTotalDistanceTravelled()).isEqualTo(accumulated,
                     Offset.offset(1.0));
             accumulated += instruction.getDistance();
         }
@@ -486,7 +485,7 @@ public class RouteTest {
 
         myroute.snapToRoute(cornerOf26thAndBroadway);
         for (Instruction instruction : instructions) {
-            int expected = before[instructions.indexOf(instruction)] - (int) myroute.getTotaldistanceTravelled();
+            int expected = before[instructions.indexOf(instruction)] - (int) myroute.getTotalDistanceTravelled();
             assertThat(instruction.getLiveDistanceToNext()).isEqualTo(expected);
         }
     }

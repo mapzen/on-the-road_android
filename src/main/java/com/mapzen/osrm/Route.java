@@ -30,7 +30,7 @@ public class Route {
     private boolean lost = false;
     private Location lastFixedPoint;
     private int currentInstructionIndex = 0;
-    private double totaldistanceTravelled;
+    private double totalDistanceTravelled;
 
     public JSONObject getRawRoute() {
         return jsonObject;
@@ -52,8 +52,8 @@ public class Route {
         }
     }
 
-    public double getTotaldistanceTravelled() {
-        return totaldistanceTravelled;
+    public double getTotalDistanceTravelled() {
+        return totalDistanceTravelled;
     }
 
     public int getTotalDistance() {
@@ -94,7 +94,7 @@ public class Route {
             instruction.setLocation(poly.get(instruction.getPolygonIndex()).getLocation());
             if (instruction.getLiveDistanceToNext() < 0) {
                 accumulatedDistance += instruction.getDistance();
-                instruction.setLiveDistanceTo(accumulatedDistance);
+                instruction.setLiveDistanceToNext(accumulatedDistance);
             }
         }
         return instructions;
@@ -239,13 +239,13 @@ public class Route {
     }
 
     private void updateDistanceTravelled(Node current) {
-        totaldistanceTravelled = 0;
+        totalDistanceTravelled = 0;
         double tempDist = 0;
         for (int i = 0; i < currentLeg; i++) {
             tempDist += poly.get(i).getLegDistance();
         }
         if (lastFixedPoint != null) {
-            totaldistanceTravelled =
+            totalDistanceTravelled =
                     Math.ceil(tempDist + current.getLocation().distanceTo(lastFixedPoint));
         }
         updateAllInstructions();
@@ -260,8 +260,8 @@ public class Route {
         for(Instruction instruction: instructions) {
             combined += instruction.getDistance();
             int remaining = (combined) - (int) Math.ceil(
-                    totaldistanceTravelled);
-            instruction.setLiveDistanceTo(remaining);
+                    totalDistanceTravelled);
+            instruction.setLiveDistanceToNext(remaining);
         }
     }
 
