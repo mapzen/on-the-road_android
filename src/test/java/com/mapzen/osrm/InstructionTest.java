@@ -62,6 +62,17 @@ public class InstructionTest {
             "128\n" +
             "]\n");
 
+    private static final JSONArray STREET_NOT_FOUND = new JSONArray("[\n"
+            + "            \"11-3\",\n"
+            + "            \"{\\\"highway\\\":\\\"unclassified\\\", \\\"message\\\":\\\"name not found\\\"}\",\n"
+            + "            31,\n"
+            + "            5345,\n"
+            + "            5,\n"
+            + "            \"30m\",\n"
+            + "            \"N\",\n"
+            + "            8\n"
+            + "        ]");
+
     private Instruction instruction;
 
     @Before
@@ -201,6 +212,12 @@ public class InstructionTest {
     @Test
     public void hasCorrectName() throws Exception {
         assertThat(instruction.getName()).isEqualTo("19th Street");
+    }
+
+    @Test
+    public void getName_returnXwhenNotClassifed() throws Exception {
+        instruction = new Instruction(STREET_NOT_FOUND);
+        assertThat(instruction.getName()).isEqualTo("unclassified");
     }
 
     @Test
