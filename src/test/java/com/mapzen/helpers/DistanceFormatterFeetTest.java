@@ -1,12 +1,20 @@
 package com.mapzen.helpers;
 
+import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Locale;
 
 import static com.mapzen.helpers.DistanceFormatter.METERS_IN_ONE_MILE;
 import static com.mapzen.helpers.DistanceFormatter.format;
 import static org.fest.assertions.api.Assertions.assertThat;
 
-public class DistanceFormatterTest {
+public class DistanceFormatterFeetTest {
+
+    @Before
+    public void setup() throws Exception {
+        Locale.setDefault(Locale.US);
+    }
 
     @Test
     public void distanceTenMiles_shouldReturnTenMiles() throws Exception {

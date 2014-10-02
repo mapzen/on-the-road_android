@@ -67,6 +67,7 @@ public class InstructionTest {
     @Before
     public void setup() throws Exception {
         instruction = new Instruction(JSON);
+        Locale.setDefault(Locale.US);
     }
 
     @Test
