@@ -4,6 +4,7 @@ import com.mapzen.helpers.DistanceFormatter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.location.Location;
 
@@ -80,7 +81,13 @@ public class Instruction {
     }
 
     public String getName() {
-        return json.getString(1);
+        String raw = json.getString(1);
+        if (raw.startsWith("{") && raw.endsWith("}")) {
+            JSONObject nameObject = new JSONObject(raw);
+            return nameObject.getString("highway");
+        } else {
+            return raw;
+        }
     }
 
     public int getDistance() {
