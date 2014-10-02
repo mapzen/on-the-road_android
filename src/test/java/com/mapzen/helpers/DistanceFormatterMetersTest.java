@@ -1,11 +1,8 @@
 package com.mapzen.helpers;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.Locale;
 
 import static com.mapzen.helpers.DistanceFormatter.format;
