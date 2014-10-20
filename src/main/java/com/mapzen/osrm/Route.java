@@ -81,10 +81,19 @@ public class Route {
     }
 
     private void initializeTurnByTurn(JSONArray instructions) {
+        int gapDistance = 0;
         this.instructions = new ArrayList<Instruction>();
         for (int i = 0; i < instructions.length(); i++) {
             Instruction instruction = new Instruction(instructions.getJSONArray(i));
-            this.instructions.add(instruction);
+            if (!instruction.skip()) {
+                int distance = instruction.getDistance();
+                distance += gapDistance;
+                instruction.setDistance(distance);
+                gapDistance = 0;
+                this.instructions.add(instruction);
+            } else {
+                gapDistance += instruction.getDistance();
+            }
         }
     }
 

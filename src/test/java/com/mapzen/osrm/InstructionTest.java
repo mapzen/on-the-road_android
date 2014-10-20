@@ -500,6 +500,18 @@ public class InstructionTest {
         assertThat(string).doesNotContain("now");
     }
 
+    @Test
+    public void skip_shouldBeTrue() throws Exception {
+        Instruction skipInstruction = new Instruction(STREET_NOT_FOUND);
+        assertThat(skipInstruction.skip()).isTrue();
+    }
+
+    @Test
+    public void skip_shouldBeFalse() throws Exception {
+        Instruction skipInstruction = new Instruction(JSON);
+        assertThat(skipInstruction.skip()).isFalse();
+    }
+
     // Helper methods.
 
     private Instruction getInstructionWithTurn(String turn) {
