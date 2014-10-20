@@ -80,6 +80,11 @@ public class Instruction {
         return decodedInstructions[turn];
     }
 
+    public boolean skip() {
+        String raw = json.getString(1);
+        return raw.startsWith("{") && raw.endsWith("}");
+    }
+
     public String getName() {
         String raw = json.getString(1);
         if (raw.startsWith("{") && raw.endsWith("}")) {
