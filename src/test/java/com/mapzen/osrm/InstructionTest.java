@@ -1,17 +1,16 @@
 package com.mapzen.osrm;
 
 import com.mapzen.helpers.DistanceFormatter;
+import com.mapzen.ontheroad.R;
 
 import org.json.JSONArray;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import android.location.Location;
 
-import java.util.ArrayList;
 import java.util.Locale;
 
 import static com.mapzen.TestUtils.getLocation;
@@ -19,6 +18,7 @@ import static com.mapzen.osrm.Instruction.ENTER_AGAINST_ALLOWED_DIRECTION;
 import static com.mapzen.osrm.Instruction.ENTER_ROUND_ABOUT;
 import static com.mapzen.osrm.Instruction.GO_STRAIGHT;
 import static com.mapzen.osrm.Instruction.HEAD_ON;
+import static com.mapzen.osrm.Instruction.INSTRUCTION_COUNT;
 import static com.mapzen.osrm.Instruction.LEAVE_AGAINST_ALLOWED_DIRECTION;
 import static com.mapzen.osrm.Instruction.LEAVE_ROUND_ABOUT;
 import static com.mapzen.osrm.Instruction.NO_TURN;
@@ -33,11 +33,10 @@ import static com.mapzen.osrm.Instruction.TURN_SHARP_RIGHT;
 import static com.mapzen.osrm.Instruction.TURN_SLIGHT_LEFT;
 import static com.mapzen.osrm.Instruction.TURN_SLIGHT_RIGHT;
 import static com.mapzen.osrm.Instruction.U_TURN;
-import static com.mapzen.osrm.Instruction.decodedInstructions;
 import static com.mapzen.osrm.Route.SNAP_PROVIDER;
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.robolectric.Robolectric.application;
 
-@Config(manifest=Config.NONE)
 @RunWith(RobolectricTestRunner.class)
 public class InstructionTest {
     private static final JSONArray JSON = new JSONArray("[\n" +
@@ -98,110 +97,110 @@ public class InstructionTest {
 
     @Test
     public void turnInstructionHasNoTurn() {
-        instruction.setTurnInstruction(0);
-        assertThat(instruction.getHumanTurnInstruction()).isEqualTo(NO_TURN);
+        assertThat(getInstructionWithTurn(NO_TURN).getHumanTurnInstruction(application))
+                .isEqualTo(application.getString(R.string.no_turn));
     }
 
     @Test
     public void turnInstructionHasGoStraight() {
-        instruction.setTurnInstruction(1);
-        assertThat(instruction.getHumanTurnInstruction()).isEqualTo(GO_STRAIGHT);
+        assertThat(getInstructionWithTurn(GO_STRAIGHT).getHumanTurnInstruction(application))
+                .isEqualTo(application.getString(R.string.go_straight));
     }
 
     @Test
     public void turnInstructionHasTurnSlightRight() {
-        instruction.setTurnInstruction(2);
-        assertThat(instruction.getHumanTurnInstruction()).isEqualTo(TURN_SLIGHT_RIGHT);
+        assertThat(getInstructionWithTurn(TURN_SLIGHT_RIGHT).getHumanTurnInstruction(application))
+                .isEqualTo(application.getString(R.string.turn_slight_right));
     }
 
     @Test
     public void turnInstructionHasTurnRight() {
-        instruction.setTurnInstruction(3);
-        assertThat(instruction.getHumanTurnInstruction()).isEqualTo(TURN_RIGHT);
+        assertThat(getInstructionWithTurn(TURN_RIGHT).getHumanTurnInstruction(application))
+                .isEqualTo(application.getString(R.string.turn_right));
     }
 
     @Test
     public void turnInstructionHasTurnSharpRight() {
-        instruction.setTurnInstruction(4);
-        assertThat(instruction.getHumanTurnInstruction()).isEqualTo(TURN_SHARP_RIGHT);
+        assertThat(getInstructionWithTurn(TURN_SHARP_RIGHT).getHumanTurnInstruction(application))
+                .isEqualTo(application.getString(R.string.turn_sharp_right));
     }
 
     @Test
     public void turnInstructionHasUTurn() {
-        instruction.setTurnInstruction(5);
-        assertThat(instruction.getHumanTurnInstruction()).isEqualTo(U_TURN);
+        assertThat(getInstructionWithTurn(U_TURN).getHumanTurnInstruction(application))
+                .isEqualTo(application.getString(R.string.u_turn));
     }
 
     @Test
     public void turnInstructionHasTurnSharpLeft() {
-        instruction.setTurnInstruction(6);
-        assertThat(instruction.getHumanTurnInstruction()).isEqualTo(TURN_SHARP_LEFT);
+        assertThat(getInstructionWithTurn(TURN_SHARP_LEFT).getHumanTurnInstruction(application))
+                .isEqualTo(application.getString(R.string.turn_sharp_left));
     }
 
     @Test
     public void turnInstructionHasTurnLeft() {
-        instruction.setTurnInstruction(7);
-        assertThat(instruction.getHumanTurnInstruction()).isEqualTo(TURN_LEFT);
+        assertThat(getInstructionWithTurn(TURN_LEFT).getHumanTurnInstruction(application))
+                .isEqualTo(application.getString(R.string.turn_left));
     }
 
     @Test
     public void turnInstructionHasTurnSlightLeft() {
-        instruction.setTurnInstruction(8);
-        assertThat(instruction.getHumanTurnInstruction()).isEqualTo(TURN_SLIGHT_LEFT);
+        assertThat(getInstructionWithTurn(TURN_SLIGHT_LEFT).getHumanTurnInstruction(application))
+                .isEqualTo(application.getString(R.string.turn_slight_left));
     }
 
     @Test
     public void turnInstructionHasReachViaPoint() {
-        instruction.setTurnInstruction(9);
-        assertThat(instruction.getHumanTurnInstruction()).isEqualTo(REACH_VIA_POINT);
+        assertThat(getInstructionWithTurn(REACH_VIA_POINT).getHumanTurnInstruction(application))
+                .isEqualTo(application.getString(R.string.reach_via_point));
     }
 
     @Test
     public void turnInstructionHasHeadOn() {
-        instruction.setTurnInstruction(10);
-        assertThat(instruction.getHumanTurnInstruction()).isEqualTo(HEAD_ON);
+        assertThat(getInstructionWithTurn(HEAD_ON).getHumanTurnInstruction(application))
+                .isEqualTo(application.getString(R.string.head_on));
     }
 
     @Test
     public void turnInstructionHasEnterRoundAbout() {
-        instruction.setTurnInstruction(11);
-        assertThat(instruction.getHumanTurnInstruction()).isEqualTo(ENTER_ROUND_ABOUT);
+        assertThat(getInstructionWithTurn(ENTER_ROUND_ABOUT).getHumanTurnInstruction(application))
+                .isEqualTo(application.getString(R.string.enter_round_about));
     }
 
     @Test
     public void turnInstructionHasLeaveRoundAbout() {
-        instruction.setTurnInstruction(12);
-        assertThat(instruction.getHumanTurnInstruction()).isEqualTo(LEAVE_ROUND_ABOUT);
+        assertThat(getInstructionWithTurn(LEAVE_ROUND_ABOUT).getHumanTurnInstruction(application))
+                .isEqualTo(application.getString(R.string.leave_round_about));
     }
 
     @Test
     public void turnInstructionHasStayOnRoundAbout() {
-        instruction.setTurnInstruction(13);
-        assertThat(instruction.getHumanTurnInstruction()).isEqualTo(STAY_ON_ROUND_ABOUT);
+        assertThat(getInstructionWithTurn(STAY_ON_ROUND_ABOUT).getHumanTurnInstruction(application))
+                .isEqualTo(application.getString(R.string.stay_on_round_about));
     }
 
     @Test
     public void turnInstructionHasStartAtEndOfStreet() {
-        instruction.setTurnInstruction(14);
-        assertThat(instruction.getHumanTurnInstruction()).isEqualTo(START_AT_END_OF_STREET);
+        assertThat(getInstructionWithTurn(START_AT_END_OF_STREET).getHumanTurnInstruction(application))
+                .isEqualTo(application.getString(R.string.start_at_end_of_street));
     }
 
     @Test
     public void turnInstructionHasReachedYourDestination() {
-        instruction.setTurnInstruction(15);
-        assertThat(instruction.getHumanTurnInstruction()).isEqualTo(YOU_HAVE_ARRIVED);
+        assertThat(getInstructionWithTurn(YOU_HAVE_ARRIVED).getHumanTurnInstruction(application))
+                .isEqualTo(application.getString(R.string.you_have_arrived));
     }
 
     @Test
     public void turnInstructionHasEnterAgainstAllowedDirection() {
-        instruction.setTurnInstruction(16);
-        assertThat(instruction.getHumanTurnInstruction()).isEqualTo(ENTER_AGAINST_ALLOWED_DIRECTION);
+        assertThat(getInstructionWithTurn(ENTER_AGAINST_ALLOWED_DIRECTION).getHumanTurnInstruction(application))
+                .isEqualTo(application.getString(R.string.enter_against_allowed_direction));
     }
 
     @Test
     public void turnInstructionHasLeaveAgainstAllowedDirection() {
-        instruction.setTurnInstruction(17);
-        assertThat(instruction.getHumanTurnInstruction()).isEqualTo(LEAVE_AGAINST_ALLOWED_DIRECTION);
+        assertThat(getInstructionWithTurn(LEAVE_AGAINST_ALLOWED_DIRECTION).getHumanTurnInstruction(application))
+                .isEqualTo(application.getString(R.string.leave_against_allowed_direction));
     }
 
     @Test
@@ -336,7 +335,7 @@ public class InstructionTest {
     @Test
     public void testHeadOnFullInstructionBeforeAction() throws Exception {
         Instruction currentInstruction = getInstructionWithTurn(HEAD_ON);
-        String actual = currentInstruction.getFullInstructionBeforeAction();
+        String actual = currentInstruction.getFullInstructionBeforeAction(application);
         assertThat(actual).isEqualTo(getExpectedFullInstructionBeforeActionFor(currentInstruction,
                 "%s %s for %s"));
     }
@@ -344,7 +343,7 @@ public class InstructionTest {
     @Test
     public void testHeadOnFullInstructionAfterAction() throws Exception {
         Instruction currentInstruction = getInstructionWithTurn(HEAD_ON);
-        String actual = currentInstruction.getFullInstructionAfterAction();
+        String actual = currentInstruction.getFullInstructionAfterAction(application);
         String expected  = "Continue on " + instruction.getName() + " for " + DistanceFormatter.format(currentInstruction.getDistance(), true);
         assertThat(actual).isEqualTo(expected);
     }
@@ -352,7 +351,7 @@ public class InstructionTest {
     @Test
     public void testGoStraightFullInstructionBeforeAction() throws Exception {
         Instruction currentInstruction = getInstructionWithTurn(GO_STRAIGHT);
-        String actual = currentInstruction.getFullInstructionBeforeAction();
+        String actual = currentInstruction.getFullInstructionBeforeAction(application);
         assertThat(actual).isEqualTo(getExpectedFullInstructionBeforeActionFor(currentInstruction,
                 "%s %s for %s"));
     }
@@ -360,7 +359,7 @@ public class InstructionTest {
     @Test
     public void testGoStraightFullInstructionAfterAction() throws Exception {
         Instruction currentInstruction = getInstructionWithTurn(GO_STRAIGHT);
-        String actual = currentInstruction.getFullInstructionAfterAction();
+        String actual = currentInstruction.getFullInstructionAfterAction(application);
         String expected  = "Continue on " + instruction.getName() + " for " + DistanceFormatter.format(currentInstruction.getDistance(), true);
         assertThat(actual).isEqualTo(expected);
     }
@@ -368,7 +367,7 @@ public class InstructionTest {
     @Test
     public void testReachedYourDestinationFullInstructionBeforeAction() throws Exception {
         Instruction currentInstruction = getInstructionWithTurn(YOU_HAVE_ARRIVED);
-        String actual = currentInstruction.getFullInstructionBeforeAction();
+        String actual = currentInstruction.getFullInstructionBeforeAction(application);
         assertThat(actual).isEqualTo(getExpectedFullInstructionBeforeActionFor(currentInstruction,
                 "%s %s"));
     }
@@ -376,7 +375,7 @@ public class InstructionTest {
     @Test
     public void testReachedYourDestinationFullInstructionAfterAction() throws Exception {
         Instruction currentInstruction = getInstructionWithTurn(YOU_HAVE_ARRIVED);
-        String actual = currentInstruction.getFullInstructionAfterAction();
+        String actual = currentInstruction.getFullInstructionAfterAction(application);
         assertThat(actual).isEqualTo(getExpectedFullInstructionBeforeActionFor(currentInstruction,
                 "%s %s"));
     }
@@ -385,12 +384,10 @@ public class InstructionTest {
     public void testOtherFullInstructionBeforeAction() throws Exception {
         Instruction currentInstruction;
         String actual;
-        for(int i = 0; i < decodedInstructions.length; i++) {
-           if (!decodedInstructions[i].equals(YOU_HAVE_ARRIVED) &&
-                   !decodedInstructions[i].equals(GO_STRAIGHT) &&
-                       !decodedInstructions[i].equals(HEAD_ON)) {
-               currentInstruction = getInstructionWithTurn(decodedInstructions[i]);
-               actual = currentInstruction.getFullInstructionBeforeAction();
+        for(int i = 0; i < INSTRUCTION_COUNT; i++) {
+           if (i != YOU_HAVE_ARRIVED && i != GO_STRAIGHT && i != HEAD_ON) {
+               currentInstruction = getInstructionWithTurn(i);
+               actual = currentInstruction.getFullInstructionBeforeAction(application);
                assertThat(actual).isEqualTo(getExpectedFullInstructionBeforeActionFor(currentInstruction,
                        "%s %s and continue on for %s"));
            }
@@ -401,12 +398,10 @@ public class InstructionTest {
     public void testOtherFullInstructionAfterAction() throws Exception {
         Instruction currentInstruction;
         String actual;
-        for(int i = 0; i < decodedInstructions.length; i++) {
-            if (!decodedInstructions[i].equals(YOU_HAVE_ARRIVED) &&
-                    !decodedInstructions[i].equals(GO_STRAIGHT) &&
-                    !decodedInstructions[i].equals(HEAD_ON)) {
-                currentInstruction = getInstructionWithTurn(decodedInstructions[i]);
-                actual = currentInstruction.getFullInstructionAfterAction();
+        for(int i = 0; i < INSTRUCTION_COUNT; i++) {
+            if (i != YOU_HAVE_ARRIVED && i != GO_STRAIGHT && i != HEAD_ON) {
+                currentInstruction = getInstructionWithTurn(i);
+                actual = currentInstruction.getFullInstructionAfterAction(application);
                 assertThat(actual).isEqualTo("Continue on " + currentInstruction.getName() + " for " + DistanceFormatter.format(currentInstruction.getDistance(), true));
             }
         }
@@ -414,12 +409,13 @@ public class InstructionTest {
 
     @Test
     public void testSimpleInstruction() throws Exception {
-        assertThat(instruction.getSimpleInstruction()).isEqualTo("Head on 19th Street");
+        assertThat(instruction.getSimpleInstruction(application)).isEqualTo("Head on 19th Street");
     }
 
     @Test
     public void testSimpleInstructionAfterAction() {
-        assertThat(instruction.getSimpleInstructionAfterAction()).isEqualTo("Continue on 19th Street");
+        assertThat(instruction.getSimpleInstructionAfterAction(application))
+                .isEqualTo("Continue on 19th Street");
     }
 
     @Test
@@ -431,14 +427,13 @@ public class InstructionTest {
     @Test
     public void getFullInstructionBeforeAction_shouldReturnNavigationDistance() throws Exception {
         instruction.setDistance(1);
-        assertThat(instruction.getFullInstructionBeforeAction()).contains("now");
+        assertThat(instruction.getFullInstructionBeforeAction(application)).contains("now");
     }
 
     @Test
     public void shouldHandleNonIntegerTurnInstruction() throws Exception {
         instruction = new Instruction(NON_INT_TURN_JSON);
-        assertThat(instruction.getHumanTurnInstruction())
-                .isEqualTo(ENTER_ROUND_ABOUT);
+        assertThat(instruction.getTurnInstruction()).isEqualTo(ENTER_ROUND_ABOUT);
     }
 
     @Test
@@ -463,7 +458,7 @@ public class InstructionTest {
         Location location = getLocation(0, 0);
         instruction.setLocation(location);
         instruction.setDistance(1);
-        String string = instruction.getFullInstructionAfterAction();
+        String string = instruction.getFullInstructionAfterAction(application);
         assertThat(string).doesNotContain("now");
     }
 
@@ -481,19 +476,15 @@ public class InstructionTest {
 
     // Helper methods.
 
-    private Instruction getInstructionWithTurn(String turn) {
-        ArrayList<String> withIndex = new ArrayList<String>(decodedInstructions.length);
-        for(int i = 0; i < decodedInstructions.length; i++) {
-            withIndex.add(decodedInstructions[i]);
-        }
-        instruction.setTurnInstruction(withIndex.indexOf(turn));
+    private Instruction getInstructionWithTurn(int turn) {
+        instruction.setTurnInstruction(turn);
         return instruction;
     }
 
     private String getExpectedFullInstructionBeforeActionFor(Instruction currentInstruction,
             String pattern) {
         return String.format(Locale.ENGLISH, pattern,
-                currentInstruction.getHumanTurnInstruction(),
+                currentInstruction.getHumanTurnInstruction(application),
                 currentInstruction.getName(),
                 DistanceFormatter.format(currentInstruction.getDistance(), true));
     }

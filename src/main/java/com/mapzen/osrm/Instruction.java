@@ -1,11 +1,13 @@
 package com.mapzen.osrm;
 
 import com.mapzen.helpers.DistanceFormatter;
+import com.mapzen.ontheroad.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Context;
 import android.location.Location;
 
 import java.util.Locale;
@@ -13,32 +15,26 @@ import java.util.Locale;
 import static com.mapzen.osrm.Route.SNAP_PROVIDER;
 
 public class Instruction {
-    public static final String NO_TURN = "No turn"; // 0; (Give no instruction at all)
-    public static final String GO_STRAIGHT = "Continue on"; //1; (Tell user to go straight!)
-    public static final String TURN_SLIGHT_RIGHT = "Slight right on"; //2;
-    public static final String TURN_RIGHT = "Right on"; // 3;
-    public static final String TURN_SHARP_RIGHT = "Sharp right on"; // 4;
-    public static final String U_TURN = "U Turn"; // 5;
-    public static final String TURN_SHARP_LEFT = "Sharp left on"; // 6;
-    public static final String TURN_LEFT = "Left on"; // 7;
-    public static final String TURN_SLIGHT_LEFT = "Slight left on"; // 8;
-    public static final String REACH_VIA_POINT = "Reach via point"; // 9;
-    public static final String HEAD_ON = "Head on"; // 10;
-    public static final String ENTER_ROUND_ABOUT = "Enter round about"; // 11;
-    public static final String LEAVE_ROUND_ABOUT = "Leave round about"; // 12;
-    public static final String STAY_ON_ROUND_ABOUT = "Stay on round about"; // 13;
-    public static final String START_AT_END_OF_STREET = "Start at end of street"; // 14;
-    public static final String YOU_HAVE_ARRIVED = "You have arrived"; // 15;
-    public static final String ENTER_AGAINST_ALLOWED_DIRECTION =
-            "Enter"; //16;
-    public static final String LEAVE_AGAINST_ALLOWED_DIRECTION =
-            "Leave"; //17;
-    public static String[] decodedInstructions = {
-            NO_TURN, GO_STRAIGHT, TURN_SLIGHT_RIGHT, TURN_RIGHT, TURN_SHARP_RIGHT, U_TURN,
-            TURN_SHARP_LEFT, TURN_LEFT, TURN_SLIGHT_LEFT, REACH_VIA_POINT, HEAD_ON,
-            ENTER_ROUND_ABOUT, LEAVE_ROUND_ABOUT, STAY_ON_ROUND_ABOUT, START_AT_END_OF_STREET,
-            YOU_HAVE_ARRIVED, ENTER_AGAINST_ALLOWED_DIRECTION, LEAVE_AGAINST_ALLOWED_DIRECTION
-    };
+    public static final int NO_TURN = 0;
+    public static final int GO_STRAIGHT = 1;
+    public static final int TURN_SLIGHT_RIGHT = 2;
+    public static final int TURN_RIGHT = 3;
+    public static final int TURN_SHARP_RIGHT = 4;
+    public static final int U_TURN = 5;
+    public static final int TURN_SHARP_LEFT = 6;
+    public static final int TURN_LEFT = 7;
+    public static final int TURN_SLIGHT_LEFT = 8;
+    public static final int REACH_VIA_POINT = 9;
+    public static final int HEAD_ON = 10;
+    public static final int ENTER_ROUND_ABOUT = 11;
+    public static final int LEAVE_ROUND_ABOUT = 12;
+    public static final int STAY_ON_ROUND_ABOUT = 13;
+    public static final int START_AT_END_OF_STREET = 14;
+    public static final int YOU_HAVE_ARRIVED = 15;
+    public static final int ENTER_AGAINST_ALLOWED_DIRECTION = 16;
+    public static final int LEAVE_AGAINST_ALLOWED_DIRECTION = 17;
+    public static final int INSTRUCTION_COUNT = 18;
+
     private JSONArray json;
     private int turn, distanceInMeters;
     private Location location = new Location(SNAP_PROVIDER);
@@ -76,8 +72,47 @@ public class Instruction {
         this.turn = turn;
     }
 
-    public String getHumanTurnInstruction() {
-        return decodedInstructions[turn];
+    public String getHumanTurnInstruction(Context context) {
+        switch (turn) {
+            case NO_TURN:
+                return context.getString(R.string.no_turn);
+            case GO_STRAIGHT:
+                return context.getString(R.string.go_straight);
+            case TURN_SLIGHT_RIGHT:
+                return context.getString(R.string.turn_slight_right);
+            case TURN_RIGHT:
+                return context.getString(R.string.turn_right);
+            case TURN_SHARP_RIGHT:
+                return context.getString(R.string.turn_sharp_right);
+            case U_TURN:
+                return context.getString(R.string.u_turn);
+            case TURN_SHARP_LEFT:
+                return context.getString(R.string.turn_sharp_left);
+            case TURN_LEFT:
+                return context.getString(R.string.turn_left);
+            case TURN_SLIGHT_LEFT:
+                return context.getString(R.string.turn_slight_left);
+            case REACH_VIA_POINT:
+                return context.getString(R.string.reach_via_point);
+            case HEAD_ON:
+                return context.getString(R.string.head_on);
+            case ENTER_ROUND_ABOUT:
+                return context.getString(R.string.enter_round_about);
+            case LEAVE_ROUND_ABOUT:
+                return context.getString(R.string.leave_round_about);
+            case STAY_ON_ROUND_ABOUT:
+                return context.getString(R.string.stay_on_round_about);
+            case START_AT_END_OF_STREET:
+                return context.getString(R.string.start_at_end_of_street);
+            case YOU_HAVE_ARRIVED:
+                return context.getString(R.string.you_have_arrived);
+            case ENTER_AGAINST_ALLOWED_DIRECTION:
+                return context.getString(R.string.enter_against_allowed_direction);
+            case LEAVE_AGAINST_ALLOWED_DIRECTION:
+                return context.getString(R.string.leave_against_allowed_direction);
+            default:
+                return context.getString(R.string.no_turn);
+        }
     }
 
     public boolean skip() {
@@ -155,45 +190,46 @@ public class Instruction {
     private String getFullInstructionBeforePattern() {
         String controllingGluePhrase = "and continue on for";
         String pattern = "%s %s " + controllingGluePhrase + " %s";
-        if (getHumanTurnInstruction().equals(HEAD_ON) ||
-                getHumanTurnInstruction().equals(GO_STRAIGHT)) {
+        if (turn == HEAD_ON || turn == GO_STRAIGHT) {
             controllingGluePhrase = "for";
             pattern = "%s %s " + controllingGluePhrase + " %s";
-        } else if (getHumanTurnInstruction().equals(YOU_HAVE_ARRIVED)) {
+        } else if (turn ==YOU_HAVE_ARRIVED) {
             pattern = "%s %s";
         }
+
         return pattern;
     }
 
-    public String getFullInstruction() {
-        return getFullInstructionBeforeAction();
+    public String getFullInstruction(Context context) {
+        return getFullInstructionBeforeAction(context);
     }
 
-    public String getFullInstructionBeforeAction() {
+    public String getFullInstructionBeforeAction(Context context) {
         return String.format(Locale.US,
                 getFullInstructionBeforePattern(),
-                getHumanTurnInstruction(),
+                getHumanTurnInstruction(context),
                 getName(),
                 DistanceFormatter.format(distanceInMeters, true));
     }
 
-    public String getFullInstructionAfterAction() {
-        if (getHumanTurnInstruction().equals(YOU_HAVE_ARRIVED)) {
-            return getFullInstructionBeforeAction();
+    public String getFullInstructionAfterAction(Context context) {
+        if (turn == YOU_HAVE_ARRIVED) {
+            return getFullInstructionBeforeAction(context);
         }
+
         String pattern = "Continue on %s for %s";
         return String.format(Locale.US, pattern, getName(), DistanceFormatter.format(getDistance(),
                 false));
     }
 
-    public String getSimpleInstruction() {
-        return String.format(Locale.US, "%s %s", getHumanTurnInstruction(), getName());
+    public String getSimpleInstruction(Context context) {
+        return String.format(Locale.US, "%s %s", getHumanTurnInstruction(context), getName());
     }
 
     @Override
     public String toString() {
         return String.format(Locale.US, "Instruction: (%.5f, %.5f) %s %s LiveDistanceTo: %d",
-                location.getLatitude(), location.getLongitude(), getHumanTurnInstruction(),
+                location.getLatitude(), location.getLongitude(), turn,
                 getName(), liveDistanceToNext);
     }
 
@@ -215,9 +251,9 @@ public class Instruction {
         return Integer.valueOf(split[0]);
     }
 
-    public String getSimpleInstructionAfterAction() {
-        if (getHumanTurnInstruction().equals(YOU_HAVE_ARRIVED)) {
-            return getFullInstructionBeforeAction();
+    public String getSimpleInstructionAfterAction(Context context) {
+        if (turn == YOU_HAVE_ARRIVED) {
+            return getFullInstructionBeforeAction(context);
         }
         String pattern = "Continue on %s";
         return String.format(Locale.US, pattern, getName(), false);

@@ -16,7 +16,6 @@ import java.util.Map;
 import static com.mapzen.TestUtils.getLocation;
 import static org.fest.assertions.api.Assertions.assertThat;
 
-@Config(manifest=Config.NONE)
 @RunWith(RobolectricTestRunner.class)
 public class GeometryHelperTest {
     @Test
