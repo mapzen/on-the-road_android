@@ -187,43 +187,38 @@ public class Instruction {
         this.location = location;
     }
 
-    private String getFullInstructionBeforePattern() {
-        String controllingGluePhrase = "and continue on for";
-        String pattern = "%s %s " + controllingGluePhrase + " %s";
-        if (turn == HEAD_ON || turn == GO_STRAIGHT) {
-            controllingGluePhrase = "for";
-            pattern = "%s %s " + controllingGluePhrase + " %s";
-        } else if (turn ==YOU_HAVE_ARRIVED) {
-            pattern = "%s %s";
-        }
-
-        return pattern;
-    }
-
     public String getFullInstruction(Context context) {
         return getFullInstructionBeforeAction(context);
     }
 
     public String getFullInstructionBeforeAction(Context context) {
-        return String.format(Locale.US,
-                getFullInstructionBeforePattern(),
-                getHumanTurnInstruction(context),
-                getName(),
-                DistanceFormatter.format(distanceInMeters, true));
+        if (turn == HEAD_ON || turn == GO_STRAIGHT) {
+            return context.getString(R.string.full_instruction_before_straight,
+                    getHumanTurnInstruction(context), getName(),
+                    DistanceFormatter.format(distanceInMeters, true));
+        } else if (turn ==YOU_HAVE_ARRIVED) {
+            return context.getString(R.string.full_instruction_destination,
+                    getHumanTurnInstruction(context), getName());
+        } else {
+            return context.getString(R.string.full_instruction_before_default,
+                    getHumanTurnInstruction(context), getName(),
+                    DistanceFormatter.format(distanceInMeters, true));
+        }
     }
 
     public String getFullInstructionAfterAction(Context context) {
         if (turn == YOU_HAVE_ARRIVED) {
-            return getFullInstructionBeforeAction(context);
+            return context.getString(R.string.full_instruction_destination,
+                    getHumanTurnInstruction(context), getName());
         }
 
-        String pattern = "Continue on %s for %s";
-        return String.format(Locale.US, pattern, getName(), DistanceFormatter.format(getDistance(),
-                false));
+        return context.getString(R.string.full_instruction_after, getName(),
+                DistanceFormatter.format(distanceInMeters, false));
     }
 
     public String getSimpleInstruction(Context context) {
-        return String.format(Locale.US, "%s %s", getHumanTurnInstruction(context), getName());
+        return context.getString(R.string.simple_instruction, getHumanTurnInstruction(context),
+                getName());
     }
 
     @Override
@@ -255,7 +250,7 @@ public class Instruction {
         if (turn == YOU_HAVE_ARRIVED) {
             return getFullInstructionBeforeAction(context);
         }
-        String pattern = "Continue on %s";
-        return String.format(Locale.US, pattern, getName(), false);
+
+        return context.getString(R.string.simple_instruction_after, getName());
     }
 }

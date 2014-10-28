@@ -18,4 +18,10 @@
     <string name="you_have_arrived">You have arrived</string>
     <string name="enter_against_allowed_direction">Enter</string>
     <string name="leave_against_allowed_direction">Leave</string>
+    <string name="full_instruction_before_default">%1$s %2$s and continue on for %3$s</string>
+    <string name="full_instruction_before_straight">%1$s %2$s for %3$s</string>
+    <string name="full_instruction_destination">%1$s %2$s</string>
+    <string name="full_instruction_after">Continue on %1$s for %2$s</string>
+    <string name="simple_instruction">%1$s %2$s</string>
+    <string name="simple_instruction_after">Continue on %s</string>
 </resources>
