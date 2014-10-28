@@ -99,10 +99,6 @@ public class Instruction {
         return distanceInMeters;
     }
 
-    public int getRemainingDistance(Location currentLocation) {
-        return getDistance() - Math.round(currentLocation.distanceTo(location));
-    }
-
     public void setDistance(int distanceInMeters) {
         this.distanceInMeters = distanceInMeters;
     }
@@ -188,15 +184,6 @@ public class Instruction {
         String pattern = "Continue on %s for %s";
         return String.format(Locale.US, pattern, getName(), DistanceFormatter.format(getDistance(),
                 false));
-    }
-
-    public String getFullInstructionAfterAction(Location currentLocation) {
-        if (getHumanTurnInstruction().equals(YOU_HAVE_ARRIVED)) {
-            return getFullInstructionBeforeAction();
-        }
-        String pattern = "Continue on %s for %s";
-        return String.format(Locale.US, pattern, getName(),
-                DistanceFormatter.format(getRemainingDistance(currentLocation), false));
     }
 
     public String getSimpleInstruction() {

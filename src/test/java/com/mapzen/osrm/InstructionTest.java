@@ -459,39 +459,6 @@ public class InstructionTest {
     }
 
     @Test
-    public void getRemainingDistance_shouldCalculateRemainingDistance() throws Exception {
-        Location current = getLocation(0, 0);
-        Location destination = getLocation(1, 1);
-        instruction.setLocation(destination);
-        instruction.setDistance(200000);
-
-        int expected = 200000 - Math.round(current.distanceTo(destination));
-        int actual = instruction.getRemainingDistance(current);
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void getFullInstructionAfterAction_shouldCalculateRemainingDistance() throws Exception {
-        Location current = getLocation(0, 0);
-        Location destination = getLocation(1, 1);
-        instruction.setLocation(destination);
-        instruction.setDistance(200000);
-
-        String expected = DistanceFormatter.format(instruction.getRemainingDistance(current));
-        String actual = instruction.getFullInstructionAfterAction(current);
-        assertThat(actual).contains(expected);
-    }
-
-    @Test
-    public void getFullInstructionAfterAction_shouldNotUseTermNow() throws Exception {
-        Location location = getLocation(0, 0);
-        instruction.setLocation(location);
-        instruction.setDistance(1);
-        String string = instruction.getFullInstructionAfterAction(location);
-        assertThat(string).doesNotContain("now");
-    }
-
-    @Test
     public void getFullInstructionAfterActionWithLocation_shouldUseTermNow() throws Exception {
         Location location = getLocation(0, 0);
         instruction.setLocation(location);
