@@ -9,11 +9,11 @@
     <string name="turn_sharp_left">Curva cerrada hacia la izquierda en</string>
     <string name="turn_left">Doble hacia la izquierda en</string>
     <string name="turn_slight_left">Doble ligeramente hacia la izquierda en</string>
-    <string name="reach_via_point">Reach via point</string>
-    <string name="head_on">Head on</string>
-    <string name="enter_round_about">Enter roundabout</string>
-    <string name="leave_round_about">Leave roundabout</string>
-    <string name="stay_on_round_about">Stay on roundabout</string>
+    <string name="reach_via_point">Continue hasta el cruce</string>
+    <string name="head_on">Cominece</string>
+    <string name="enter_round_about">Entre a la rotonda</string>
+    <string name="leave_round_about">Salga de la rotonda</string>
+    <string name="stay_on_round_about">Continue por la rotonda</string>
     <string name="start_at_end_of_street">Cominece al final de la calle</string>
     <string name="you_have_arrived">Usted ha llegado a destino</string>
     <string name="enter_against_allowed_direction">Entrar</string>
