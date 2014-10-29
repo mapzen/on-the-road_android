@@ -11,9 +11,9 @@
     <string name="turn_slight_left">Doble ligeramente hacia la izquierda en</string>
     <string name="reach_via_point">Reach via point</string>
     <string name="head_on">Head on</string>
-    <string name="enter_round_about">Enter round about</string>
-    <string name="leave_round_about">Leave round about</string>
-    <string name="stay_on_round_about">Stay on round about</string>
+    <string name="enter_round_about">Enter roundabout</string>
+    <string name="leave_round_about">Leave roundabout</string>
+    <string name="stay_on_round_about">Stay on roundabout</string>
     <string name="start_at_end_of_street">Cominece al final de la calle</string>
     <string name="you_have_arrived">Usted ha llegado a destino</string>
     <string name="enter_against_allowed_direction">Entrar</string>
