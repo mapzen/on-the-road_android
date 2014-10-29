@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import android.location.Location;
 
@@ -19,8 +18,8 @@ import static com.mapzen.TestUtils.getLocation;
 import static java.lang.System.getProperty;
 import static java.nio.charset.Charset.defaultCharset;
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.robolectric.Robolectric.application;
 
-@Config(manifest=Config.NONE)
 @RunWith(RobolectricTestRunner.class)
 public class RouteTest {
     private Route route;
@@ -111,7 +110,7 @@ public class RouteTest {
         ListIterator<String> expectedPoints = points.listIterator();
         for(Instruction instruction: brooklynRoute.getRouteInstructions()) {
             String expectedDirection = expectedPoints.next();
-            String instructionDirection = instruction.getHumanTurnInstruction();
+            String instructionDirection = instruction.getHumanTurnInstruction(application);
             assertThat(instructionDirection).isEqualTo(expectedDirection);
         }
     }
@@ -308,7 +307,8 @@ public class RouteTest {
         myroute.addSeenInstruction(instructions.get(1));
         Instruction instruction = myroute.getNextInstruction();
         Instruction i = instructions.get(instructions.size() - 1);
-        assertThat(instruction.getFullInstruction()).isNotEqualTo(i.getFullInstruction());
+        assertThat(instruction.getFullInstruction(application))
+                .isNotEqualTo(i.getFullInstruction(application));
     }
 
     @Test
@@ -328,7 +328,7 @@ public class RouteTest {
     public void getRouteInstructions_shouldPopulateLastInstruction() throws Exception {
         Route myroute = getRoute("last_instruction_at_last_point");
         ArrayList<Instruction> instructions = myroute.getRouteInstructions();
-        assertThat(instructions.get(instructions.size() - 1).getHumanTurnInstruction())
+        assertThat(instructions.get(instructions.size() - 1).getHumanTurnInstruction(application))
                 .isEqualTo("You have arrived");
     }
 
