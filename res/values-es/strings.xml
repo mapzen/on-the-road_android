@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="no_turn">No turn</string>
-    <string name="go_straight">Continue on</string>
-    <string name="turn_slight_right">Slight right on</string>
-    <string name="turn_right">Right on</string>
-    <string name="turn_sharp_right">Sharp right on</string>
-    <string name="u_turn">U Turn</string>
-    <string name="turn_sharp_left">Sharp left on</string>
-    <string name="turn_left">Left on</string>
-    <string name="turn_slight_left">Slight left on</string>
+    <string name="no_turn">No doble</string>
+    <string name="go_straight">Continue por</string>
+    <string name="turn_slight_right">Doble levement hacia la derecha en</string>
+    <string name="turn_right">Doble hacia la derecha en</string>
+    <string name="turn_sharp_right">Curva cerrada hacia la derecha en</string>
+    <string name="u_turn">Doble en U</string>
+    <string name="turn_sharp_left">Curva cerrada hacia la izquierda en</string>
+    <string name="turn_left">Doble hacia la izquierda en</string>
+    <string name="turn_slight_left">Doble ligeramente hacia la izquierda en</string>
     <string name="reach_via_point">Reach via point</string>
     <string name="head_on">Head on</string>
     <string name="enter_round_about">Enter round about</string>
     <string name="leave_round_about">Leave round about</string>
     <string name="stay_on_round_about">Stay on round about</string>
-    <string name="start_at_end_of_street">Start at end of street</string>
-    <string name="you_have_arrived">You have arrived</string>
-    <string name="enter_against_allowed_direction">Enter</string>
-    <string name="leave_against_allowed_direction">Leave</string>
-    <string name="full_instruction_before_default">%1$s %2$s and continue on for %3$s</string>
-    <string name="full_instruction_before_straight">%1$s %2$s for %3$s</string>
+    <string name="start_at_end_of_street">Cominece al final de la calle</string>
+    <string name="you_have_arrived">Usted ha llegado a destino</string>
+    <string name="enter_against_allowed_direction">Entrar</string>
+    <string name="leave_against_allowed_direction">Salir</string>
+    <string name="full_instruction_before_default">%1$s %2$s y siga por %3$s</string>
+    <string name="full_instruction_before_straight">%1$s %2$s por %3$s</string>
     <string name="full_instruction_destination">%1$s %2$s</string>
-    <string name="full_instruction_after">Continue on %1$s for %2$s</string>
+    <string name="full_instruction_after">Siga en %1$s por %2$s</string>
     <string name="simple_instruction">%1$s %2$s</string>
-    <string name="simple_instruction_after">Continue on %s</string>
+    <string name="simple_instruction_after">Siga en %s</string>
 </resources>
