@@ -119,10 +119,36 @@ double[] onTheRoad = route.snapToRoute(new double[] { lat, lng });
 see https://github.com/mapzen/on-the-road_web-tester
 
 
-[1]: http://search.maven.org/remotecontent?filepath=com/mapzen/on-the-road/0.1/on-the-road-0.1.jar
+## Install
+
+#### Download AAR
+
+Download the [latest AAR][1].
+
+#### Maven
+
+Include dependency using Maven.
+
+```xml
+<dependency>
+  <groupId>com.mapzen</groupId>
+  <artifactId>on-the-road</artifactId>
+  <version>0.5</version>
+  <type>aar</type>
+</dependency>
+```
+
+#### Gradle
+
+Include dependency using Gradle.
+
+```groovy
+compile 'com.mapzen.android:pelias-android-sdk:0.5'
+```
+
+[1]: http://search.maven.org/remotecontent?filepath=com/mapzen/on-the-road/0.5/on-the-road-0.5.aar
 [2]: http://project-osrm.org/ 
 [3]: https://github.com/mapzen/player-services
 [4]: http://www.movable-type.co.uk/scripts/latlong.html
 [5]: https://github.com/DennisOSRM/Project-OSRM/wiki/API%20Usage%20Policy
 [6]: https://github.com/DennisOSRM/Project-OSRM/wiki/Running-OSRM
-
