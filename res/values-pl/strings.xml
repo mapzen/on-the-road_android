@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?><resources>
+    <!-- this set of text is displayed to the users while they are driving a car  with the app in navigation mode-->
+    <!-- user cannot turn-->
+    <string name="no_turn">Zakaz skrętu</string>
+    <!-- go straight -->
+    <string name="go_straight">Kontynuuj wdłuż</string>
+    <!-- slight right turn on (streetname) -->
+    <string name="turn_slight_right">Lekko w prawo w</string>
+    <!-- right turn on (streetname) -->
+    <string name="turn_right">W prawo w</string>
+    <!-- sharp right turn on (streetname) -->
+    <string name="turn_sharp_right">Ostro w prawo w</string>
+    <!-- u turn/ turn around -->
+    <string name="u_turn">Zawróć</string>
+    <!-- sharp left turn on (streetname) -->
+    <string name="turn_sharp_left">Ostro w lewo w</string>
+    <!-- left turn on (streetname) -->
+    <string name="turn_left">W lewo w</string>
+    <!-- slight left on (streetname) -->
+    <string name="turn_slight_left">Lekko w lewo w</string>
+    <string name="reach_via_point">Dotrzyj do celu przez punkt</string>
+    <!-- drive on (streetname) -->
+    <string name="head_on">Kieruj się na</string>
+    <!--  enter traffic circle -->
+    <string name="enter_round_about">Wjedź na rondo</string>
+    <!-- leave traffic circle -->
+    <string name="leave_round_about">Zjedź z ronda</string>
+    <!-- stay in traffic circle -->
+    <string name="stay_on_round_about">Zostań na rondzie</string>
+    <!-- begin at the end of the street -->
+    <string name="start_at_end_of_street">Rozpocznij na końcu ulicy</string>
+    <!-- you have reached your destiniation -->
+    <string name="you_have_arrived">Jesteś u celu</string>
+    <!-- enter -->
+    <string name="enter_against_allowed_direction">Wjedź</string>
+    <!-- exit -->
+    <string name="leave_against_allowed_direction">Zjedź</string>
+    <!-- will construct to a phrase like 'turn left and continue on for 2 miles' -->
+    <string name="full_instruction_before_default">%1$s %2$s i kontynuuj przez %3$s</string>
+    <!-- will construct to a phrase like 'drive straight 2 miles' -->
+    <string name="full_instruction_before_straight">%1$s %2$s przez %3$s</string>
+    <string name="full_instruction_destination">%1$s %2$s</string>
+    <!-- will construct to a phrase like 'Continue on main street for 2 miles'-->
+    <string name="full_instruction_after">Kontynuuj wzdłuż %1$s przez %2$s</string>
+    <string name="simple_instruction">%1$s %2$s</string>
+    <!-- will construct to a phrase like 'continue on main street' -->
+    <string name="simple_instruction_after">Kontynuuj wzdłuż %s</string>
+</resources>

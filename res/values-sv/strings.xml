@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?><resources>
+    <!-- this set of text is displayed to the users while they are driving a car  with the app in navigation mode-->
+    <!-- user cannot turn-->
+    <string name="no_turn">Sväng förbjuden</string>
+    <!-- go straight -->
+    <string name="go_straight">Fortsätt rakt fram</string>
+    <!-- slight right turn on (streetname) -->
+    <string name="turn_slight_right">Mjuk sväng till höger på</string>
+    <!-- right turn on (streetname) -->
+    <string name="turn_right">Sväng höger på</string>
+    <!-- sharp right turn on (streetname) -->
+    <string name="turn_sharp_right">Skarp högersväng på</string>
+    <!-- u turn/ turn around -->
+    <string name="u_turn">U-sväng</string>
+    <!-- sharp left turn on (streetname) -->
+    <string name="turn_sharp_left">Skarp vänstersväng på</string>
+    <!-- left turn on (streetname) -->
+    <string name="turn_left">Sväng vänster på</string>
+    <!-- slight left on (streetname) -->
+    <string name="turn_slight_left">Mjuk vänstersväng på</string>
+    <string name="reach_via_point">Nå etappmål</string>
+    <!-- drive on (streetname) -->
+    <string name="head_on">Fortsätt på</string>
+    <!--  enter traffic circle -->
+    <string name="enter_round_about">Kör in i rondellen</string>
+    <!-- leave traffic circle -->
+    <string name="leave_round_about">Lämna rondellen</string>
+    <!-- stay in traffic circle -->
+    <string name="stay_on_round_about">Stanna i rondellen</string>
+    <!-- begin at the end of the street -->
+    <string name="start_at_end_of_street">Starta i slutet av gatan</string>
+    <!-- you have reached your destiniation -->
+    <string name="you_have_arrived">Du har nått din slutdestination</string>
+    <!-- enter -->
+    <string name="enter_against_allowed_direction">Åk in i</string>
+    <!-- exit -->
+    <string name="leave_against_allowed_direction">Lämna</string>
+    <!-- will construct to a phrase like 'turn left and continue on for 2 miles' -->
+    <string name="full_instruction_before_default">%1$s %2$s och fortsätt rakt fram %3$s</string>
+    <!-- will construct to a phrase like 'drive straight 2 miles' -->
+    <string name="full_instruction_before_straight">%1$s %2$s ungefär %3$s</string>
+    <string name="full_instruction_destination">%1$s %2$s</string>
+    <!-- will construct to a phrase like 'Continue on main street for 2 miles'-->
+    <string name="full_instruction_after">Fortsätt på %1$s ungefär %2$s</string>
+    <string name="simple_instruction">%1$s %2$s</string>
+    <!-- will construct to a phrase like 'continue on main street' -->
+    <string name="simple_instruction_after">Fortsätt på %s</string>
+</resources>
