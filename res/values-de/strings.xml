@@ -36,13 +36,13 @@
     <!-- exit -->
     <string name="leave_against_allowed_direction">Verlassen</string>
     <!-- will construct to a phrase like 'turn left and continue on for 2 miles' -->
-    <string name="full_instruction_before_default">%1$s%2$s und folgen Sie %3$s der Straße</string>
+    <string name="full_instruction_before_default">%1$s %2$s und folgen Sie %3$s der Straße</string>
     <!-- will construct to a phrase like 'drive straight 2 miles' -->
-    <string name="full_instruction_before_straight">%1$s%2$s für %3$s</string>
-    <string name="full_instruction_destination">%1$s%2$s</string>
+    <string name="full_instruction_before_straight">%1$s %2$s für %3$s</string>
+    <string name="full_instruction_destination">%1$s %2$s</string>
     <!-- will construct to a phrase like 'Continue on main street for 2 miles'-->
     <string name="full_instruction_after">Folgen Sie der Straße %1$s für %2$s</string>
-    <string name="simple_instruction">%1$s%2$s</string>
+    <string name="simple_instruction">%1$s %2$s</string>
     <!-- will construct to a phrase like 'continue on main street' -->
     <string name="simple_instruction_after">Folgen Sie der Straße %s</string>
 </resources>
