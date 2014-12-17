@@ -1,27 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- this set of text is displayed to the users while they are driving a car  with the app in navigation mode-->
+    <!-- user cannot turn-->
     <string name="no_turn">No turn</string>
+    <!-- go straight -->
     <string name="go_straight">Continue on</string>
+    <!-- slight right turn on (streetname) -->
     <string name="turn_slight_right">Slight right on</string>
+    <!-- right turn on (streetname) -->
     <string name="turn_right">Right on</string>
+    <!-- sharp right turn on (streetname) -->
     <string name="turn_sharp_right">Sharp right on</string>
+    <!-- u turn/ turn around -->
     <string name="u_turn">U Turn</string>
+    <!-- sharp left turn on (streetname) -->
     <string name="turn_sharp_left">Sharp left on</string>
+    <!-- left turn on (streetname) -->
     <string name="turn_left">Left on</string>
+    <!-- slight left on (streetname) -->
     <string name="turn_slight_left">Slight left on</string>
     <string name="reach_via_point">Reach via point</string>
+    <!-- drive on (streetname) -->
     <string name="head_on">Head on</string>
+    <!--  enter traffic circle -->
     <string name="enter_round_about">Enter roundabout</string>
+    <!-- leave traffic circle -->
     <string name="leave_round_about">Leave roundabout</string>
+    <!-- stay in traffic circle -->
     <string name="stay_on_round_about">Stay on roundabout</string>
+    <!-- begin at the end of the street -->
     <string name="start_at_end_of_street">Start at end of street</string>
+    <!-- you have reached your destiniation -->
     <string name="you_have_arrived">You have arrived</string>
+    <!-- enter -->
     <string name="enter_against_allowed_direction">Enter</string>
+    <!-- exit -->
     <string name="leave_against_allowed_direction">Leave</string>
+    <!-- will construct to a phrase like 'turn left and continue on for 2 miles' -->
     <string name="full_instruction_before_default">%1$s %2$s and continue on for %3$s</string>
+    <!-- will construct to a phrase like 'drive straight 2 miles' -->
     <string name="full_instruction_before_straight">%1$s %2$s for %3$s</string>
     <string name="full_instruction_destination">%1$s %2$s</string>
+    <!-- will construct to a phrase like 'Continue on main street for 2 miles'-->
     <string name="full_instruction_after">Continue on %1$s for %2$s</string>
     <string name="simple_instruction">%1$s %2$s</string>
+    <!-- will construct to a phrase like 'continue on main street' -->
     <string name="simple_instruction_after">Continue on %s</string>
 </resources>

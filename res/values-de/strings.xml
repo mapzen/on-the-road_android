@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?><resources>
+    <!-- this set of text is displayed to the users while they are driving a car  with the app in navigation mode-->
+    <!-- user cannot turn-->
+    <string name="no_turn">Keine Wendemöglichkeit</string>
+    <!-- go straight -->
+    <string name="go_straight">Der Straße folgen</string>
+    <!-- slight right turn on (streetname) -->
+    <string name="turn_slight_right">Leicht rechts in</string>
+    <!-- right turn on (streetname) -->
+    <string name="turn_right">Rechtskurve in</string>
+    <!-- sharp right turn on (streetname) -->
+    <string name="turn_sharp_right">Scharf rechts in</string>
+    <!-- u turn/ turn around -->
+    <string name="u_turn">Kehrtwendung</string>
+    <!-- sharp left turn on (streetname) -->
+    <string name="turn_sharp_left">Scharf links in</string>
+    <!-- left turn on (streetname) -->
+    <string name="turn_left">Links in</string>
+    <!-- slight left on (streetname) -->
+    <string name="turn_slight_left">Leicht links in</string>
+    <string name="reach_via_point">Erreichen über Punkt</string>
+    <!-- drive on (streetname) -->
+    <string name="head_on">Der Straße folgen</string>
+    <!--  enter traffic circle -->
+    <string name="enter_round_about">In Kreisverkehr fahren</string>
+    <!-- leave traffic circle -->
+    <string name="leave_round_about">Kreisverkehr verlassen</string>
+    <!-- stay in traffic circle -->
+    <string name="stay_on_round_about">In Kreisverkehr bleiben</string>
+    <!-- begin at the end of the street -->
+    <string name="start_at_end_of_street">Am Ende der Straße beginnen</string>
+    <!-- you have reached your destiniation -->
+    <string name="you_have_arrived">Sie haben Ihr Ziel erreicht</string>
+    <!-- enter -->
+    <string name="enter_against_allowed_direction">Betreten</string>
+    <!-- exit -->
+    <string name="leave_against_allowed_direction">Verlassen</string>
+    <!-- will construct to a phrase like 'turn left and continue on for 2 miles' -->
+    <string name="full_instruction_before_default">%1$s %2$s und folgen Sie %3$s der Straße</string>
+    <!-- will construct to a phrase like 'drive straight 2 miles' -->
+    <string name="full_instruction_before_straight">%1$s %2$s für %3$s</string>
+    <string name="full_instruction_destination">%1$s %2$s</string>
+    <!-- will construct to a phrase like 'Continue on main street for 2 miles'-->
+    <string name="full_instruction_after">Folgen Sie der Straße %1$s für %2$s</string>
+    <string name="simple_instruction">%1$s %2$s</string>
+    <!-- will construct to a phrase like 'continue on main street' -->
+    <string name="simple_instruction_after">Folgen Sie der Straße %s</string>
+</resources>
