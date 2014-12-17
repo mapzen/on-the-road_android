@@ -14,3 +14,9 @@ dependencies:
 test:
   override:
     - mvn verify
+
+deployment:
+  master:
+    branch: master
+    commands:
+      - mvn deploy -Dmaven.test.skip=true
