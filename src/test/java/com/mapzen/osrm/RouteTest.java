@@ -1,5 +1,7 @@
 package com.mapzen.osrm;
 
+import com.mapzen.ontheroad.R;
+
 import org.apache.commons.io.FileUtils;
 import org.fest.assertions.data.Offset;
 import org.junit.Before;
@@ -99,12 +101,12 @@ public class RouteTest {
     @Test
     public void hasCorrectTurnByTurnHumanInstructionsInBrooklyn() throws Exception {
         ArrayList<String> points = new ArrayList<String>();
-        points.add("Head on");
-        points.add("Right on");
-        points.add("Right on");
-        points.add("Right on");
-        points.add("Right on");
-        points.add("You have arrived");
+        points.add(application.getString(R.string.head_on));
+        points.add(application.getString(R.string.turn_right));
+        points.add(application.getString(R.string.turn_right));
+        points.add(application.getString(R.string.turn_right));
+        points.add(application.getString(R.string.turn_right));
+        points.add(application.getString(R.string.you_have_arrived));
         Route brooklynRoute = getRoute("brooklyn");
 
         ListIterator<String> expectedPoints = points.listIterator();

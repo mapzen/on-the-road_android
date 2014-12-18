@@ -409,7 +409,8 @@ public class InstructionTest {
 
     @Test
     public void testSimpleInstruction() throws Exception {
-        assertThat(instruction.getSimpleInstruction(application)).isEqualTo("Head on 19th Street");
+        assertThat(instruction.getSimpleInstruction(application))
+                .isEqualTo(application.getString(R.string.head_on) + " 19th Street");
     }
 
     @Test
