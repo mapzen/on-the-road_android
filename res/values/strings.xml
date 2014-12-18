@@ -21,7 +21,7 @@
     <string name="turn_slight_left">Slight left on</string>
     <string name="reach_via_point">Reach via point</string>
     <!-- drive on (streetname) -->
-    <string name="head_on">Head on</string>
+    <string name="head_on">Start on</string>
     <!--  enter traffic circle -->
     <string name="enter_round_about">Enter roundabout</string>
     <!-- leave traffic circle -->
