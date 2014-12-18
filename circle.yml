@@ -19,4 +19,4 @@ deployment:
   master:
     branch: master
     commands:
-      - mvn deploy -Dmaven.test.skip=true
+      - mvn deploy -Dmaven.test.skip=true -s conf/settings.xml
