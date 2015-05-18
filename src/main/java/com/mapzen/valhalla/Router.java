@@ -21,11 +21,10 @@ public class Router implements Runnable {
         return new Router();
     }
 
-    private String endpoint = "http://osrm.test.mapzen.com";
+    private String endpoint = "http://valhalla.api.dev.mapzen.com/route";
     private OkHttpClient client = new OkHttpClient();
     private Type type = Type.DRIVING;
     private List<double[]> locations = new ArrayList<double[]>();
-    private int zoomLevel = 17;
     private Callback callback;
 
     public enum Type {
@@ -72,16 +71,6 @@ public class Router implements Runnable {
         return this;
     }
 
-    public Router setZoomLevel(int zoomLevel) {
-        this.zoomLevel = zoomLevel;
-        return this;
-    }
-
-    public Router setZoomLevel(double zoomLevel) {
-        this.zoomLevel = (int) zoomLevel;
-        return this;
-    }
-
     private String readInputStream(InputStream in) throws IOException {
         return CharStreams.toString(new InputStreamReader(in, Charsets.UTF_8));
     }
@@ -94,8 +83,8 @@ public class Router implements Runnable {
         for (double[] point : locations) {
             loc += "&loc=" + String.valueOf(point[0]) + "," + String.valueOf(point[1]);
         }
-        String template = "%s/%s/viaroute?z=%d&output=json&instructions=true&%s";
-        return new URL(String.format(template, endpoint, type, zoomLevel, loc));
+        String template = "%s/%s/viaroute?output=json&instructions=true&%s";
+        return new URL(String.format(template, endpoint, type, loc));
     }
 
     public Router setCallback(Callback callback) {
@@ -140,11 +129,9 @@ public class Router implements Runnable {
         }
     }
 
-    public static interface Callback {
+    public interface Callback {
         void success(Route route);
 
         void failure(int statusCode);
     }
 }
-
-

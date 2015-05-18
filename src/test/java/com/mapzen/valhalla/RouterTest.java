@@ -1,8 +1,5 @@
 package com.mapzen.valhalla;
 
-import com.mapzen.osrm.Route;
-import com.mapzen.osrm.Router;
-
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import com.squareup.okhttp.mockwebserver.MockResponse;
@@ -57,31 +54,13 @@ public class RouterTest {
     @Test
     public void shouldHaveDefaultEndpoint() throws Exception {
         URL url = validRouter.getRouteUrl();
-        assertThat(url.toString()).startsWith("http://osrm.test.mapzen.com");
+        assertThat(url.toString()).startsWith("http://valhalla.api.dev.mapzen.com/route");
     }
 
     @Test
     public void shouldSetEndpoint() throws Exception {
         URL url = validRouter.setEndpoint("http://testing.com").getRouteUrl();
         assertThat(url.toString()).startsWith("http://testing.com");
-    }
-
-    @Test
-    public void shouldHaveDefaultZoom() throws Exception {
-        URL url = validRouter.getRouteUrl();
-        assertThat(url.toString()).contains("z=17");
-    }
-
-    @Test
-    public void shouldSetZoomAsInt() throws Exception {
-        URL url = validRouter.setZoomLevel(11).getRouteUrl();
-        assertThat(url.toString()).contains("z=11");
-    }
-
-    @Test
-    public void shouldSetZoomAsDouble() throws Exception {
-        URL url = validRouter.setZoomLevel(11.0).getRouteUrl();
-        assertThat(url.toString()).contains("z=11");
     }
 
     @Test
