@@ -7,13 +7,20 @@ import com.squareup.okhttp.OkHttpClient;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Router implements Runnable {
+    private static final String DEFAULT_URL = "http://valhalla.api.dev.mapzen.com/route";
+    private static final String ROUTE_PARAMS = "?json={\"locations\":"
+            + "[{\"lat\":%1f,\"lon\":%2f},{\"lat\":%3f,\"lon\":%4f}],"
+            + "\"costing\":\"%s\",\"output\":\"json\"}";
+
     private Router() {
     }
 
@@ -21,14 +28,14 @@ public class Router implements Runnable {
         return new Router();
     }
 
-    private String endpoint = "http://valhalla.api.dev.mapzen.com/route";
+    private String endpoint = DEFAULT_URL;
     private OkHttpClient client = new OkHttpClient();
     private Type type = Type.DRIVING;
     private List<double[]> locations = new ArrayList<double[]>();
     private Callback callback;
 
     public enum Type {
-        WALKING("foot"), BIKING("bicycle"), DRIVING("car");
+        WALKING("pedestrian"), BIKING("bicycle"), DRIVING("auto");
         private String type;
 
         Type(String type) {
@@ -75,16 +82,19 @@ public class Router implements Runnable {
         return CharStreams.toString(new InputStreamReader(in, Charsets.UTF_8));
     }
 
-    public URL getRouteUrl() throws MalformedURLException {
+    public URL getRouteUrl() throws MalformedURLException, UnsupportedEncodingException {
         if (locations.size() < 2) {
             throw new MalformedURLException();
         }
-        String loc = "";
-        for (double[] point : locations) {
-            loc += "&loc=" + String.valueOf(point[0]) + "," + String.valueOf(point[1]);
-        }
-        String template = "%s/%s/viaroute?output=json&instructions=true&%s";
-        return new URL(String.format(template, endpoint, type, loc));
+
+        final String params = String.format(ROUTE_PARAMS,
+                locations.get(0)[0],
+                locations.get(0)[1],
+                locations.get(1)[0],
+                locations.get(1)[1],
+                type);
+
+        return new URL(endpoint + URLEncoder.encode(params, "utf-8"));
     }
 
     public Router setCallback(Callback callback) {
@@ -131,7 +141,6 @@ public class Router implements Runnable {
 
     public interface Callback {
         void success(Route route);
-
         void failure(int statusCode);
     }
 }

@@ -14,8 +14,10 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -66,25 +68,25 @@ public class RouterTest {
     @Test
     public void shouldDefaultToCar() throws Exception {
         URL url = validRouter.getRouteUrl();
-        assertThat(url.toString()).contains("car/viaroute");
+        assertThat(url.toString()).contains(urlEncode("\"costing\":\"auto\""));
     }
 
     @Test
     public void shouldSetToCar() throws Exception {
         URL url = validRouter.setDriving().getRouteUrl();
-        assertThat(url.toString()).contains("car/viaroute");
+        assertThat(url.toString()).contains(urlEncode("\"costing\":\"auto\""));
     }
 
     @Test
     public void shouldSetToBike() throws Exception {
         URL url = validRouter.setBiking().getRouteUrl();
-        assertThat(url.toString()).contains("bicycle/viaroute");
+        assertThat(url.toString()).contains(urlEncode("\"costing\":\"bicycle\""));
     }
 
     @Test
     public void shouldSetToFoot() throws Exception {
         URL url = validRouter.setWalking().getRouteUrl();
-        assertThat(url.toString()).contains("foot/viaroute");
+        assertThat(url.toString()).contains(urlEncode("\"costing\":\"pedestrian\""));
     }
 
     @Test
@@ -99,9 +101,9 @@ public class RouterTest {
         router.setLocation(loc2);
         router.setLocation(loc3);
         URL url = router.getRouteUrl();
-        assertThat(url.toString()).doesNotContain("1.0,2.0");
-        assertThat(url.toString()).contains("3.0,4.0");
-        assertThat(url.toString()).contains("5.0,6.0");
+        assertThat(url.toString()).doesNotContain(urlEncode("{\"lat\":1.000000,\"lon\":2.000000}"));
+        assertThat(url.toString()).contains(urlEncode("{\"lat\":3.000000,\"lon\":4.000000}"));
+        assertThat(url.toString()).contains(urlEncode("{\"lat\":5.000000,\"lon\":6.000000}"));
     }
 
     @Test(expected=MalformedURLException.class)
@@ -118,12 +120,12 @@ public class RouterTest {
     public void shouldAddLocations() throws Exception {
         double[] loc1 = { 1.0, 2.0 };
         double[] loc2 = { 3.0, 4.0 };
-        double[] loc3 = { 5.0, 6.0 };
         URL url = Router.getRouter()
                 .setLocation(loc1)
                 .setLocation(loc2)
-                .setLocation(loc3).getRouteUrl();
-        assertThat(url.toString()).contains("&loc=1.0,2.0&loc=3.0,4.0&loc=5.0,6.0");
+                .getRouteUrl();
+        assertThat(url.toString()).contains(urlEncode("[{\"lat\":1.000000,\"lon\":2.000000},"
+                + "{\"lat\":3.000000,\"lon\":4.000000}]"));
     }
 
     @Test
@@ -235,6 +237,10 @@ public class RouterTest {
     private void startServerAndEnqueue(MockResponse response) throws Exception {
         server.enqueue(response);
         server.play();
+    }
+
+    private static String urlEncode(String raw) throws UnsupportedEncodingException {
+        return URLEncoder.encode(raw, "utf-8");
     }
 
     public static String getFixture(String name) {

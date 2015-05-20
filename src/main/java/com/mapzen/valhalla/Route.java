@@ -46,10 +46,11 @@ public class Route {
 
     public void setJsonObject(JSONObject jsonObject) {
         this.jsonObject = jsonObject;
-        if (foundRoute()) {
-            initializeTurnByTurn(jsonObject.getJSONArray("route_instructions"));
-            initializePolyline(jsonObject.getString("route_geometry"));
-        }
+        // TODO: Parse Valhalla response
+        // if (foundRoute()) {
+        //     initializeTurnByTurn(jsonObject.getJSONArray("route_instructions"));
+        //     initializePolyline(jsonObject.getString("route_geometry"));
+        // }
     }
 
     public double getTotalDistanceTravelled() {
@@ -61,7 +62,7 @@ public class Route {
     }
 
     public int getStatus() {
-        return jsonObject.getInt("status");
+        return jsonObject.getJSONObject("trip").getInt("status");
     }
 
     public boolean foundRoute() {
