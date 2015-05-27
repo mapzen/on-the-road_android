@@ -1,5 +1,6 @@
 package com.mapzen.osrm;
 
+import com.google.common.io.Files;
 import com.mapzen.ontheroad.R;
 
 import org.apache.commons.io.FileUtils;
@@ -12,7 +13,6 @@ import org.robolectric.RobolectricTestRunner;
 import android.location.Location;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
@@ -512,7 +512,7 @@ public class RouteTest {
         String fileName = getProperty("user.dir");
         File file = new File(fileName + "/src/test/fixtures/" + name + ".txt");
         ArrayList<Location> allLocations = new ArrayList<Location>();
-        for(String locations: Files.readAllLines(file.toPath(), defaultCharset())) {
+        for(String locations: Files.readLines(file, defaultCharset())) {
             String[] latLng = locations.split(",");
             Location location = new Location("test");
             location.setLatitude(Double.valueOf(latLng[0]));

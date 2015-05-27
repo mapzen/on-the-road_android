@@ -4,6 +4,8 @@ import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import com.squareup.okhttp.OkHttpClient;
 
+import org.json.JSONException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -128,6 +130,8 @@ public class Router implements Runnable {
                 callback.failure(207);
             }
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
             e.printStackTrace();
         } finally {
             if (in != null) {

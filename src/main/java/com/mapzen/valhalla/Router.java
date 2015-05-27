@@ -4,6 +4,8 @@ import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import com.squareup.okhttp.OkHttpClient;
 
+import org.json.JSONException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -120,13 +122,20 @@ public class Router implements Runnable {
             }
             in = connection.getInputStream();
             final String responseText = readInputStream(in);
-            Route route = new Route(responseText);
+            Route route = null;
+            try {
+                route = new Route(responseText);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
             if (route.foundRoute()) {
                 callback.success(route);
             } else {
                 callback.failure(207);
             }
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
             e.printStackTrace();
         } finally {
             if (in != null) {

@@ -5,6 +5,7 @@ import com.mapzen.ontheroad.R;
 import com.mapzen.osrm.Instruction;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,38 +41,68 @@ import static org.robolectric.Robolectric.application;
 
 @RunWith(RobolectricTestRunner.class)
 public class InstructionTest {
-    private static final JSONArray JSON = new JSONArray("[\n" +
-            "\"10\",\n" +
-            "\"19th Street\",\n" +
-            "1609,\n" +
-            "8,\n" +
-            "0,\n" +
-            "\"1609m\",\n" +
-            "\"SE\",\n" +
-            "128\n" +
-            "]\n");
+    private static final JSONArray JSON;
 
-    private static final JSONArray NON_INT_TURN_JSON = new JSONArray("[\n" +
-            "\"11-1\",\n" +
-            "\"19th Street\",\n" +
-            "1609,\n" +
-            "8,\n" +
-            "0,\n" +
-            "\"1609m\",\n" +
-            "\"SE\",\n" +
-            "128\n" +
-            "]\n");
+    static {JSONArray JSON1;
+        try {
+            JSON1 = new JSONArray("[\n" +
+                    "\"10\",\n" +
+                    "\"19th Street\",\n" +
+                    "1609,\n" +
+                    "8,\n" +
+                    "0,\n" +
+                    "\"1609m\",\n" +
+                    "\"SE\",\n" +
+                    "128\n" +
+                    "]\n");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            JSON1 = null;
+        }
+        JSON = JSON1;
+    }
 
-    private static final JSONArray STREET_NOT_FOUND = new JSONArray("[\n"
-            + "            \"11-3\",\n"
-            + "            \"{\\\"highway\\\":\\\"unclassified\\\", \\\"message\\\":\\\"name not found\\\"}\",\n"
-            + "            31,\n"
-            + "            5345,\n"
-            + "            5,\n"
-            + "            \"30m\",\n"
-            + "            \"N\",\n"
-            + "            8\n"
-            + "        ]");
+    private static final JSONArray NON_INT_TURN_JSON;
+
+    static {JSONArray NON_INT_TURN_JSON1;
+        try {
+            NON_INT_TURN_JSON1 = new JSONArray("[\n" +
+                    "\"11-1\",\n" +
+                    "\"19th Street\",\n" +
+                    "1609,\n" +
+                    "8,\n" +
+                    "0,\n" +
+                    "\"1609m\",\n" +
+                    "\"SE\",\n" +
+                    "128\n" +
+                    "]\n");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            NON_INT_TURN_JSON1 = null;
+        }
+        NON_INT_TURN_JSON = NON_INT_TURN_JSON1;
+    }
+
+    private static final JSONArray STREET_NOT_FOUND;
+
+    static {JSONArray STREET_NOT_FOUND1;
+        try {
+            STREET_NOT_FOUND1 = new JSONArray("[\n"
+                    + "            \"11-3\",\n"
+                    + "            \"{\\\"highway\\\":\\\"unclassified\\\", \\\"message\\\":\\\"name not found\\\"}\",\n"
+                    + "            31,\n"
+                    + "            5345,\n"
+                    + "            5,\n"
+                    + "            \"30m\",\n"
+                    + "            \"N\",\n"
+                    + "            8\n"
+                    + "        ]");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            STREET_NOT_FOUND1 = null;
+        }
+        STREET_NOT_FOUND = STREET_NOT_FOUND1;
+    }
 
     private com.mapzen.osrm.Instruction instruction;
 
@@ -415,7 +446,7 @@ public class InstructionTest {
     }
 
     @Test
-    public void testSimpleInstructionAfterAction() {
+    public void testSimpleInstructionAfterAction() throws JSONException {
         assertThat(instruction.getSimpleInstructionAfterAction(application))
                 .isEqualTo("Continue on 19th Street");
     }
@@ -485,14 +516,14 @@ public class InstructionTest {
 
     private String getExpectedFullInstructionBeforeActionFor(
             com.mapzen.osrm.Instruction currentInstruction,
-            String pattern) {
+            String pattern) throws JSONException {
         return String.format(Locale.ENGLISH, pattern,
                 currentInstruction.getHumanTurnInstruction(application),
                 currentInstruction.getName(),
                 DistanceFormatter.format(currentInstruction.getDistance(), true));
     }
 
-    private com.mapzen.osrm.Instruction getInstructionWithDirection(String dir) {
+    private com.mapzen.osrm.Instruction getInstructionWithDirection(String dir) throws JSONException {
         String json = "[\"10\",\"\", 1609,0,0,\"1609m\",\"" + dir + "\",\"128\"]";
         return new Instruction(new JSONArray(json));
     }

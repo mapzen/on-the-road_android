@@ -5,6 +5,7 @@ import com.google.common.io.Files;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
 
+import org.json.JSONException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -160,7 +161,11 @@ public class RouterTest {
                 router.setCallback(callback);
                 router.fetch();
                 Mockito.verify(callback).success(route.capture());
-                assertThat(route.getValue().foundRoute()).isTrue();
+                try {
+                    assertThat(route.getValue().foundRoute()).isTrue();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }

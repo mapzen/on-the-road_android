@@ -36,15 +36,15 @@ public class Route {
         return jsonObject;
     }
 
-    public Route(String jsonString) {
+    public Route(String jsonString) throws JSONException {
         setJsonObject(new JSONObject(jsonString));
     }
 
-    public Route(JSONObject jsonObject) {
+    public Route(JSONObject jsonObject) throws JSONException {
         setJsonObject(jsonObject);
     }
 
-    public void setJsonObject(JSONObject jsonObject) {
+    public void setJsonObject(JSONObject jsonObject) throws JSONException {
         this.jsonObject = jsonObject;
         if (foundRoute()) {
             initializeTurnByTurn(jsonObject.getJSONArray("route_instructions"));
@@ -56,19 +56,19 @@ public class Route {
         return totalDistanceTravelled;
     }
 
-    public int getTotalDistance() {
+    public int getTotalDistance() throws JSONException {
         return getSummary().getInt("total_distance");
     }
 
-    public int getStatus() {
+    public int getStatus() throws JSONException {
         return jsonObject.getInt("status");
     }
 
-    public boolean foundRoute() {
+    public boolean foundRoute() throws JSONException {
         return getStatus() == 0;
     }
 
-    public int getTotalTime() {
+    public int getTotalTime() throws JSONException {
         return getSummary().getInt("total_time");
     }
 
@@ -80,7 +80,7 @@ public class Route {
         return instructions.get(instructions.size() - 1).getLiveDistanceToNext();
     }
 
-    private void initializeTurnByTurn(JSONArray instructions) {
+    private void initializeTurnByTurn(JSONArray instructions) throws JSONException {
         int gapDistance = 0;
         this.instructions = new ArrayList<Instruction>();
         for (int i = 0; i < instructions.length(); i++) {
@@ -97,7 +97,7 @@ public class Route {
         }
     }
 
-    public ArrayList<Instruction> getRouteInstructions() {
+    public ArrayList<Instruction> getRouteInstructions() throws JSONException {
         int accumulatedDistance = 0;
         for (Instruction instruction: instructions) {
             instruction.setLocation(poly.get(instruction.getPolygonIndex()).getLocation());
@@ -117,7 +117,7 @@ public class Route {
         return geometry;
     }
 
-    public Location getStartCoordinates() {
+    public Location getStartCoordinates() throws JSONException {
         JSONArray points = getViaPoints().getJSONArray(0);
         Location location = new Location(SNAP_PROVIDER);
         location.setLatitude(points.getDouble(0));
@@ -129,7 +129,7 @@ public class Route {
         return lost;
     }
 
-    private JSONArray getViaPoints() {
+    private JSONArray getViaPoints() throws JSONException {
         return jsonObject.getJSONArray("via_points");
     }
 
@@ -195,7 +195,7 @@ public class Route {
         currentLeg = 0;
     }
 
-    public Location snapToRoute(Location originalPoint) {
+    public Location snapToRoute(Location originalPoint) throws JSONException {
         Ln.d("Snapping => currentLeg: " + String.valueOf(currentLeg));
         Ln.d("Snapping => originalPoint: "
                 + String.valueOf(originalPoint.getLatitude()) + ", "
@@ -391,7 +391,7 @@ public class Route {
         return instructions.get(currentInstructionIndex);
     }
 
-    private void updateCurrentInstructionIndex() {
+    private void updateCurrentInstructionIndex() throws JSONException {
         Instruction next = getNextInstruction();
         if (next == null) {
             return;

@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.location.Location;
+import android.util.Log;
 
 import java.util.Locale;
 
@@ -48,7 +49,7 @@ public class Instruction {
         this.liveDistanceToNext = liveDistanceToNext;
     }
 
-    public Instruction(JSONArray json) {
+    public Instruction(JSONArray json) throws JSONException {
         if (json.length() < 8) {
             throw new JSONException("too few arguments");
         }
@@ -116,11 +117,17 @@ public class Instruction {
     }
 
     public boolean skip() {
-        String raw = json.getString(1);
+        String raw = null;
+        try {
+            raw = json.getString(1);
+        } catch (JSONException e) {
+            Log.e("Json exception", "Unable to skip", e);
+
+        }
         return raw.startsWith("{") && raw.endsWith("}");
     }
 
-    public String getName() {
+    public String getName() throws JSONException {
         String raw = json.getString(1);
         if (raw.startsWith("{") && raw.endsWith("}")) {
             JSONObject nameObject = new JSONObject(raw);
@@ -142,15 +149,15 @@ public class Instruction {
         return DistanceFormatter.format(distanceInMeters);
     }
 
-    public String getDirection() {
+    public String getDirection() throws JSONException {
         return json.getString(6);
     }
 
-    public int getPolygonIndex() {
+    public int getPolygonIndex() throws JSONException {
         return json.getInt(3);
     }
 
-    public float getDirectionAngle() {
+    public float getDirectionAngle() throws JSONException {
         String direction = getDirection();
         float angle = 0;
         if (direction.equals("NE")) {
@@ -171,11 +178,11 @@ public class Instruction {
         return angle;
     }
 
-    public int getRotationBearing() {
+    public int getRotationBearing() throws JSONException {
         return 360 - json.getInt(7);
     }
 
-    public int getBearing() {
+    public int getBearing() throws JSONException {
         return json.getInt(7);
     }
 
@@ -187,11 +194,11 @@ public class Instruction {
         this.location = location;
     }
 
-    public String getFullInstruction(Context context) {
+    public String getFullInstruction(Context context) throws JSONException {
         return getFullInstructionBeforeAction(context);
     }
 
-    public String getFullInstructionBeforeAction(Context context) {
+    public String getFullInstructionBeforeAction(Context context) throws JSONException {
         if (turn == HEAD_ON || turn == GO_STRAIGHT) {
             return context.getString(R.string.full_instruction_before_straight,
                     getHumanTurnInstruction(context), getName(),
@@ -206,7 +213,7 @@ public class Instruction {
         }
     }
 
-    public String getFullInstructionAfterAction(Context context) {
+    public String getFullInstructionAfterAction(Context context) throws JSONException {
         if (turn == YOU_HAVE_ARRIVED) {
             return context.getString(R.string.full_instruction_destination,
                     getHumanTurnInstruction(context), getName());
@@ -216,16 +223,23 @@ public class Instruction {
                 DistanceFormatter.format(distanceInMeters, false));
     }
 
-    public String getSimpleInstruction(Context context) {
+    public String getSimpleInstruction(Context context) throws JSONException {
         return context.getString(R.string.simple_instruction, getHumanTurnInstruction(context),
                 getName());
     }
 
     @Override
     public String toString() {
+        String name = "";
+        try {
+            name = getName();
+        } catch (JSONException e) {
+            Log.e("Json exception", "Unable to get name", e);
+        }
         return String.format(Locale.US, "Instruction: (%.5f, %.5f) %s %s LiveDistanceTo: %d",
                 location.getLatitude(), location.getLongitude(), turn,
-                getName(), liveDistanceToNext);
+                name, liveDistanceToNext);
+
     }
 
     @Override
@@ -234,19 +248,24 @@ public class Instruction {
             return false;
         }
         Instruction other = (Instruction) obj;
-        return (getTurnInstruction() == other.getTurnInstruction()
-                && getBearing() == other.getBearing()
-                && getLocation().getLatitude() == other.getLocation().getLatitude()
-                && getLocation().getLongitude() == other.getLocation().getLongitude());
+        try {
+            return (getTurnInstruction() == other.getTurnInstruction()
+                    && getBearing() == other.getBearing()
+                    && getLocation().getLatitude() == other.getLocation().getLatitude()
+                    && getLocation().getLongitude() == other.getLocation().getLongitude());
+        } catch (JSONException e) {
+            Log.e("Json exception", "Unable to get bearing", e);
+            return false;
+        }
     }
 
-    private int parseTurnInstruction(JSONArray json) {
+    private int parseTurnInstruction(JSONArray json) throws JSONException {
         String turn = json.getString(0);
         String[] split = turn.split("-");
         return Integer.valueOf(split[0]);
     }
 
-    public String getSimpleInstructionAfterAction(Context context) {
+    public String getSimpleInstructionAfterAction(Context context) throws JSONException {
         if (turn == YOU_HAVE_ARRIVED) {
             return getFullInstructionBeforeAction(context);
         }
