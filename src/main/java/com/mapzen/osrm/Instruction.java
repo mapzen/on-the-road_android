@@ -230,16 +230,14 @@ public class Instruction {
 
     @Override
     public String toString() {
-        String name = "";
         try {
-            name = getName();
+            return String.format(Locale.US, "Instruction: (%.5f, %.5f) %s %s LiveDistanceTo: %d",
+                    location.getLatitude(), location.getLongitude(), turn,
+                    getName(), liveDistanceToNext);
         } catch (JSONException e) {
-            Log.e("Json exception", "Unable to get name", e);
+            e.printStackTrace();
         }
-        return String.format(Locale.US, "Instruction: (%.5f, %.5f) %s %s LiveDistanceTo: %d",
-                location.getLatitude(), location.getLongitude(), turn,
-                name, liveDistanceToNext);
-
+        return null;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.mapzen.osrm;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
 import com.mapzen.helpers.DistanceFormatter;
 import com.mapzen.ontheroad.R;
 
@@ -12,6 +14,7 @@ import org.robolectric.RobolectricTestRunner;
 
 import android.location.Location;
 
+import java.io.File;
 import java.util.Locale;
 
 import static com.mapzen.TestUtils.getLocation;
@@ -45,16 +48,7 @@ public class InstructionTest {
 
     static {JSONArray JSON1;
         try {
-            JSON1 = new JSONArray("[\n" +
-                    "\"10\",\n" +
-                    "\"19th Street\",\n" +
-                    "1609,\n" +
-                    "8,\n" +
-                    "0,\n" +
-                    "\"1609m\",\n" +
-                    "\"SE\",\n" +
-                    "128\n" +
-                    "]\n");
+            JSON1 = new JSONArray(getFixture("json").toString());
         } catch (JSONException e) {
             e.printStackTrace();
             JSON1 = null;
@@ -66,16 +60,7 @@ public class InstructionTest {
 
     static {JSONArray NON_INT_TURN_JSON1;
         try {
-            NON_INT_TURN_JSON1 = new JSONArray("[\n" +
-                    "\"11-1\",\n" +
-                    "\"19th Street\",\n" +
-                    "1609,\n" +
-                    "8,\n" +
-                    "0,\n" +
-                    "\"1609m\",\n" +
-                    "\"SE\",\n" +
-                    "128\n" +
-                    "]\n");
+            NON_INT_TURN_JSON1 = new JSONArray(getFixture("non_int_turn_json").toString());
         } catch (JSONException e) {
             e.printStackTrace();
             NON_INT_TURN_JSON1 = null;
@@ -87,16 +72,7 @@ public class InstructionTest {
 
     static {JSONArray STREET_NOT_FOUND1;
         try {
-            STREET_NOT_FOUND1 = new JSONArray("[\n"
-                    + "            \"11-3\",\n"
-                    + "            \"{\\\"highway\\\":\\\"unclassified\\\", \\\"message\\\":\\\"name not found\\\"}\",\n"
-                    + "            31,\n"
-                    + "            5345,\n"
-                    + "            5,\n"
-                    + "            \"30m\",\n"
-                    + "            \"N\",\n"
-                    + "            8\n"
-                    + "        ]");
+            STREET_NOT_FOUND1 = new JSONArray(getFixture("street_not_found").toString());
         } catch (JSONException e) {
             e.printStackTrace();
             STREET_NOT_FOUND1 = null;
@@ -525,5 +501,17 @@ public class InstructionTest {
     private Instruction getInstructionWithDirection(String dir) throws JSONException {
         String json = "[\"10\",\"\", 1609,0,0,\"1609m\",\"" + dir + "\",\"128\"]";
         return new Instruction(new JSONArray(json));
+    }
+
+    public static String getFixture(String name) {
+        String basedir = System.getProperty("user.dir");
+        File file = new File(basedir + "/src/test/fixtures/" + name + ".route");
+        String fixture = "";
+        try {
+            fixture = Files.toString(file, Charsets.UTF_8);
+        } catch (Exception e) {
+            fixture = "not found";
+        }
+        return fixture;
     }
 }
