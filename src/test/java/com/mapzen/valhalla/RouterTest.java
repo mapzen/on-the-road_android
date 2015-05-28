@@ -46,7 +46,7 @@ public class RouterTest {
         server = new MockWebServer();
         MockitoAnnotations.initMocks(this);
         double[] loc = new double[] {1.0, 2.0};
-        validRouter = Router.getRouter().setLocation(loc).setLocation(loc);
+        validRouter = new Router().setLocation(loc).setLocation(loc);
     }
 
     @After
@@ -95,7 +95,7 @@ public class RouterTest {
         double[] loc1 = { 1.0, 2.0 };
         double[] loc2 = { 3.0, 4.0 };
         double[] loc3 = { 5.0, 6.0 };
-        Router router = Router.getRouter()
+        Router router = new Router()
                 .setLocation(loc1)
                 .setLocation(loc2);
         router.clearLocations();
@@ -109,19 +109,19 @@ public class RouterTest {
 
     @Test(expected=MalformedURLException.class)
     public void shouldThrowErrorWhenNoLocation() throws Exception {
-        Router.getRouter().getRouteUrl();
+        new Router().getRouteUrl();
     }
 
     @Test(expected=MalformedURLException.class)
     public void shouldThrowErrorWhenOnlyOneLocation() throws Exception {
-        Router.getRouter().setLocation(new double[] {1.0, 1.0}).getRouteUrl();
+        new Router().setLocation(new double[]{1.0, 1.0}).getRouteUrl();
     }
 
     @Test
     public void shouldAddLocations() throws Exception {
         double[] loc1 = { 1.0, 2.0 };
         double[] loc2 = { 3.0, 4.0 };
-        URL url = Router.getRouter()
+        URL url = new Router()
                 .setLocation(loc1)
                 .setLocation(loc2)
                 .getRouteUrl();
@@ -138,7 +138,7 @@ public class RouterTest {
             public void run() {
                 String endpoint = server.getUrl("").toString();
                 Router.Callback callback = Mockito.mock(Router.Callback.class);
-                Router router = Router.getRouter()
+                Router router = new Router()
                         .setEndpoint(endpoint)
                         .setLocation(new double[] { 40.659241, -73.983776 })
                         .setLocation(new double[] { 40.671773, -73.981115 });
@@ -163,7 +163,7 @@ public class RouterTest {
             public void run() {
                 Router.Callback callback = Mockito.mock(Router.Callback.class);
                 String endpoint = server.getUrl("").toString();
-                Router router = Router.getRouter()
+                Router router = new Router()
                         .setEndpoint(endpoint)
                         .setLocation(new double[] { 40.659241, -73.983776 })
                         .setLocation(new double[] { 40.671773, -73.981115 });
@@ -184,7 +184,7 @@ public class RouterTest {
             public void run() {
                 Router.Callback callback = Mockito.mock(Router.Callback.class);
                 String endpoint = server.getUrl("").toString();
-                Router router = Router.getRouter()
+                Router router = new Router()
                         .setEndpoint(endpoint)
                         .setLocation(new double[] { 40.659241, -73.983776 })
                         .setLocation(new double[] { 40.671773, -73.981115 });
@@ -205,10 +205,10 @@ public class RouterTest {
             public void run() {
                 Router.Callback callback = Mockito.mock(Router.Callback.class);
                 String endpoint = server.getUrl("").toString();
-                Router router = Router.getRouter()
+                Router router = new Router()
                         .setEndpoint(endpoint)
                         .setLocation(new double[] { 40.659241, -73.983776 })
-                        .setLocation(new double[] { 40.671773, -73.981115 });
+                        .setLocation(new double[]{40.671773, -73.981115 });
                 router.setCallback(callback);
                 router.fetch();
                 Mockito.verify(callback).failure(statusCode.capture());
@@ -226,7 +226,7 @@ public class RouterTest {
             public void run() {
                 String endpoint = server.getUrl("").toString();
                 Router.Callback callback = Mockito.mock(Router.Callback.class);
-                Router router = Router.getRouter()
+                Router router = new Router()
                         .setEndpoint(endpoint)
                         .setLocation(new double[] { 40.659241, -73.983776 })
                         .setLocation(new double[] { 40.671773, -73.981115 });
