@@ -48,7 +48,7 @@ public class InstructionTest {
 
     static {JSONArray JSON1;
         try {
-            JSON1 = new JSONArray(getFixture("json").toString());
+            JSON1 = new JSONArray(getFixture("JSON").toString());
         } catch (JSONException e) {
             e.printStackTrace();
             JSON1 = null;
@@ -234,7 +234,7 @@ public class InstructionTest {
 
     @Test
     public void hasCorrectDistance() throws Exception {
-        assertThat(instruction.getDistance()).isEqualTo(1609);
+        assertThat(instruction.getDistance()).isEqualTo(160);
     }
 
     @Test
@@ -505,7 +505,7 @@ public class InstructionTest {
 
     public static String getFixture(String name) {
         String basedir = System.getProperty("user.dir");
-        File file = new File(basedir + "/src/test/fixtures/" + name + ".route");
+        File file = new File(basedir + "/src/test/fixtures/" + name);
         String fixture = "";
         try {
             fixture = Files.toString(file, Charsets.UTF_8);

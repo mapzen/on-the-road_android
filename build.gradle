@@ -1,15 +1,17 @@
 buildscript {
-  repositories {
+    repositories {
     mavenCentral()
     mavenLocal()
   }
   dependencies {
     classpath 'com.android.tools.build:gradle:1.1.3'
-    classpath 'com.github.dcendents:android-maven-plugin:1.2'
+      classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:0.11.91.4'
+      classpath 'com.github.dcendents:android-maven-plugin:1.2'
   }
 }
 
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply plugin: 'com.github.dcendents.android-maven'
 
 group = 'com.mapzen'
@@ -55,6 +57,7 @@ android {
       java.srcDir file('src/test/java/')
       java.srcDir file('build/generated/source/r/debug')
     }
+      main.java.srcDirs += 'src/main/kotlin'
   }
 }
 
@@ -69,10 +72,12 @@ tasks.withType(Test) {
 repositories {
   jcenter()
   maven { url 'http://repo.maven.apache.org/maven2' }
+    mavenCentral()
 }
 
 dependencies {
     compile 'com.android.support:support-v4:22.1.0'
+    compile 'org.jetbrains.kotlin:kotlin-stdlib:0.11.91'
     compile 'com.squareup.okhttp:okhttp:1.5.2'
     compile 'org.apache.commons:commons-io:1.3.2'
     compile 'com.google.guava:guava:16.0.1'

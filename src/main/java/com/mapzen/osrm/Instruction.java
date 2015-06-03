@@ -50,6 +50,7 @@ public class Instruction {
     }
 
     public Instruction(JSONArray json) throws JSONException {
+        System.out.println(json.toString());
         if (json.length() < 8) {
             throw new JSONException("too few arguments");
         }
