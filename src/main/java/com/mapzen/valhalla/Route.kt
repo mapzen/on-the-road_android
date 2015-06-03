@@ -53,15 +53,15 @@ public class Route {
 
     throws(javaClass())
     public fun getTotalDistance(): Int {
-        return Math.round(poly!!.get(poly!!.size() - 1).totalDistance).toInt();
+        return Math.round(poly!!.get(poly!!.size() - 1).totalDistance).toInt()
     }
 
     [throws(javaClass<JSONException>())]
     public fun getStatus(): Int? {
         if(rawRoute!!.optJSONObject("trip") == null) {
-            return -1;
+            return -1
         }
-        return rawRoute!!.optJSONObject("trip").getInt("status");
+        return rawRoute!!.optJSONObject("trip").getInt("status")
     }
 
     throws(javaClass<JSONException>())
@@ -171,8 +171,8 @@ public class Route {
                 } while (b >= 32)
                 val dlng = (if ((result and 1) != 0) (result shr 1).inv() else (result shr 1))
                 lng += dlng
-                val x = lat.toDouble() / 1E6.toDouble();
-                val y = lng.toDouble() / 1E6.toDouble();
+                val x = lat.toDouble() / 1E6.toDouble()
+                val y = lng.toDouble() / 1E6.toDouble()
                 val node = Node(x, y)
                 if (!poly!!.isEmpty()) {
                     val lastElement = poly!!.get(poly!!.size() - 1)
@@ -396,6 +396,6 @@ public class Route {
     }
 
     public fun getAccurateStartPoint() : Location {
-        return poly!!.get(0).getLocation();
+        return poly!!.get(0).getLocation()
     }
 }
