@@ -45,21 +45,23 @@ public class Route {
 
     public fun setJsonObject(jsonObject: JSONObject) {
         this.rawRoute = jsonObject
-        // TODO: Parse Valhalla response
-        // if (foundRoute()) {
-        //     initializeTurnByTurn(jsonObject.getJSONArray("route_instructions"));
-        //     initializePolyline(jsonObject.getString("route_geometry"));
-        // }
+        if (foundRoute()) {
+            initializePolyline(jsonObject.getJSONObject("trip").getJSONArray("legs").getJSONObject(0).getString("shape"))
+            initializeTurnByTurn(jsonObject.getJSONObject("trip").getJSONArray("legs").getJSONObject(0).getJSONArray("maneuvers"))
+        }
     }
 
     throws(javaClass())
     public fun getTotalDistance(): Int {
-        return getSummary().getInt("total_distance")
+        return Math.round(poly!!.get(poly!!.size() - 1).totalDistance).toInt();
     }
 
     [throws(javaClass<JSONException>())]
-    public fun getStatus(): Int {
-        return rawRoute!!.getJSONObject("trip").getInt("status")
+    public fun getStatus(): Int? {
+        if(rawRoute!!.optJSONObject("trip") == null) {
+            return -1;
+        }
+        return rawRoute!!.optJSONObject("trip").getInt("status");
     }
 
     throws(javaClass<JSONException>())
@@ -69,7 +71,7 @@ public class Route {
 
     throws(javaClass<JSONException>())
     public fun getTotalTime(): Int {
-        return getSummary().getInt("total_time")
+        return getSummary().getInt("time")
     }
 
     public fun getDistanceToNextInstruction(): Int {
@@ -85,7 +87,8 @@ public class Route {
         var gapDistance = 0
         this.instructions = ArrayList<Instruction>()
         for (i in 0..instructions.length() - 1) {
-            val instruction = Instruction(instructions.getJSONArray(i))
+            val instruction = Instruction(instructions.getJSONObject(i))
+            instruction.bearing = Math.ceil(poly!!.get(instruction.getBeginPolygonIndex()).bearing).toInt()
             if (!instruction.skip()) {
                 var distance = instruction.distance
                 distance += gapDistance
@@ -102,14 +105,14 @@ public class Route {
     public fun getRouteInstructions(): ArrayList<Instruction> {
         var accumulatedDistance = 0
         for (instruction in instructions!!) {
-            instruction.location = poly!!.get(instruction.getPolygonIndex()).getLocation()
+            instruction.location = poly!!.get(instruction.getBeginPolygonIndex()).getLocation()
             if (instruction.liveDistanceToNext < 0) {
                 accumulatedDistance += instruction.distance
                 instruction.liveDistanceToNext = accumulatedDistance
             }
         }
-        return instructions!!
-    }
+        return instructions!!    }
+
 
     public fun getGeometry(): ArrayList<Location> {
         val geometry = ArrayList<Location>()
@@ -121,10 +124,9 @@ public class Route {
 
     throws(javaClass<JSONException>())
     public fun getStartCoordinates(): Location {
-        val points = getViaPoints().getJSONArray(0)
         val location = Location(SNAP_PROVIDER)
-        location.setLatitude(points.getDouble(0))
-        location.setLongitude(points.getDouble(1))
+        location.setLatitude(poly!!.get(0).lat)
+        location.setLongitude(poly!!.get(0).lng)
         return location
     }
 
@@ -134,14 +136,13 @@ public class Route {
 
     throws(javaClass<JSONException>())
     private fun getViaPoints(): JSONArray {
-        return rawRoute!!.getJSONArray("via_points")
+        return rawRoute!!.getJSONObject("trip").getJSONArray("locations")
     }
 
     throws(javaClass<JSONException>())
     private fun getSummary(): JSONObject {
-        return rawRoute!!.getJSONObject("route_summary")
+        return rawRoute!!.getJSONObject("trip").getJSONArray("legs").getJSONObject(0).getJSONObject("summary")
     }
-
     private fun initializePolyline(encoded: String): ArrayList<Node> {
         var lastNode: Node? = null
         if (poly == null) {
@@ -161,7 +162,6 @@ public class Route {
                 } while (b >= 32)
                 val dlat = (if ((result and 1) != 0) (result shr 1).inv() else (result shr 1))
                 lat += dlat
-
                 shift = 0
                 result = 0
                 do {
@@ -255,6 +255,7 @@ public class Route {
         totalDistanceTravelled = 0.0
         var tempDist: Double = 0.0
         for (i in 0..currentLeg - 1) {
+
             tempDist += poly!!.get(i).legDistance
         }
         if (lastFixedPoint != null) {
@@ -389,8 +390,12 @@ public class Route {
         val next = getNextInstruction()
         if (next == null) {
             return
-        } else if (currentLeg >= next.getPolygonIndex()) {
+        } else if (currentLeg >= next.getBeginPolygonIndex()) {
             currentInstructionIndex++
         }
+    }
+
+    public fun getAccurateStartPoint() : Location {
+        return poly!!.get(0).getLocation();
     }
 }

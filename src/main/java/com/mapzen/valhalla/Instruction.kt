@@ -16,40 +16,53 @@ import java.util.Locale
 import com.mapzen.osrm.Route.SNAP_PROVIDER
 
 public class Instruction {
-    public val NO_TURN: Int = 0
-    public val GO_STRAIGHT: Int = 1
-    public val TURN_SLIGHT_RIGHT: Int = 2
-    public val TURN_RIGHT: Int = 3
-    public val TURN_SHARP_RIGHT: Int = 4
-    public val U_TURN: Int = 5
-    public val TURN_SHARP_LEFT: Int = 6
-    public val TURN_LEFT: Int = 7
-    public val TURN_SLIGHT_LEFT: Int = 8
-    public val REACH_VIA_POINT: Int = 9
-    public val HEAD_ON: Int = 10
-    public val ENTER_ROUND_ABOUT: Int = 11
-    public val LEAVE_ROUND_ABOUT: Int = 12
-    public val STAY_ON_ROUND_ABOUT: Int = 13
-    public val START_AT_END_OF_STREET: Int = 14
-    public val YOU_HAVE_ARRIVED: Int = 15
-    public val ENTER_AGAINST_ALLOWED_DIRECTION: Int = 16
-    public val LEAVE_AGAINST_ALLOWED_DIRECTION: Int = 17
-    public val INSTRUCTION_COUNT: Int = 18
-    private var json: JSONArray? = null;
+    public val NONE : Int = 0
+    public val START : Int = 1
+    public val START_RIGHT : Int = 2
+    public val START_LEFT : Int = 3
+    public val DESTINATION : Int = 4
+    public val DESTINATION_RIGHT : Int = 5
+    public val DESTINATION_LEFT : Int = 6
+    public val BECOMES : Int = 7
+    public val CONTINUE : Int = 8
+    public val SLIGHT_RIGHT : Int = 9
+    public val RIGHT : Int = 10
+    public val SHARP_RIGHT : Int = 11
+    public val U_TURN_RIGHT: Int = 12
+    public val U_TURN_LEFT : Int = 13
+    public val SHARP_LEFT : Int = 14
+    public val LEFT : Int = 15
+    public val SLIGHT_LEFT : Int = 16
+    public val RAMP_STRAIGHT : Int = 17
+    public val RAMP_RIGHT : Int = 18
+    public val RAMP_LEFT : Int = 19
+    public val EXIT_RIGHT : Int = 20
+    public val EXIT_LEFT : Int = 21
+    public val STAY_STRAIGHT : Int = 22
+    public val STAY_RIGHT : Int = 23
+    public val STAY_LEFT : Int = 24
+    public val MERGE : Int = 25
+    public val ROUNDABOUT_ENTER : Int = 26
+    public val ROUNDABOUT_EXIT: Int = 27
+    public val FERRY_ENTER: Int = 28
+    public val FERRY_EXIT: Int = 29
+
+    private var json: JSONObject? = null;
 
     public var turnInstruction: Int = 0
     public var distance: Int = 0
     public var location: Location = Location(SNAP_PROVIDER)
     public var liveDistanceToNext: Int = -1
+    public var bearing: Int = 0
 
     throws(javaClass<JSONException>())
-    public constructor(json: JSONArray) {
-        if (json.length() < 8) {
+    public constructor(json: JSONObject) {
+        if (json.length() < 6) {
             throw JSONException("too few arguments")
         }
         this.json = json
         turnInstruction = parseTurnInstruction(json)
-        distance = json.getInt(2)
+        distance = (json.getDouble("length") * 1000).toInt()
     }
 
     /**
@@ -59,121 +72,101 @@ public class Instruction {
     protected constructor() {
     }
 
-    public fun getHumanTurnInstruction(context: Context): String {
-        when (turnInstruction) {
-            NO_TURN -> return context.getString(R.string.no_turn)
-            GO_STRAIGHT -> return context.getString(R.string.go_straight)
-            TURN_SLIGHT_RIGHT -> return context.getString(R.string.turn_slight_right)
-            TURN_RIGHT -> return context.getString(R.string.turn_right)
-            TURN_SHARP_RIGHT -> return context.getString(R.string.turn_sharp_right)
-            U_TURN -> return context.getString(R.string.u_turn)
-            TURN_SHARP_LEFT -> return context.getString(R.string.turn_sharp_left)
-            TURN_LEFT -> return context.getString(R.string.turn_left)
-            TURN_SLIGHT_LEFT -> return context.getString(R.string.turn_slight_left)
-            REACH_VIA_POINT -> return context.getString(R.string.reach_via_point)
-            HEAD_ON -> return context.getString(R.string.head_on)
-            ENTER_ROUND_ABOUT -> return context.getString(R.string.enter_round_about)
-            LEAVE_ROUND_ABOUT -> return context.getString(R.string.leave_round_about)
-            STAY_ON_ROUND_ABOUT -> return context.getString(R.string.stay_on_round_about)
-            START_AT_END_OF_STREET -> return context.getString(R.string.start_at_end_of_street)
-            YOU_HAVE_ARRIVED -> return context.getString(R.string.you_have_arrived)
-            ENTER_AGAINST_ALLOWED_DIRECTION -> return context.getString(R.string.enter_against_allowed_direction)
-            LEAVE_AGAINST_ALLOWED_DIRECTION -> return context.getString(R.string.leave_against_allowed_direction)
-            else -> return context.getString(R.string.no_turn)
-        }
+    public fun getIntegerInstruction(context: Context): Int {
+       return turnInstruction;
     }
+
+    public fun getHumanTurnInstruction(context: Context): String {
+        return json!!.getString("instruction");
+    }
+
 
     throws(javaClass<JSONException>())
     public fun skip(): Boolean {
-        val raw = json!!.getString(1)
-        return raw.startsWith("{") && raw.endsWith("}")
+        if(json!!.optJSONArray("street_names") == null && json!!.getInt("type") != DESTINATION ) {
+            return true
+        }
+        return false;
     }
 
     throws(javaClass<JSONException>())
     public fun getName(): String {
-        val raw = json!!.getString(1)
-        if (raw.startsWith("{") && raw.endsWith("}")) {
-            val nameObject = JSONObject(raw)
-            return nameObject.getString("highway")
-        } else {
-            return raw
+        if(json!!.getInt("type") == DESTINATION) {
+            return "You have arrived at your destination."
         }
+        var streetName = "";
+        val numStreetNames = (json!!.getJSONArray("street_names").length())
+        for(i in 0..numStreetNames - 1) {
+            streetName += json!!.getJSONArray("street_names").get(i);
+            if((numStreetNames > 1) && (i < numStreetNames - 1)) {
+                streetName += "/"
+            }
+        }
+        return streetName;
     }
 
     public fun getFormattedDistance(): String {
-        return DistanceFormatter.format(distance)
+        return DistanceFormatter.format(distance.toInt())
     }
 
     throws(javaClass<JSONException>())
-    public fun getDirection(): String {
-        return json!!.getString(6)
+    public fun getBeginPolygonIndex(): Int {
+        return json!!.getInt("begin_shape_index");
     }
 
     throws(javaClass<JSONException>())
-    public fun getPolygonIndex(): Int {
-        return json!!.getInt(3)
+    public fun getEndPolygonIndex(): Int {
+        return json!!.getInt("end_shape_index");
     }
 
-    throws(javaClass<JSONException>())
     public fun getDirectionAngle(): Float {
-        val direction = getDirection()
+        val direction = bearing
         var angle: Float = 0.0f
-        if (direction == "NE") {
+        if (direction >= 315.0 && direction <= 360.0 ) {
             angle = 315.0.toFloat()
-        } else if (direction == "E") {
+        } else if (direction >= 270.0 && direction < 315.0) {
             angle = 270.0.toFloat()
-        } else if (direction == "SE") {
+        } else if (direction >= 225.0 && direction < 270.0) {
             angle = 225.0.toFloat()
-        } else if (direction == "S") {
+        } else if (direction >= 180.0 && direction < 225.0) {
             angle = 180.0.toFloat()
-        } else if (direction == "SW") {
+        } else if (direction >= 135.0 && direction < 180.0) {
             angle = 135.0.toFloat()
-        } else if (direction == "W") {
+        } else if (direction >= 90.0 && direction < 135.0) {
             angle = 90.0.toFloat()
-        } else if (direction == "NW") {
+        } else if (direction >= 45.0 && direction < 90.0) {
             angle = 45.0.toFloat()
+        } else if (direction >= 0.0 && direction < 45.0) {
+            angle = 0.0.toFloat()
         }
         return angle
     }
 
-    throws(javaClass<JSONException>())
+    public fun getDirection(): String {
+        var direction = ""
+        if (bearing >= 315.0 && bearing >= 360.0 ) {
+            direction = "NE"
+        } else if (bearing >= 270.0 && bearing < 315.0) {
+            direction = "E"
+        } else if (bearing >= 225.0 && bearing < 270.0) {
+            direction = "SE"
+        } else if (bearing >= 180.0 && bearing < 225.0) {
+            direction = "S"
+        } else if (bearing >= 135.0 && bearing < 180.0) {
+            direction = "SW"
+        } else if (bearing >= 90.0 && bearing < 135.0) {
+            direction = "W"
+        } else if (bearing >= 45.0 && bearing < 90.0) {
+            direction = "NW"
+        } else if (bearing >= 0.0 && bearing < 45.0) {
+            direction = "N"
+        }
+        return direction
+    }
+
+        throws(javaClass<JSONException>())
     public fun getRotationBearing(): Int {
-        return 360 - json!!.getInt(7)
-    }
-
-    throws(javaClass<JSONException>())
-    public fun getBearing(): Int {
-        return json!!.getInt(7)
-    }
-
-    throws(javaClass<JSONException>())
-    public fun getFullInstruction(context: Context): String {
-        return getFullInstructionBeforeAction(context)
-    }
-
-    throws(javaClass<JSONException>())
-    public fun getFullInstructionBeforeAction(context: Context): String {
-        if (turnInstruction == HEAD_ON || turnInstruction == GO_STRAIGHT) {
-            return context.getString(R.string.full_instruction_before_straight, getHumanTurnInstruction(context), getName(), DistanceFormatter.format(distance, true))
-        } else if (turnInstruction == YOU_HAVE_ARRIVED) {
-            return context.getString(R.string.full_instruction_destination, getHumanTurnInstruction(context), getName())
-        } else {
-            return context.getString(R.string.full_instruction_before_default, getHumanTurnInstruction(context), getName(), DistanceFormatter.format(distance, true))
-        }
-    }
-
-    throws(javaClass<JSONException>())
-    public fun getFullInstructionAfterAction(context: Context): String {
-        if (turnInstruction == YOU_HAVE_ARRIVED) {
-            return context.getString(R.string.full_instruction_destination, getHumanTurnInstruction(context), getName())
-        }
-
-        return context.getString(R.string.full_instruction_after, getName(), DistanceFormatter.format(distance, false))
-    }
-
-    throws(javaClass<JSONException>())
-    public fun getSimpleInstruction(context: Context): String {
-        return context.getString(R.string.simple_instruction, getHumanTurnInstruction(context), getName())
+        return 360 - bearing
     }
 
     override fun toString(): String {
@@ -193,7 +186,7 @@ public class Instruction {
         }
         val other = obj as Instruction
         try {
-            return (turnInstruction == other.turnInstruction && getBearing() == other.getBearing() && location.getLatitude() == other.location.getLatitude() && location.getLongitude() == other.location.getLongitude())
+            return (turnInstruction == other.turnInstruction && bearing == other.bearing && location.getLatitude() == other.location.getLatitude() && location.getLongitude() == other.location.getLongitude())
         } catch (e: JSONException) {
             Log.e("Json exception", "Unable to get bearing", e)
             return false
@@ -202,19 +195,8 @@ public class Instruction {
     }
 
     throws(javaClass<JSONException>())
-    private fun parseTurnInstruction(json: JSONArray): Int {
-        val turn = json.getString(0)
-        val split = turn.split("-")
-        return Integer.valueOf(split[0])!!
+    private fun parseTurnInstruction(json: JSONObject): Int {
+        val turn = json.getString("type")
+        return Integer.valueOf(turn)!!
     }
-
-    throws(javaClass<JSONException>())
-    public fun getSimpleInstructionAfterAction(context: Context): String {
-        if (turnInstruction == YOU_HAVE_ARRIVED) {
-            return getFullInstructionBeforeAction(context)
-        }
-
-        return context.getString(R.string.simple_instruction_after, getName())
-    }
-
 }

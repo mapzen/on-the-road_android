@@ -80,7 +80,6 @@ public class Router : Runnable {
         }
 
         val params = java.lang.String.format(ROUTE_PARAMS, locations.get(0)[0], locations.get(0)[1], locations.get(1)[0], locations.get(1)[1], type)
-
         return URL(endpoint + URLEncoder.encode(params, "utf-8"))
     }
 
@@ -139,9 +138,4 @@ public class Router : Runnable {
         public fun failure(statusCode: Int)
     }
 
-    companion object {
-
-
-
-    }
 }

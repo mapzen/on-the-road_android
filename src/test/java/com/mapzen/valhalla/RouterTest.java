@@ -140,8 +140,8 @@ public class RouterTest {
                 Router.Callback callback = Mockito.mock(Router.Callback.class);
                 Router router = new Router()
                         .setEndpoint(endpoint)
-                        .setLocation(new double[] { 40.659241, -73.983776 })
-                        .setLocation(new double[] { 40.671773, -73.981115 });
+                        .setLocation(new double[]{40.659241, -73.983776})
+                        .setLocation(new double[]{40.671773, -73.981115});
                 router.setCallback(callback);
                 router.fetch();
                 Mockito.verify(callback).success(route.capture());
