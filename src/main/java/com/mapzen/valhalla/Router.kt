@@ -1,10 +1,14 @@
 package com.mapzen.valhalla
 
+import android.util.Log
+import android.widget.Toast
 import com.google.common.base.Charsets
 import com.google.common.io.CharStreams
+import com.google.gson.Gson
 import com.squareup.okhttp.OkHttpClient
 
 import org.json.JSONException
+import retrofit.*
 
 import java.io.IOException
 import java.io.InputStream
@@ -12,13 +16,17 @@ import java.io.InputStreamReader
 import java.io.UnsupportedEncodingException
 import java.net.HttpURLConnection
 import java.net.MalformedURLException
+import retrofit.http.GET
+import retrofit.client.Response
+import retrofit.http.Query;
 import java.net.URL
 import java.net.URLEncoder
 import java.util.ArrayList
 
 public class Router : Runnable {
-    private val DEFAULT_URL = "http://valhalla.api.dev.mapzen.com/route"
-    private val ROUTE_PARAMS = "?json={\"locations\":" + "[{\"lat\":%1f,\"lon\":%2f},{\"lat\":%3f,\"lon\":%4f}]," + "\"costing\":\"%s\",\"output\":\"json\"}"
+    private val DEFAULT_URL = "http://valhalla.dev.mapzen.com/"
+    private val ROUTE_PARAMS = "?json={\"locations\":" + "[{\"lat\":%1f,\"lon\":%2f},{\"lat\":%3f,\"lon\":%4f}]," + "\"costing\":\"%s\",\"output\":\"json\"}&api_key=%s"
+    private var API_KEY = "";
     private var endpoint = DEFAULT_URL
     private val client = OkHttpClient()
     private var type = Type.DRIVING
@@ -34,8 +42,9 @@ public class Router : Runnable {
         }
     }
 
-    public fun getRouter(): Router {
-        return Router()
+    public fun setApiKey(key : String) : Router {
+        API_KEY = key
+        return this;
     }
 
     public fun setEndpoint(endpoint: String): Router {
@@ -73,16 +82,6 @@ public class Router : Runnable {
         return CharStreams.toString(InputStreamReader(`in`, Charsets.UTF_8))
     }
 
-    throws(javaClass<MalformedURLException>(), javaClass<UnsupportedEncodingException>())
-    public fun getRouteUrl(): URL {
-        if (locations.size() < 2) {
-            throw MalformedURLException()
-        }
-
-        val params = java.lang.String.format(ROUTE_PARAMS, locations.get(0)[0], locations.get(0)[1], locations.get(1)[0], locations.get(1)[1], type)
-        return URL(endpoint + URLEncoder.encode(params, "utf-8"))
-    }
-
     public fun setCallback(callback: Callback): Router {
         this.callback = callback
         return this
@@ -96,46 +95,56 @@ public class Router : Runnable {
     }
 
     override fun run() {
-        var `in`: InputStream? = null
-        try {
-            val connection = client.open(getRouteUrl())
-            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                callback!!.failure(connection.getResponseCode())
-                return
-            }
-            `in` = connection.getInputStream()
-            val responseText = readInputStream(`in`!!)
-            var route: Route? = null
-            try {
-                route = Route(responseText)
-            } catch (e: JSONException) {
-                e.printStackTrace()
-            }
-
-            if (route!!.foundRoute()) {
-                callback!!.success(route!!)
-            } else {
-                callback!!.failure(207)
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
-        } catch (e: JSONException) {
-            e.printStackTrace()
-        } finally {
-            if (`in` != null) {
-                try {
-                    `in`!!.close()
-                } catch (e: IOException) {
-                    e.printStackTrace()
+            var route: Route? = null;
+            var requestInterceptor: RequestInterceptor = RequestInterceptor() {
+                fun intercept(request: RequestInterceptor.RequestFacade) {
+                    request.addHeader("api_key", API_KEY);
                 }
+            };
 
-            }
-        }
+            var restAdapter: RestAdapter = RestAdapter.Builder()
+                    .setEndpoint(DEFAULT_URL)
+                    .setRequestInterceptor(requestInterceptor)
+                    .build()
+
+            var routingService = RestAdapterFactory(restAdapter).getRoutingService();
+            var json: JSON = JSON();
+            json.locations[0] = JSON.location()
+            json.locations[1] = JSON.location()
+            json.locations[0].lat = "33"
+            json.locations[0].lon ="33"
+            json.locations[1].lat ="33"
+            json.locations[1].lon = "33"
+            json.costing = this.type.toString()
+
+            var gson : Gson  =  Gson();
+        Log.d("ERER",gson.toJson(json).toString());
+    //    gson.toJson(json).toString(),
+        routingService.getRoute(
+                    API_KEY,
+                ((object: retrofit.Callback<Result> {
+                    override fun failure(error: RetrofitError?) {
+                        Log.d("ERROR",error!!.getUrl().toString());
+                        throw UnsupportedOperationException()
+                    }
+
+                    override fun success(t: Result?, response: Response?) {
+                        throw UnsupportedOperationException()
+                    }
+
+                }) as retrofit.Callback<Result> ))
+//            if ( route!!.foundRoute()) {
+//                callback!!.success(route as Route);
+//            } else {
+//                callback!!.failure(207);
+//            }
+
     }
 
     public trait Callback {
         public fun success(route: Route)
         public fun failure(statusCode: Int)
     }
+
 
 }

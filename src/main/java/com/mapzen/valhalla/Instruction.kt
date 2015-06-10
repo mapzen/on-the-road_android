@@ -72,12 +72,12 @@ public class Instruction {
     protected constructor() {
     }
 
-    public fun getIntegerInstruction(context: Context): Int {
+    public fun getIntegerInstruction(): Int {
        return turnInstruction;
     }
 
-    public fun getHumanTurnInstruction(context: Context): String {
-        return json!!.getString("instruction");
+    public fun getHumanTurnInstruction(): String? {
+        return json?.getString("instruction");
     }
 
 

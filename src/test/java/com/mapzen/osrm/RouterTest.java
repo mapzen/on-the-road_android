@@ -55,7 +55,7 @@ public class RouterTest {
     @Test
     public void shouldHaveDefaultEndpoint() throws Exception {
         URL url = validRouter.getRouteUrl();
-        assertThat(url.toString()).startsWith("http://osrm.test.mapzen.com");
+        assertThat(url.toString()).startsWith("http://osrm.mapzen.com");
     }
 
     @Test

@@ -211,7 +211,7 @@ public class InstructionTest {
 
     @Test
     public void shouldGetCorrectHumanTurnInstruction() {
-        assertThat(instruction.getHumanTurnInstruction(application)).isEqualTo("Go southeast on 19th Street.");
+        assertThat(instruction.getHumanTurnInstruction()).isEqualTo("Go southeast on 19th Street.");
     }
 
     @Test

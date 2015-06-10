@@ -114,7 +114,7 @@ public class RouteTest {
         //TODO Once strings are corrected for valhalla add test for correct turn by turn instructions
         for(Instruction instruction: brooklynRoute.getRouteInstructions()) {
             String expectedDirection = expectedPoints.next();
-            String instructionDirection = instruction.getHumanTurnInstruction(application);
+            String instructionDirection = instruction.getHumanTurnInstruction();
             assertThat(instructionDirection).isEqualTo(expectedDirection);
         }
     }
@@ -303,8 +303,8 @@ public class RouteTest {
         myroute.addSeenInstruction(instructions.get(1));
         Instruction instruction = myroute.getNextInstruction();
         Instruction i = instructions.get(instructions.size() - 1);
-        assertThat(instruction.getHumanTurnInstruction(application))
-                .isNotEqualTo(i.getHumanTurnInstruction(application));
+        assertThat(instruction.getHumanTurnInstruction())
+                .isNotEqualTo(i.getHumanTurnInstruction());
     }
 
     @Test
@@ -324,7 +324,7 @@ public class RouteTest {
     public void getRouteInstructions_shouldPopulateLastInstruction() throws Exception {
         Route myroute = getRoute("brooklyn_valhalla");
         ArrayList<Instruction> instructions = myroute.getRouteInstructions();
-        assertThat(instructions.get(instructions.size() - 1).getHumanTurnInstruction(application))
+        assertThat(instructions.get(instructions.size() - 1).getHumanTurnInstruction())
                 .isEqualTo("You have arrived at your destination.");
     }
 
