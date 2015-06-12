@@ -1,10 +1,10 @@
 package com.mapzen.helpers;
 
-import com.mapzen.osrm.Router;
+import com.mapzen.valhalla.Router;
 
 import java.util.HashMap;
 
-import static com.mapzen.osrm.Router.Type.DRIVING;
+import static com.mapzen.valhalla.Router.Type.DRIVING;
 
 public class ZoomController {
     public static final int DEFAULT_ZOOM = 17;

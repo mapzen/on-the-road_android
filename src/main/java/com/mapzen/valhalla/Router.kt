@@ -6,6 +6,7 @@ import com.google.common.base.Charsets
 import com.google.common.io.CharStreams
 import com.google.gson.Gson
 import com.squareup.okhttp.OkHttpClient
+import org.apache.commons.io.IOUtils
 
 import org.json.JSONException
 import retrofit.*
@@ -24,7 +25,7 @@ import java.net.URLEncoder
 import java.util.ArrayList
 
 public class Router : Runnable {
-    private val DEFAULT_URL = "http://valhalla.dev.mapzen.com/"
+    private val DEFAULT_URL = "http://valhalla.mapzen.com/"
     private val ROUTE_PARAMS = "?json={\"locations\":" + "[{\"lat\":%1f,\"lon\":%2f},{\"lat\":%3f,\"lon\":%4f}]," + "\"costing\":\"%s\",\"output\":\"json\"}&api_key=%s"
     private var API_KEY = "";
     private var endpoint = DEFAULT_URL
@@ -53,6 +54,7 @@ public class Router : Runnable {
     }
 
     public fun setWalking(): Router {
+
         this.type = Type.WALKING
         return this
     }
@@ -78,8 +80,8 @@ public class Router : Runnable {
     }
 
     throws(javaClass<IOException>())
-    private fun readInputStream(`in`: InputStream): String {
-        return CharStreams.toString(InputStreamReader(`in`, Charsets.UTF_8))
+    private fun readInputStream(`in`: InputStream?): String {
+        return CharStreams.toString(InputStreamReader(`in`))
     }
 
     public fun setCallback(callback: Callback): Router {
@@ -96,55 +98,51 @@ public class Router : Runnable {
 
     override fun run() {
             var route: Route? = null;
-            var requestInterceptor: RequestInterceptor = RequestInterceptor() {
-                fun intercept(request: RequestInterceptor.RequestFacade) {
-                    request.addHeader("api_key", API_KEY);
-                }
-            };
+
 
             var restAdapter: RestAdapter = RestAdapter.Builder()
                     .setEndpoint(DEFAULT_URL)
-                    .setRequestInterceptor(requestInterceptor)
+                    .setLogLevel(RestAdapter.LogLevel.FULL)
                     .build()
 
             var routingService = RestAdapterFactory(restAdapter).getRoutingService();
             var json: JSON = JSON();
             json.locations[0] = JSON.location()
             json.locations[1] = JSON.location()
-            json.locations[0].lat = "33"
-            json.locations[0].lon ="33"
-            json.locations[1].lat ="33"
-            json.locations[1].lon = "33"
+            json.locations[0].lat = locations.get(0)[0].toString()
+            json.locations[0].lon = locations.get(0)[1].toString()
+            json.locations[1].lat =  locations.get(1)[0].toString()
+            json.locations[1].lon =  locations.get(1)[1].toString()
             json.costing = this.type.toString()
 
             var gson : Gson  =  Gson();
-        Log.d("ERER",gson.toJson(json).toString());
-    //    gson.toJson(json).toString(),
-        routingService.getRoute(
+
+        routingService.getRoute(gson.toJson(json).toString(),
                     API_KEY,
                 ((object: retrofit.Callback<Result> {
                     override fun failure(error: RetrofitError?) {
-                        Log.d("ERROR",error!!.getUrl().toString());
-                        throw UnsupportedOperationException()
+                             callback!!.failure(207)
                     }
 
-                    override fun success(t: Result?, response: Response?) {
-                        throw UnsupportedOperationException()
+                    override fun success(t: Result?, response: Response) {
+                        if (response.getBody() != null) {
+                            try {
+                                var input = response.getBody().`in`()
+                                var route = callback!!.success(Route(readInputStream(input)))
+                                input.close()
+                            } catch (e: IOException) {
+                                e.printStackTrace()
+                            }
+
+                        }
                     }
 
                 }) as retrofit.Callback<Result> ))
-//            if ( route!!.foundRoute()) {
-//                callback!!.success(route as Route);
-//            } else {
-//                callback!!.failure(207);
-//            }
-
     }
-
     public trait Callback {
-        public fun success(route: Route)
+        public fun success(route: Route?)
         public fun failure(statusCode: Int)
     }
 
-
 }
+

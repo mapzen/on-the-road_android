@@ -16,9 +16,9 @@ import static com.mapzen.helpers.ZoomController.DrivingSpeed.MPH_25_TO_35;
 import static com.mapzen.helpers.ZoomController.DrivingSpeed.MPH_35_TO_50;
 import static com.mapzen.helpers.ZoomController.DrivingSpeed.MPH_OVER_50;
 import static com.mapzen.helpers.ZoomController.milesPerHourToMetersPerSecond;
-import static com.mapzen.osrm.Router.Type.BIKING;
-import static com.mapzen.osrm.Router.Type.DRIVING;
-import static com.mapzen.osrm.Router.Type.WALKING;
+import static com.mapzen.valhalla.Router.Type.BIKING;
+import static com.mapzen.valhalla.Router.Type.DRIVING;
+import static com.mapzen.valhalla.Router.Type.WALKING;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class ZoomControllerTest {

@@ -13,7 +13,6 @@ import android.util.Log
 
 import java.util.Locale
 
-import com.mapzen.osrm.Route.SNAP_PROVIDER
 
 public class Instruction {
     public val NONE : Int = 0
@@ -51,7 +50,7 @@ public class Instruction {
 
     public var turnInstruction: Int = 0
     public var distance: Int = 0
-    public var location: Location = Location(SNAP_PROVIDER)
+    public var location: Location = Location("snap")
     public var liveDistanceToNext: Int = -1
     public var bearing: Int = 0
 
