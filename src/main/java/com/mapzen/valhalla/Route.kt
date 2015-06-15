@@ -64,7 +64,6 @@ public class Route {
         return rawRoute!!.optJSONObject("trip").getInt("status")
     }
 
-    throws(javaClass<JSONException>())
     public fun foundRoute(): Boolean {
         return getStatus() == 0
     }

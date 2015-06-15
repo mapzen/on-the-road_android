@@ -28,11 +28,12 @@ public class Router : Runnable {
     private val DEFAULT_URL = "http://valhalla.mapzen.com/"
     private val ROUTE_PARAMS = "?json={\"locations\":" + "[{\"lat\":%1f,\"lon\":%2f},{\"lat\":%3f,\"lon\":%4f}]," + "\"costing\":\"%s\",\"output\":\"json\"}&api_key=%s"
     private var API_KEY = "";
-    private var endpoint = DEFAULT_URL
+    private var endpoint: String = DEFAULT_URL
     private val client = OkHttpClient()
     private var type = Type.DRIVING
     private val locations = ArrayList<DoubleArray>()
     private var callback: Callback? = null
+
     public enum class Type(private val type: String) {
         WALKING : Type("pedestrian")
         BIKING : Type("bicycle")
@@ -43,14 +44,9 @@ public class Router : Runnable {
         }
     }
 
-    public fun setApiKey(key : String) : Router {
+    public fun setApiKey(key: String): Router {
         API_KEY = key
         return this;
-    }
-
-    public fun setEndpoint(endpoint: String): Router {
-        this.endpoint = endpoint
-        return this
     }
 
     public fun setWalking(): Router {
@@ -79,6 +75,15 @@ public class Router : Runnable {
         return this
     }
 
+    public fun setEndpoint(url : String) : Router {
+        endpoint = url;
+        return this
+    }
+
+    public fun getEndpoint() : String {
+       return endpoint
+    }
+
     throws(javaClass<IOException>())
     private fun readInputStream(`in`: InputStream?): String {
         return CharStreams.toString(InputStreamReader(`in`))
@@ -97,31 +102,21 @@ public class Router : Runnable {
     }
 
     override fun run() {
-            var route: Route? = null;
+        var route: Route? = null;
 
 
-            var restAdapter: RestAdapter = RestAdapter.Builder()
-                    .setEndpoint(DEFAULT_URL)
-                    .setLogLevel(RestAdapter.LogLevel.FULL)
-                    .build()
+        var restAdapter: RestAdapter = RestAdapter.Builder()
+                .setEndpoint(DEFAULT_URL)
+                .setLogLevel(RestAdapter.LogLevel.FULL)
+                .build()
 
-            var routingService = RestAdapterFactory(restAdapter).getRoutingService();
-            var json: JSON = JSON();
-            json.locations[0] = JSON.location()
-            json.locations[1] = JSON.location()
-            json.locations[0].lat = locations.get(0)[0].toString()
-            json.locations[0].lon = locations.get(0)[1].toString()
-            json.locations[1].lat =  locations.get(1)[0].toString()
-            json.locations[1].lon =  locations.get(1)[1].toString()
-            json.costing = this.type.toString()
-
-            var gson : Gson  =  Gson();
-
-        routingService.getRoute(gson.toJson(json).toString(),
-                    API_KEY,
-                ((object: retrofit.Callback<Result> {
+        var routingService = RestAdapterFactory(restAdapter).getRoutingService();
+        var gson: Gson = Gson();
+        routingService.getRoute(gson.toJson(getJSONRequest()).toString(),
+                API_KEY,
+                ((object : retrofit.Callback<Result> {
                     override fun failure(error: RetrofitError?) {
-                             callback!!.failure(207)
+                        callback!!.failure(207)
                     }
 
                     override fun success(t: Result?, response: Response) {
@@ -133,12 +128,27 @@ public class Router : Runnable {
                             } catch (e: IOException) {
                                 e.printStackTrace()
                             }
-
                         }
                     }
 
                 }) as retrofit.Callback<Result> ))
     }
+
+    public fun getJSONRequest(): JSON {
+        if (locations.size() < 2) {
+            throw  MalformedURLException();
+        }
+        var json: JSON = JSON();
+        json.locations[0] = JSON.location()
+        json.locations[1] = JSON.location()
+        json.locations[0].lat = locations.get(0)[0].toString()
+        json.locations[0].lon = locations.get(0)[1].toString()
+        json.locations[1].lat = locations.get(1)[0].toString()
+        json.locations[1].lon = locations.get(1)[1].toString()
+        json.costing = this.type.toString()
+        return json
+    }
+
     public trait Callback {
         public fun success(route: Route?)
         public fun failure(statusCode: Int)
