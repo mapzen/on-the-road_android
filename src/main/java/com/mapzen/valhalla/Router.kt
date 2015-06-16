@@ -152,5 +152,9 @@ public class Router : Runnable {
         public fun failure(statusCode: Int)
     }
 
+    public class Result {
+
+    }
+
 }
 
