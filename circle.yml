@@ -13,7 +13,7 @@ dependencies:
 
 test:
   override:
-    - ./gradlew
+    - ./gradlew --stacktrace --info --debug
 
 deployment:
   master:
