@@ -26,10 +26,8 @@ import java.util.ArrayList
 
 public class Router : Runnable {
     private val DEFAULT_URL = "http://valhalla.mapzen.com/"
-    private val ROUTE_PARAMS = "?json={\"locations\":" + "[{\"lat\":%1f,\"lon\":%2f},{\"lat\":%3f,\"lon\":%4f}]," + "\"costing\":\"%s\",\"output\":\"json\"}&api_key=%s"
     private var API_KEY = "";
     private var endpoint: String = DEFAULT_URL
-    private val client = OkHttpClient()
     private var type = Type.DRIVING
     private val locations = ArrayList<DoubleArray>()
     private var callback: Callback? = null
@@ -75,16 +73,16 @@ public class Router : Runnable {
         return this
     }
 
-    public fun setEndpoint(url : String) : Router {
+    public fun setEndpoint(url: String): Router {
         endpoint = url;
         return this
     }
 
-    public fun getEndpoint() : String {
-       return endpoint
+    public fun getEndpoint(): String {
+        return endpoint
     }
 
-    throws(javaClass<IOException>())
+    throws(IOException::class)
     private fun readInputStream(`in`: InputStream?): String {
         return CharStreams.toString(InputStreamReader(`in`))
     }
@@ -123,7 +121,7 @@ public class Router : Runnable {
                         if (response.getBody() != null) {
                             try {
                                 var input = response.getBody().`in`()
-                                var route = callback!!.success(Route(readInputStream(input)))
+                                callback!!.success(Route(readInputStream(input)))
                                 input.close()
                             } catch (e: IOException) {
                                 e.printStackTrace()
@@ -149,7 +147,7 @@ public class Router : Runnable {
         return json
     }
 
-    public trait Callback {
+    public interface Callback {
         public fun success(route: Route?)
         public fun failure(statusCode: Int)
     }
