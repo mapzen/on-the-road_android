@@ -19,4 +19,4 @@ deployment:
   master:
     branch: master
     commands:
-      - ./gradlew uploadArchives -PsonatypeUsername=${env.SONATYPE_NEXUS_SNAPSHOTS_USERNAME} -PsonatypePassword=${env.SONATYPE_NEXUS_SNAPSHOTS_PASSWORD}
+      - ./gradlew uploadArchives -PsonatypeUsername=$SONATYPE_NEXUS_SNAPSHOTS_USERNAME -PsonatypePassword=$SONATYPE_NEXUS_SNAPSHOTS_PASSWORD
