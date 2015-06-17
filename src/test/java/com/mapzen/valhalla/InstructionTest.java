@@ -1,10 +1,14 @@
 package com.mapzen.valhalla;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
 import com.mapzen.helpers.DistanceFormatter;
 import com.mapzen.ontheroad.R;
-import com.mapzen.osrm.Instruction;
 
+import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,72 +16,61 @@ import org.robolectric.RobolectricTestRunner;
 
 import android.location.Location;
 
+import java.io.File;
 import java.util.Locale;
 
 import static com.mapzen.TestUtils.getLocation;
-import static com.mapzen.osrm.Instruction.ENTER_AGAINST_ALLOWED_DIRECTION;
-import static com.mapzen.osrm.Instruction.ENTER_ROUND_ABOUT;
-import static com.mapzen.osrm.Instruction.GO_STRAIGHT;
-import static com.mapzen.osrm.Instruction.HEAD_ON;
-import static com.mapzen.osrm.Instruction.INSTRUCTION_COUNT;
-import static com.mapzen.osrm.Instruction.LEAVE_AGAINST_ALLOWED_DIRECTION;
-import static com.mapzen.osrm.Instruction.LEAVE_ROUND_ABOUT;
-import static com.mapzen.osrm.Instruction.NO_TURN;
-import static com.mapzen.osrm.Instruction.REACH_VIA_POINT;
-import static com.mapzen.osrm.Instruction.START_AT_END_OF_STREET;
-import static com.mapzen.osrm.Instruction.STAY_ON_ROUND_ABOUT;
-import static com.mapzen.osrm.Instruction.TURN_LEFT;
-import static com.mapzen.osrm.Instruction.TURN_RIGHT;
-import static com.mapzen.osrm.Instruction.TURN_SHARP_LEFT;
-import static com.mapzen.osrm.Instruction.TURN_SHARP_RIGHT;
-import static com.mapzen.osrm.Instruction.TURN_SLIGHT_LEFT;
-import static com.mapzen.osrm.Instruction.TURN_SLIGHT_RIGHT;
-import static com.mapzen.osrm.Instruction.U_TURN;
-import static com.mapzen.osrm.Instruction.YOU_HAVE_ARRIVED;
-import static com.mapzen.osrm.Route.SNAP_PROVIDER;
+import static java.lang.System.getProperty;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.robolectric.Robolectric.application;
 
+
 @RunWith(RobolectricTestRunner.class)
 public class InstructionTest {
-    private static final JSONArray JSON = new JSONArray("[\n" +
-            "\"10\",\n" +
-            "\"19th Street\",\n" +
-            "1609,\n" +
-            "8,\n" +
-            "0,\n" +
-            "\"1609m\",\n" +
-            "\"SE\",\n" +
-            "128\n" +
-            "]\n");
+    private static final JSONObject JSON;
 
-    private static final JSONArray NON_INT_TURN_JSON = new JSONArray("[\n" +
-            "\"11-1\",\n" +
-            "\"19th Street\",\n" +
-            "1609,\n" +
-            "8,\n" +
-            "0,\n" +
-            "\"1609m\",\n" +
-            "\"SE\",\n" +
-            "128\n" +
-            "]\n");
+    static {
+        JSONObject JSON1;
+        try {
+            JSON1 = new JSONObject(getInstructionFixture("json_valhalla"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+            JSON1 = null;
+        }
+        JSON = JSON1;
+    }
 
-    private static final JSONArray STREET_NOT_FOUND = new JSONArray("[\n"
-            + "            \"11-3\",\n"
-            + "            \"{\\\"highway\\\":\\\"unclassified\\\", \\\"message\\\":\\\"name not found\\\"}\",\n"
-            + "            31,\n"
-            + "            5345,\n"
-            + "            5,\n"
-            + "            \"30m\",\n"
-            + "            \"N\",\n"
-            + "            8\n"
-            + "        ]");
+    private static final JSONObject DOUBLE_STREET_NAME;
 
-    private com.mapzen.osrm.Instruction instruction;
+    static {
+        JSONObject DOUBLE_STREET_NAME1;
+        try {
+            DOUBLE_STREET_NAME1 = new JSONObject(getInstructionFixture("double_street_name_valhalla"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+            DOUBLE_STREET_NAME1 = null;
+        }
+        DOUBLE_STREET_NAME = DOUBLE_STREET_NAME1;
+    }
+
+    private static final JSONObject STREET_NOT_FOUND;
+
+    static {
+        JSONObject STREET_NOT_FOUND1;
+        try {
+            STREET_NOT_FOUND1 = new JSONObject(getInstructionFixture("street_not_found_valhalla"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+            STREET_NOT_FOUND1 = null;
+        }
+        STREET_NOT_FOUND = STREET_NOT_FOUND1;
+    }
+
+    private com.mapzen.valhalla.Instruction instruction;
 
     @Before
     public void setup() throws Exception {
-        instruction = new com.mapzen.osrm.Instruction(JSON);
+        instruction = new com.mapzen.valhalla.Instruction(JSON);
         Locale.setDefault(Locale.US);
     }
 
@@ -93,115 +86,7 @@ public class InstructionTest {
 
     @Test
     public void hasCorrectTurnInstruction() throws Exception {
-        assertThat(instruction.getTurnInstruction()).isNotEqualTo(0);
-    }
-
-    @Test
-    public void turnInstructionHasNoTurn() {
-        assertThat(getInstructionWithTurn(NO_TURN).getHumanTurnInstruction(application))
-                .isEqualTo(application.getString(R.string.no_turn));
-    }
-
-    @Test
-    public void turnInstructionHasGoStraight() {
-        assertThat(getInstructionWithTurn(GO_STRAIGHT).getHumanTurnInstruction(application))
-                .isEqualTo(application.getString(R.string.go_straight));
-    }
-
-    @Test
-    public void turnInstructionHasTurnSlightRight() {
-        assertThat(getInstructionWithTurn(TURN_SLIGHT_RIGHT).getHumanTurnInstruction(application))
-                .isEqualTo(application.getString(R.string.turn_slight_right));
-    }
-
-    @Test
-    public void turnInstructionHasTurnRight() {
-        assertThat(getInstructionWithTurn(TURN_RIGHT).getHumanTurnInstruction(application))
-                .isEqualTo(application.getString(R.string.turn_right));
-    }
-
-    @Test
-    public void turnInstructionHasTurnSharpRight() {
-        assertThat(getInstructionWithTurn(TURN_SHARP_RIGHT).getHumanTurnInstruction(application))
-                .isEqualTo(application.getString(R.string.turn_sharp_right));
-    }
-
-    @Test
-    public void turnInstructionHasUTurn() {
-        assertThat(getInstructionWithTurn(U_TURN).getHumanTurnInstruction(application))
-                .isEqualTo(application.getString(R.string.u_turn));
-    }
-
-    @Test
-    public void turnInstructionHasTurnSharpLeft() {
-        assertThat(getInstructionWithTurn(TURN_SHARP_LEFT).getHumanTurnInstruction(application))
-                .isEqualTo(application.getString(R.string.turn_sharp_left));
-    }
-
-    @Test
-    public void turnInstructionHasTurnLeft() {
-        assertThat(getInstructionWithTurn(TURN_LEFT).getHumanTurnInstruction(application))
-                .isEqualTo(application.getString(R.string.turn_left));
-    }
-
-    @Test
-    public void turnInstructionHasTurnSlightLeft() {
-        assertThat(getInstructionWithTurn(TURN_SLIGHT_LEFT).getHumanTurnInstruction(application))
-                .isEqualTo(application.getString(R.string.turn_slight_left));
-    }
-
-    @Test
-    public void turnInstructionHasReachViaPoint() {
-        assertThat(getInstructionWithTurn(REACH_VIA_POINT).getHumanTurnInstruction(application))
-                .isEqualTo(application.getString(R.string.reach_via_point));
-    }
-
-    @Test
-    public void turnInstructionHasHeadOn() {
-        assertThat(getInstructionWithTurn(HEAD_ON).getHumanTurnInstruction(application))
-                .isEqualTo(application.getString(R.string.head_on));
-    }
-
-    @Test
-    public void turnInstructionHasEnterRoundAbout() {
-        assertThat(getInstructionWithTurn(ENTER_ROUND_ABOUT).getHumanTurnInstruction(application))
-                .isEqualTo(application.getString(R.string.enter_round_about));
-    }
-
-    @Test
-    public void turnInstructionHasLeaveRoundAbout() {
-        assertThat(getInstructionWithTurn(LEAVE_ROUND_ABOUT).getHumanTurnInstruction(application))
-                .isEqualTo(application.getString(R.string.leave_round_about));
-    }
-
-    @Test
-    public void turnInstructionHasStayOnRoundAbout() {
-        assertThat(getInstructionWithTurn(STAY_ON_ROUND_ABOUT).getHumanTurnInstruction(application))
-                .isEqualTo(application.getString(R.string.stay_on_round_about));
-    }
-
-    @Test
-    public void turnInstructionHasStartAtEndOfStreet() {
-        assertThat(getInstructionWithTurn(START_AT_END_OF_STREET).getHumanTurnInstruction(application))
-                .isEqualTo(application.getString(R.string.start_at_end_of_street));
-    }
-
-    @Test
-    public void turnInstructionHasReachedYourDestination() {
-        assertThat(getInstructionWithTurn(YOU_HAVE_ARRIVED).getHumanTurnInstruction(application))
-                .isEqualTo(application.getString(R.string.you_have_arrived));
-    }
-
-    @Test
-    public void turnInstructionHasEnterAgainstAllowedDirection() {
-        assertThat(getInstructionWithTurn(ENTER_AGAINST_ALLOWED_DIRECTION).getHumanTurnInstruction(application))
-                .isEqualTo(application.getString(R.string.enter_against_allowed_direction));
-    }
-
-    @Test
-    public void turnInstructionHasLeaveAgainstAllowedDirection() {
-        assertThat(getInstructionWithTurn(LEAVE_AGAINST_ALLOWED_DIRECTION).getHumanTurnInstruction(application))
-                .isEqualTo(application.getString(R.string.leave_against_allowed_direction));
+        assertThat(instruction.getTurnInstruction()).isEqualTo(1);
     }
 
     @Test
@@ -215,19 +100,13 @@ public class InstructionTest {
     }
 
     @Test
-    public void getName_returnXwhenNotClassifed() throws Exception {
-        instruction = new com.mapzen.osrm.Instruction(STREET_NOT_FOUND);
-        assertThat(instruction.getName()).isEqualTo("unclassified");
-    }
-
-    @Test
     public void hasDistance() throws Exception {
         assertThat(instruction.getDistance()).isGreaterThan(-1);
     }
 
     @Test
     public void hasCorrectDistance() throws Exception {
-        assertThat(instruction.getDistance()).isEqualTo(1609);
+        assertThat(instruction.getDistance()).isEqualTo(161);
     }
 
     @Test
@@ -237,85 +116,82 @@ public class InstructionTest {
 
     @Test
     public void hasCorrectDirection() throws Exception {
-        assertThat(instruction.getDirection()).isEqualTo("SE");
+        Route myRoute = getRoute("brooklyn_valhalla");
+        instruction = myRoute.getCurrentInstruction();
+        assertThat(instruction.getDirection()).isEqualTo("W");
     }
 
 
     @Test
-    public void hasPolygonIndex() throws Exception {
-        assertThat(instruction.getPolygonIndex()).isEqualTo(JSON.getInt(3));
+    public void hasBeginPolygonIndex() throws Exception {
+        assertThat(instruction.getBeginPolygonIndex()).isEqualTo(0);
+    }
+
+    @Test
+    public void hasEndPolygonIndex() throws Exception {
+        assertThat(instruction.getEndPolygonIndex()).isEqualTo(1);
     }
 
     @Test
     public void hasNdirectionAngle() throws Exception {
-        com.mapzen.osrm.Instruction i = getInstructionWithDirection("N");
+        com.mapzen.valhalla.Instruction i = getInstructionWithDirection("N");
         assertThat(i.getDirectionAngle()).isEqualTo(0f);
     }
 
     @Test
     public void hasNEdirectionAngle() throws Exception {
-        com.mapzen.osrm.Instruction i = getInstructionWithDirection("NE");
+        com.mapzen.valhalla.Instruction i = getInstructionWithDirection("NE");
         assertThat(i.getDirectionAngle()).isEqualTo(315f);
     }
 
     @Test
     public void hasEdirectionAngle() throws Exception {
-        com.mapzen.osrm.Instruction i = getInstructionWithDirection("E");
+        com.mapzen.valhalla.Instruction i = getInstructionWithDirection("E");
         assertThat(i.getDirectionAngle()).isEqualTo(270f);
     }
 
     @Test
     public void hasSEdirectionAngle() throws Exception {
-        com.mapzen.osrm.Instruction i = getInstructionWithDirection("SE");
+        com.mapzen.valhalla.Instruction i = getInstructionWithDirection("SE");
         assertThat(i.getDirectionAngle()).isEqualTo(225f);
     }
 
     @Test
     public void hasSdirectionAngle() throws Exception {
-        com.mapzen.osrm.Instruction i = getInstructionWithDirection("S");
+        com.mapzen.valhalla.Instruction i = getInstructionWithDirection("S");
         assertThat(i.getDirectionAngle()).isEqualTo(180f);
     }
 
     @Test
     public void hasSWdirectionAngle() throws Exception {
-        com.mapzen.osrm.Instruction i = getInstructionWithDirection("SW");
+        com.mapzen.valhalla.Instruction i = getInstructionWithDirection("SW");
         assertThat(i.getDirectionAngle()).isEqualTo(135f);
     }
 
     @Test
     public void hasWdirectionAngle() throws Exception {
-        com.mapzen.osrm.Instruction i = getInstructionWithDirection("W");
+        com.mapzen.valhalla.Instruction i = getInstructionWithDirection("W");
         assertThat(i.getDirectionAngle()).isEqualTo(90f);
     }
 
     @Test
     public void hasNWdirectionAngle() throws Exception {
-        com.mapzen.osrm.Instruction i = getInstructionWithDirection("NW");
+        com.mapzen.valhalla.Instruction i = getInstructionWithDirection("NW");
         assertThat(i.getDirectionAngle()).isEqualTo(45f);
     }
 
     @Test
-    public void hasDirectionAngle() throws Exception {
-        String json = "[\"10\",\"\", 1609,0,0,\"1609m\",\"SE\",\"128\"]";
-        JSONArray jsonArray = new JSONArray(json);
-        instruction = new com.mapzen.osrm.Instruction(jsonArray);
-        assertThat(instruction.getDirection()).isEqualTo("SE");
-    }
-
-    @Test
     public void hasRotationBearingAngle() throws Exception {
-        String json = "[\"10\",\"\", 1609,0,0,\"1609m\",\"SE\",\"128\"]";
-        JSONArray jsonArray = new JSONArray(json);
-        instruction = new com.mapzen.osrm.Instruction(jsonArray);
-        assertThat(instruction.getRotationBearing()).isEqualTo(360 - 128);
+        Route myRoute = getRoute("brooklyn_valhalla");
+        instruction = myRoute.getCurrentInstruction();
+        assertThat(instruction.getRotationBearing()).isEqualTo(360 - 129);
     }
 
     @Test
     public void hasBearingAngle() throws Exception {
-        String json = "[\"10\",\"\", 1609,0,0,\"1609m\",\"SE\",\"128\"]";
-        JSONArray jsonArray = new JSONArray(json);
-        instruction = new com.mapzen.osrm.Instruction(jsonArray);
-        assertThat(instruction.getBearing()).isEqualTo(128);
+        Route myRoute = getRoute("brooklyn_valhalla");
+        instruction = myRoute.getCurrentInstruction();
+        assertThat(instruction.getBearing()).isEqualTo(129);
     }
 
     @Test
@@ -325,7 +201,7 @@ public class InstructionTest {
 
     @Test
     public void canSetCoordinates() throws Exception {
-        Location expected = new Location(SNAP_PROVIDER);
+        Location expected = new Location("snap");
         expected.setLatitude(3.3);
         expected.setLongitude(4.4);
         instruction.setLocation(expected);
@@ -334,115 +210,21 @@ public class InstructionTest {
     }
 
     @Test
-    public void testHeadOnFullInstructionBeforeAction() throws Exception {
-        com.mapzen.osrm.Instruction currentInstruction = getInstructionWithTurn(HEAD_ON);
-        String actual = currentInstruction.getFullInstructionBeforeAction(application);
-        assertThat(actual).isEqualTo(getExpectedFullInstructionBeforeActionFor(currentInstruction,
-                "%s %s for %s"));
+    public void shouldGetCorrectHumanTurnInstruction() {
+        assertThat(instruction.getHumanTurnInstruction()).isEqualTo("Go southeast on 19th Street.");
     }
 
     @Test
-    public void testHeadOnFullInstructionAfterAction() throws Exception {
-        com.mapzen.osrm.Instruction currentInstruction = getInstructionWithTurn(HEAD_ON);
-        String actual = currentInstruction.getFullInstructionAfterAction(application);
-        String expected  = "Continue on " + instruction.getName() + " for " + DistanceFormatter.format(currentInstruction.getDistance(), true);
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void testGoStraightFullInstructionBeforeAction() throws Exception {
-        com.mapzen.osrm.Instruction currentInstruction = getInstructionWithTurn(GO_STRAIGHT);
-        String actual = currentInstruction.getFullInstructionBeforeAction(application);
-        assertThat(actual).isEqualTo(getExpectedFullInstructionBeforeActionFor(currentInstruction,
-                "%s %s for %s"));
-    }
-
-    @Test
-    public void testGoStraightFullInstructionAfterAction() throws Exception {
-        com.mapzen.osrm.Instruction currentInstruction = getInstructionWithTurn(GO_STRAIGHT);
-        String actual = currentInstruction.getFullInstructionAfterAction(application);
-        String expected  = "Continue on " + instruction.getName() + " for " + DistanceFormatter.format(currentInstruction.getDistance(), true);
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void testReachedYourDestinationFullInstructionBeforeAction() throws Exception {
-        com.mapzen.osrm.Instruction currentInstruction = getInstructionWithTurn(YOU_HAVE_ARRIVED);
-        String actual = currentInstruction.getFullInstructionBeforeAction(application);
-        assertThat(actual).isEqualTo(getExpectedFullInstructionBeforeActionFor(currentInstruction,
-                "%s %s"));
-    }
-
-    @Test
-    public void testReachedYourDestinationFullInstructionAfterAction() throws Exception {
-        com.mapzen.osrm.Instruction currentInstruction = getInstructionWithTurn(YOU_HAVE_ARRIVED);
-        String actual = currentInstruction.getFullInstructionAfterAction(application);
-        assertThat(actual).isEqualTo(getExpectedFullInstructionBeforeActionFor(currentInstruction,
-                "%s %s"));
-    }
-
-    @Test
-    public void testOtherFullInstructionBeforeAction() throws Exception {
-        com.mapzen.osrm.Instruction currentInstruction;
-        String actual;
-        for(int i = 0; i < INSTRUCTION_COUNT; i++) {
-           if (i != YOU_HAVE_ARRIVED && i != GO_STRAIGHT && i != HEAD_ON) {
-               currentInstruction = getInstructionWithTurn(i);
-               actual = currentInstruction.getFullInstructionBeforeAction(application);
-               assertThat(actual).isEqualTo(getExpectedFullInstructionBeforeActionFor(currentInstruction,
-                       "%s %s and continue on for %s"));
-           }
-        }
-    }
-
-    @Test
-    public void testOtherFullInstructionAfterAction() throws Exception {
-        com.mapzen.osrm.Instruction currentInstruction;
-        String actual;
-        for(int i = 0; i < INSTRUCTION_COUNT; i++) {
-            if (i != YOU_HAVE_ARRIVED && i != GO_STRAIGHT && i != HEAD_ON) {
-                currentInstruction = getInstructionWithTurn(i);
-                actual = currentInstruction.getFullInstructionAfterAction(application);
-                assertThat(actual).isEqualTo("Continue on " + currentInstruction.getName() + " for " + DistanceFormatter.format(currentInstruction.getDistance(), true));
-            }
-        }
-    }
-
-    @Test
-    public void testSimpleInstruction() throws Exception {
-        assertThat(instruction.getSimpleInstruction(application))
-                .isEqualTo(application.getString(R.string.head_on) + " 19th Street");
-    }
-
-    @Test
-    public void testSimpleInstructionAfterAction() {
-        assertThat(instruction.getSimpleInstructionAfterAction(application))
-                .isEqualTo("Continue on 19th Street");
-    }
-
-    @Test
-    public void getFormattedDistance_shouldReturnListViewDistance() throws Exception {
-        instruction.setDistance(1);
-        assertThat(instruction.getFormattedDistance()).isEqualTo("3 ft");
-    }
-
-    @Test
-    public void getFullInstructionBeforeAction_shouldReturnNavigationDistance() throws Exception {
-        instruction.setDistance(1);
-        assertThat(instruction.getFullInstructionBeforeAction(application)).contains("now");
-    }
-
-    @Test
-    public void shouldHandleNonIntegerTurnInstruction() throws Exception {
-        instruction = new com.mapzen.osrm.Instruction(NON_INT_TURN_JSON);
-        assertThat(instruction.getTurnInstruction()).isEqualTo(ENTER_ROUND_ABOUT);
+    public void shouldGetCorrectNameWithDualStreetNames() throws JSONException {
+        Instruction ins = new com.mapzen.valhalla.Instruction(DOUBLE_STREET_NAME);
+        assertThat(ins.getName()).isEqualTo("Main Street/PA 29");
     }
 
     @Test
     public void shouldBeEqual() throws Exception {
-        com.mapzen.osrm.Instruction instruction = new com.mapzen.osrm.Instruction(NON_INT_TURN_JSON);
+        com.mapzen.valhalla.Instruction instruction = new com.mapzen.valhalla.Instruction(JSON);
         instruction.setLocation(getLocation(0, 0));
-        com.mapzen.osrm.Instruction other = new com.mapzen.osrm.Instruction(NON_INT_TURN_JSON);
+        com.mapzen.valhalla.Instruction other = new com.mapzen.valhalla.Instruction(JSON);
         other.setLocation(getLocation(0, 0));
         assertThat(instruction).isEqualTo(other);
     }
@@ -450,50 +232,64 @@ public class InstructionTest {
     @Test
     public void shouldNotBeEqual() throws Exception {
         instruction.setLocation(getLocation(0, 0));
-        com.mapzen.osrm.Instruction other = new com.mapzen.osrm.Instruction(NON_INT_TURN_JSON);
+        com.mapzen.valhalla.Instruction other = new com.mapzen.valhalla.Instruction(DOUBLE_STREET_NAME);
         other.setLocation(getLocation(0, 0));
         assertThat(instruction).isNotEqualTo(other);
     }
 
     @Test
-    public void getFullInstructionAfterActionWithLocation_shouldUseTermNow() throws Exception {
-        Location location = getLocation(0, 0);
-        instruction.setLocation(location);
-        instruction.setDistance(1);
-        String string = instruction.getFullInstructionAfterAction(application);
-        assertThat(string).doesNotContain("now");
-    }
-
-    @Test
     public void skip_shouldBeTrue() throws Exception {
-        com.mapzen.osrm.Instruction skipInstruction = new com.mapzen.osrm.Instruction(STREET_NOT_FOUND);
+        Instruction skipInstruction = new com.mapzen.valhalla.Instruction(STREET_NOT_FOUND);
         assertThat(skipInstruction.skip()).isTrue();
     }
 
     @Test
     public void skip_shouldBeFalse() throws Exception {
-        com.mapzen.osrm.Instruction skipInstruction = new com.mapzen.osrm.Instruction(JSON);
+        com.mapzen.valhalla.Instruction skipInstruction = new com.mapzen.valhalla.Instruction(JSON);
         assertThat(skipInstruction.skip()).isFalse();
     }
 
     // Helper methods.
-
-    private com.mapzen.osrm.Instruction getInstructionWithTurn(int turn) {
-        instruction.setTurnInstruction(turn);
-        return instruction;
+    private com.mapzen.valhalla.Instruction getInstructionWithDirection(String direction) throws JSONException {
+        int angle = 0;
+        if (direction.equals("NE")) {
+            angle = 315;
+        } else if (direction.equals("E")) {
+            angle = 270;
+        } else if (direction.equals("SE")) {
+            angle = 225;
+        } else if (direction.equals("S")) {
+            angle = 180;
+        } else if (direction.equals("SW")) {
+            angle = 135;
+        } else if (direction.equals("W")) {
+            angle = 90;
+        } else if (direction.equals("NW")) {
+            angle = 45;
+        }
+        Instruction ins = new com.mapzen.valhalla.Instruction(JSON);
+        ins.setBearing(angle);
+        return ins;
     }
 
-    private String getExpectedFullInstructionBeforeActionFor(
-            com.mapzen.osrm.Instruction currentInstruction,
-            String pattern) {
-        return String.format(Locale.ENGLISH, pattern,
-                currentInstruction.getHumanTurnInstruction(application),
-                currentInstruction.getName(),
-                DistanceFormatter.format(currentInstruction.getDistance(), true));
+    private com.mapzen.valhalla.Route getRoute(String name) throws Exception {
+        String fileName = getProperty("user.dir");
+        File file = new File(fileName + "/src/test/fixtures/" + name + ".route");
+        String content = FileUtils.readFileToString(file, "UTF-8");
+        return new Route(content);
     }
 
-    private com.mapzen.osrm.Instruction getInstructionWithDirection(String dir) {
-        String json = "[\"10\",\"\", 1609,0,0,\"1609m\",\"" + dir + "\",\"128\"]";
-        return new Instruction(new JSONArray(json));
+    public static String getInstructionFixture(String name) {
+        String basedir = System.getProperty("user.dir");
+        File file = new File(basedir + "/src/test/fixtures/" + name);
+        String fixture = "";
+        try {
+            fixture = Files.toString(file, Charsets.UTF_8);
+        } catch (Exception e) {
+            fixture = "not found";
+        }
+        return fixture;
     }
 }
+
+

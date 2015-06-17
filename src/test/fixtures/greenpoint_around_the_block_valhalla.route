@@ -1,0 +1,75 @@
+{
+trip: {
+status: 0,
+status_message: "Found route between points",
+legs: [
+{
+shape: "imvplAzl}blCxv@}|AcWwWcK~HgTbPmh@ddA",
+summary: {
+length: 0.405,
+time: 65
+},
+maneuvers: [
+{
+begin_shape_index: 0,
+length: 0.162,
+end_shape_index: 1,
+instruction: "Go southeast on 19th Street.",
+street_names: [
+"19th Street"
+],
+type: 1,
+time: 0
+},
+{
+begin_shape_index: 1,
+length: 0.054,
+end_shape_index: 2,
+instruction: "Turn left onto 7th Avenue.",
+street_names: [
+"7th Avenue"
+],
+type: 15,
+time: 8
+},
+{
+begin_shape_index: 2,
+length: 0.19,
+end_shape_index: 5,
+instruction: "Turn left onto 18th Street.",
+street_names: [
+"18th Street"
+],
+type: 15,
+time: 34
+},
+{
+begin_shape_index: 5,
+length: 0,
+end_shape_index: 5,
+instruction: "You have arrived at your destination.",
+type: 4,
+time: 0
+}
+]
+}
+],
+units: "kilometers",
+summary: {
+length: 0.405,
+time: 65
+},
+locations: [
+{
+lon: -73.989342,
+lat: 40.660713,
+type: "break"
+},
+{
+lon: -73.988983,
+lat: 40.661404,
+type: "break"
+}
+]
+}
+}

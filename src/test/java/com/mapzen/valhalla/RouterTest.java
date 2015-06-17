@@ -5,6 +5,7 @@ import com.google.common.io.Files;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
 
+import org.json.JSONException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,7 +46,7 @@ public class RouterTest {
         server = new MockWebServer();
         MockitoAnnotations.initMocks(this);
         double[] loc = new double[] {1.0, 2.0};
-        validRouter = Router.getRouter().setLocation(loc).setLocation(loc);
+        validRouter = new Router().setLocation(loc).setLocation(loc);
     }
 
     @After
@@ -55,38 +56,36 @@ public class RouterTest {
 
     @Test
     public void shouldHaveDefaultEndpoint() throws Exception {
-        URL url = validRouter.getRouteUrl();
-        assertThat(url.toString()).startsWith("http://valhalla.api.dev.mapzen.com/route");
+        assertThat(validRouter.getEndpoint()).startsWith("http://valhalla.mapzen.com/");
     }
 
     @Test
     public void shouldSetEndpoint() throws Exception {
-        URL url = validRouter.setEndpoint("http://testing.com").getRouteUrl();
-        assertThat(url.toString()).startsWith("http://testing.com");
+        validRouter.setEndpoint("http://testing.com");
+        assertThat(validRouter.getEndpoint()).startsWith("http://testing.com");
     }
 
     @Test
     public void shouldDefaultToCar() throws Exception {
-        URL url = validRouter.getRouteUrl();
-        assertThat(url.toString()).contains(urlEncode("\"costing\":\"auto\""));
+        assertThat(validRouter.getJSONRequest().costing).contains("auto");
     }
 
     @Test
     public void shouldSetToCar() throws Exception {
-        URL url = validRouter.setDriving().getRouteUrl();
-        assertThat(url.toString()).contains(urlEncode("\"costing\":\"auto\""));
+        validRouter.setDriving();
+        assertThat(validRouter.getJSONRequest().costing).contains("auto");
     }
 
     @Test
     public void shouldSetToBike() throws Exception {
-        URL url = validRouter.setBiking().getRouteUrl();
-        assertThat(url.toString()).contains(urlEncode("\"costing\":\"bicycle\""));
+        validRouter.setBiking();
+        assertThat(validRouter.getJSONRequest().costing).contains("bicycle");
     }
 
     @Test
     public void shouldSetToFoot() throws Exception {
-        URL url = validRouter.setWalking().getRouteUrl();
-        assertThat(url.toString()).contains(urlEncode("\"costing\":\"pedestrian\""));
+        validRouter.setWalking();
+        assertThat(validRouter.getJSONRequest().costing).contains("pedestrian");
     }
 
     @Test
@@ -94,42 +93,44 @@ public class RouterTest {
         double[] loc1 = { 1.0, 2.0 };
         double[] loc2 = { 3.0, 4.0 };
         double[] loc3 = { 5.0, 6.0 };
-        Router router = Router.getRouter()
+        Router router = new Router()
                 .setLocation(loc1)
                 .setLocation(loc2);
         router.clearLocations();
         router.setLocation(loc2);
         router.setLocation(loc3);
-        URL url = router.getRouteUrl();
-        assertThat(url.toString()).doesNotContain(urlEncode("{\"lat\":1.000000,\"lon\":2.000000}"));
-        assertThat(url.toString()).contains(urlEncode("{\"lat\":3.000000,\"lon\":4.000000}"));
-        assertThat(url.toString()).contains(urlEncode("{\"lat\":5.000000,\"lon\":6.000000}"));
+        JSON json = router.getJSONRequest();
+        assertThat(json.locations[0].lat).doesNotContain("1.0");
+        assertThat(json.locations[0].lat).contains("3.0");
+        assertThat(json.locations[1].lat).contains("5.0");
     }
 
     @Test(expected=MalformedURLException.class)
     public void shouldThrowErrorWhenNoLocation() throws Exception {
-        Router.getRouter().getRouteUrl();
+        new Router().getJSONRequest();
     }
 
     @Test(expected=MalformedURLException.class)
     public void shouldThrowErrorWhenOnlyOneLocation() throws Exception {
-        Router.getRouter().setLocation(new double[] {1.0, 1.0}).getRouteUrl();
+        new Router().setLocation(new double[]{1.0, 1.0}).getJSONRequest();
     }
 
     @Test
     public void shouldAddLocations() throws Exception {
         double[] loc1 = { 1.0, 2.0 };
         double[] loc2 = { 3.0, 4.0 };
-        URL url = Router.getRouter()
+        JSON json = new Router()
                 .setLocation(loc1)
                 .setLocation(loc2)
-                .getRouteUrl();
-        assertThat(url.toString()).contains(urlEncode("[{\"lat\":1.000000,\"lon\":2.000000},"
-                + "{\"lat\":3.000000,\"lon\":4.000000}]"));
+                .getJSONRequest();
+        assertThat(json.locations[0].lat).contains("1.0");
+        assertThat(json.locations[0].lon).contains("2.0");
+        assertThat(json.locations[1].lat).contains("3.0");
+        assertThat(json.locations[1].lon).contains("4.0");
     }
 
     @Test
-    public void shouldGetRoute() throws Exception {
+    public void shouldGetRoute() throws Exception, JSONException {
         startServerAndEnqueue(new MockResponse().setBody(getFixture("brooklyn")));
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(new Runnable() {
@@ -137,10 +138,10 @@ public class RouterTest {
             public void run() {
                 String endpoint = server.getUrl("").toString();
                 Router.Callback callback = Mockito.mock(Router.Callback.class);
-                Router router = Router.getRouter()
+                Router router = new Router()
                         .setEndpoint(endpoint)
-                        .setLocation(new double[] { 40.659241, -73.983776 })
-                        .setLocation(new double[] { 40.671773, -73.981115 });
+                        .setLocation(new double[]{40.659241, -73.983776})
+                        .setLocation(new double[]{40.671773, -73.981115});
                 router.setCallback(callback);
                 router.fetch();
                 Mockito.verify(callback).success(route.capture());
@@ -158,10 +159,10 @@ public class RouterTest {
             public void run() {
                 Router.Callback callback = Mockito.mock(Router.Callback.class);
                 String endpoint = server.getUrl("").toString();
-                Router router = Router.getRouter()
+                Router router = new Router()
                         .setEndpoint(endpoint)
-                        .setLocation(new double[] { 40.659241, -73.983776 })
-                        .setLocation(new double[] { 40.671773, -73.981115 });
+                        .setLocation(new double[]{40.659241, -73.983776})
+                        .setLocation(new double[]{40.671773, -73.981115});
                 router.setCallback(callback);
                 router.fetch();
                 Mockito.verify(callback).failure(statusCode.capture());
@@ -179,10 +180,10 @@ public class RouterTest {
             public void run() {
                 Router.Callback callback = Mockito.mock(Router.Callback.class);
                 String endpoint = server.getUrl("").toString();
-                Router router = Router.getRouter()
+                Router router = new Router()
                         .setEndpoint(endpoint)
-                        .setLocation(new double[] { 40.659241, -73.983776 })
-                        .setLocation(new double[] { 40.671773, -73.981115 });
+                        .setLocation(new double[]{40.659241, -73.983776})
+                        .setLocation(new double[]{40.671773, -73.981115});
                 router.setCallback(callback);
                 router.fetch();
                 Mockito.verify(callback).failure(statusCode.capture());
@@ -200,10 +201,10 @@ public class RouterTest {
             public void run() {
                 Router.Callback callback = Mockito.mock(Router.Callback.class);
                 String endpoint = server.getUrl("").toString();
-                Router router = Router.getRouter()
+                Router router = new Router()
                         .setEndpoint(endpoint)
-                        .setLocation(new double[] { 40.659241, -73.983776 })
-                        .setLocation(new double[] { 40.671773, -73.981115 });
+                        .setLocation(new double[]{40.659241, -73.983776})
+                        .setLocation(new double[]{40.671773, -73.981115});
                 router.setCallback(callback);
                 router.fetch();
                 Mockito.verify(callback).failure(statusCode.capture());
@@ -221,7 +222,7 @@ public class RouterTest {
             public void run() {
                 String endpoint = server.getUrl("").toString();
                 Router.Callback callback = Mockito.mock(Router.Callback.class);
-                Router router = Router.getRouter()
+                Router router = new Router()
                         .setEndpoint(endpoint)
                         .setLocation(new double[] { 40.659241, -73.983776 })
                         .setLocation(new double[] { 40.671773, -73.981115 });

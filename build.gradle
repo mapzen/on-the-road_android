@@ -1,0 +1,96 @@
+buildscript {
+    repositories {
+    mavenCentral()
+    mavenLocal()
+  }
+  dependencies {
+    classpath 'com.android.tools.build:gradle:1.1.3'
+      classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:0.12.213'
+      classpath 'com.github.dcendents:android-maven-plugin:1.2'
+  }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'com.github.dcendents.android-maven'
+
+group = 'com.mapzen'
+version = '0.8-SNAPSHOT'
+
+defaultTasks = ['clean', 'assembleDebug', 'copyTask', 'testDebug', 'install']
+
+task copyTask(type: Copy) {
+  println "Copying com/mapzen/ontheroad/R.java to android/support/v7/appcompat/R.java"
+  from 'build/generated/source/r/debug/com/mapzen/ontheroad'
+  into 'build/generated/source/r/debug/android/support/v7/appcompat'
+  include 'R.java'
+  filter { line -> line.contains('package com.mapzen.ontheroad;') ? 'package android.support.v7.appcompat;' : line }
+}
+
+android {
+  compileSdkVersion 21
+  buildToolsVersion "22.0.1"
+
+  defaultConfig {
+    minSdkVersion 15
+    targetSdkVersion 21
+    versionCode 1
+    versionName version
+  }
+  buildTypes {
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+  }
+  sourceSets {
+    main {
+      manifest.srcFile 'AndroidManifest.xml'
+      java.srcDirs = ['src/main/java']
+      resources.srcDirs = ['src/main/java']
+      aidl.srcDirs = ['src/main/java']
+      renderscript.srcDirs = ['src/main/java']
+      res.srcDirs = ['res']
+      assets.srcDirs = ['assets']
+    }
+    test {
+      java.srcDir file('src/test/java/')
+      java.srcDir file('build/generated/source/r/debug')
+    }
+      main.java.srcDirs += 'src/main/kotlin'
+  }
+}
+
+tasks.withType(Test) {
+  testLogging {
+    exceptionFormat "full"
+    events "started", "skipped", "passed", "failed"
+    showStandardStreams true
+  }
+}
+
+repositories {
+  jcenter()
+  maven { url 'http://repo.maven.apache.org/maven2' }
+    mavenCentral()
+}
+
+dependencies {
+    compile 'com.android.support:support-v4:22.1.0'
+    compile 'org.jetbrains.kotlin:kotlin-stdlib:0.12.213'
+    compile 'com.squareup.okhttp:okhttp:1.6.0'
+    compile 'org.apache.commons:commons-io:1.3.2'
+    compile 'com.google.guava:guava:16.0.1'
+    compile 'com.squareup.retrofit:retrofit:1.5.0'
+    compile 'com.f2prateek.ln:ln:1.1.1'
+    testCompile 'junit:junit:4.12'
+    testCompile('org.robolectric:robolectric:2.2') {
+        exclude group: 'commons-logging', module: 'commons-logging'
+        exclude group: 'org.apache.httpcomponents', module: 'httpclient'
+    }
+    testCompile 'org.easytesting:fest-assert-core:2.0M10'
+    testCompile 'com.squareup:fest-android:1.0.7'
+    testCompile 'org.mockito:mockito-all:1.9.5'
+    testCompile 'com.squareup.okhttp:mockwebserver:1.5.2'
+    testCompile 'org.easytesting:fest-reflect:1.4.1'
+}
