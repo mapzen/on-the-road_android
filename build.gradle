@@ -14,8 +14,8 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'com.github.dcendents.android-maven'
 
-group = 'com.mapzen'
-version = '0.8-SNAPSHOT'
+group = GROUP
+version = VERSION_NAME
 
 defaultTasks = ['clean', 'assembleDebug', 'copyTask', 'testDebug', 'install']
 
@@ -94,3 +94,5 @@ dependencies {
     testCompile 'com.squareup.okhttp:mockwebserver:1.5.2'
     testCompile 'org.easytesting:fest-reflect:1.4.1'
 }
+
+apply from: file('gradle-mvn-push.gradle')
