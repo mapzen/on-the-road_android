@@ -14,8 +14,8 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'com.github.dcendents.android-maven'
 
-group = GROUP
-version = VERSION_NAME
+group = 'com.mapzen'
+version = '0.9-SNAPSHOT'
 
 defaultTasks = ['clean', 'assembleDebug', 'copyTask', 'testDebug', 'install']
 
