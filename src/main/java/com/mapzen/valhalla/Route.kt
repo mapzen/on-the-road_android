@@ -87,15 +87,11 @@ public class Route {
         for (i in 0..instructions.length() - 1) {
             val instruction = Instruction(instructions.getJSONObject(i))
             instruction.bearing = Math.ceil(poly!!.get(instruction.getBeginPolygonIndex()).bearing).toInt()
-            if (!instruction.skip()) {
                 var distance = instruction.distance
                 distance += gapDistance
                 instruction.distance = distance
                 gapDistance = 0
                 this.instructions!!.add(instruction)
-            } else {
-                gapDistance += instruction.distance
-            }
         }
     }
 

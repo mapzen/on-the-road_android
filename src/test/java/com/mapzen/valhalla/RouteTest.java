@@ -478,22 +478,6 @@ public class RouteTest {
         }
     }
 
-    @Test
-    public void shouldSkipInstructions() throws Exception {
-        Route myroute = getRoute("missing_roads_valhalla");
-        ArrayList<Instruction> instructions = myroute.getRouteInstructions();
-        for (Instruction instruction : instructions) {
-            assertThat(instruction.skip()).isFalse();
-        }
-    }
-
-    @Test
-    public void shouldSkipInstructionsAndAddDistanceToNext() throws Exception {
-        Route myroute = getRoute("missing_roads_valhalla");
-        ArrayList<Instruction> instructions = myroute.getRouteInstructions();
-        assertThat(instructions.get(4).getDistance()).isEqualTo(1947+166);
-    }
-
     private ArrayList<Location> getLocationsFromFile(String name) throws Exception {
         String fileName = getProperty("user.dir");
         File file = new File(fileName + "/src/test/fixtures/" + name + ".txt");

@@ -237,18 +237,6 @@ public class InstructionTest {
         assertThat(instruction).isNotEqualTo(other);
     }
 
-    @Test
-    public void skip_shouldBeTrue() throws Exception {
-        Instruction skipInstruction = new com.mapzen.valhalla.Instruction(STREET_NOT_FOUND);
-        assertThat(skipInstruction.skip()).isTrue();
-    }
-
-    @Test
-    public void skip_shouldBeFalse() throws Exception {
-        com.mapzen.valhalla.Instruction skipInstruction = new com.mapzen.valhalla.Instruction(JSON);
-        assertThat(skipInstruction.skip()).isFalse();
-    }
-
     // Helper methods.
     private com.mapzen.valhalla.Instruction getInstructionWithDirection(String direction) throws JSONException {
         int angle = 0;
