@@ -44,6 +44,7 @@ public class RouterTest {
     @Before
     public void setup() throws Exception {
         server = new MockWebServer();
+        server.start();
         MockitoAnnotations.initMocks(this);
         double[] loc = new double[] {1.0, 2.0};
         validRouter = new Router().setLocation(loc).setLocation(loc);
@@ -237,7 +238,6 @@ public class RouterTest {
 
     private void startServerAndEnqueue(MockResponse response) throws Exception {
         server.enqueue(response);
-        server.play();
     }
 
     private static String urlEncode(String raw) throws UnsupportedEncodingException {
