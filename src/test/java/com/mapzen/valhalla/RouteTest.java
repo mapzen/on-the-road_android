@@ -1,7 +1,6 @@
 package com.mapzen.valhalla;
 
 import com.google.common.io.Files;
-import com.mapzen.ontheroad.R;
 
 import org.apache.commons.io.FileUtils;
 import org.fest.assertions.data.Offset;
@@ -21,7 +20,6 @@ import static com.mapzen.TestUtils.getLocation;
 import static java.lang.System.getProperty;
 import static java.nio.charset.Charset.defaultCharset;
 import static org.fest.assertions.api.Assertions.assertThat;
-import static org.robolectric.Robolectric.application;
 
 @RunWith(RobolectricTestRunner.class)
 public class RouteTest {
@@ -148,7 +146,7 @@ public class RouteTest {
         assertThat(route.getStartCoordinates()).isEqualsToByComparingFields(expected);
     }
 
-    private com.mapzen.valhalla.Route getRoute(String name) throws Exception {
+    public static Route getRoute(String name) throws Exception {
         String fileName = getProperty("user.dir");
         File file = new File(fileName + "/src/test/fixtures/" + name + ".route");
         String content = FileUtils.readFileToString(file, "UTF-8");

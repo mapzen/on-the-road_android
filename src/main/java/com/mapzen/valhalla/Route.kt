@@ -34,7 +34,6 @@ public class Route {
     public var totalDistanceTravelled: Double = 0.0
         private set
 
-    throws(JSONException::class)
     public constructor(jsonString: String) {
         setJsonObject(JSONObject(jsonString))
     }
@@ -55,7 +54,6 @@ public class Route {
         return Math.round(poly!!.get(poly!!.size() - 1).totalDistance).toInt()
     }
 
-    throws(JSONException::class)
     public fun getStatus(): Int? {
         if (rawRoute!!.optJSONObject("trip") == null) {
             return -1
@@ -80,7 +78,6 @@ public class Route {
         return instructions!!.get(instructions!!.size() - 1).liveDistanceToNext
     }
 
-    throws(JSONException::class)
     private fun initializeTurnByTurn(instructions: JSONArray) {
         var gapDistance = 0
         this.instructions = ArrayList<Instruction>()
@@ -95,7 +92,6 @@ public class Route {
         }
     }
 
-    throws(JSONException::class)
     public fun getRouteInstructions(): ArrayList<Instruction> {
         var accumulatedDistance = 0
         for (instruction in instructions!!) {
@@ -117,7 +113,6 @@ public class Route {
         return geometry
     }
 
-    throws(JSONException::class)
     public fun getStartCoordinates(): Location {
         val location = Location(SNAP_PROVIDER)
         location.setLatitude(poly!!.get(0).lat)
@@ -196,7 +191,6 @@ public class Route {
         currentLeg = 0
     }
 
-    throws(JSONException::class)
     public fun snapToRoute(originalPoint: Location): Location? {
         Ln.d("Snapping => currentLeg: " + currentLeg.toString())
         Ln.d("Snapping => originalPoint: " + originalPoint.getLatitude().toString() + ", " + originalPoint.getLongitude().toString())
@@ -381,7 +375,6 @@ public class Route {
         return instructions!!.get(currentInstructionIndex)
     }
 
-    throws(JSONException::class)
     private fun updateCurrentInstructionIndex() {
         val next = getNextInstruction()
         if (next == null) {
