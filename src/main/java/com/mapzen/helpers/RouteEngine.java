@@ -105,7 +105,6 @@ public class RouteEngine {
         routeState = RouteState.START;
         instructions = route.getRouteInstructions();
         currentInstruction = instructions.get(0);
-
     }
 
     public void setListener(RouteListener listener) {

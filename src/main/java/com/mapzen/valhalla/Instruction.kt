@@ -13,7 +13,6 @@ import android.util.Log
 
 import java.util.Locale
 
-
 public class Instruction {
     public val NONE : Int = 0
     public val START : Int = 1
@@ -90,18 +89,23 @@ public class Instruction {
 
     throws(JSONException::class)
     public fun getName(): String {
-        if(json!!.getInt("type") == DESTINATION) {
+        if (json?.getInt("type") == DESTINATION) {
             return "You have arrived at your destination."
         }
-        var streetName = "";
-        val numStreetNames = (json!!.getJSONArray("street_names").length())
-        for(i in 0..numStreetNames - 1) {
-            streetName += json!!.getJSONArray("street_names").get(i);
-            if((numStreetNames > 1) && (i < numStreetNames - 1)) {
-                streetName += "/"
+
+        if (json?.has("street_names") ?: false) {
+            var streetName = "";
+            val numStreetNames = (json!!.getJSONArray("street_names").length())
+            for(i in 0..numStreetNames - 1) {
+                streetName += json!!.getJSONArray("street_names").get(i);
+                if((numStreetNames > 1) && (i < numStreetNames - 1)) {
+                    streetName += "/"
+                }
             }
+            return streetName;
         }
-        return streetName;
+
+        return json?.getString("instruction") ?: ""
     }
 
     public fun getFormattedDistance(): String {
@@ -190,7 +194,6 @@ public class Instruction {
             Log.e("Json exception", "Unable to get bearing", e)
             return false
         }
-
     }
 
     throws(JSONException::class)
