@@ -1,30 +1,17 @@
 package com.mapzen.valhalla
 
-import android.util.Log
-import android.widget.Toast
-import com.google.common.base.Charsets
 import com.google.common.io.CharStreams
 import com.google.gson.Gson
-import com.squareup.okhttp.OkHttpClient
-import org.apache.commons.io.IOUtils
-
-import org.json.JSONException
-import retrofit.*
-
+import retrofit.RestAdapter
+import retrofit.RetrofitError
+import retrofit.client.Response
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
-import java.io.UnsupportedEncodingException
-import java.net.HttpURLConnection
 import java.net.MalformedURLException
-import retrofit.http.GET
-import retrofit.client.Response
-import retrofit.http.Query;
-import java.net.URL
-import java.net.URLEncoder
 import java.util.ArrayList
 
-public class Router : Runnable {
+public open class Router : Runnable {
     private val DEFAULT_URL = "http://valhalla.mapzen.com/"
     private var API_KEY = "";
     private var endpoint: String = DEFAULT_URL

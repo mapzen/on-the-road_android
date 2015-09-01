@@ -1,20 +1,16 @@
 package com.mapzen.valhalla
 
+import android.location.Location
 import com.f2prateek.ln.Ln
-
+import com.mapzen.helpers.GeometryHelper.getBearing
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-
-import android.location.Location
-
+import java.lang.Math.toRadians
 import java.util.ArrayList
 import java.util.HashSet
 
-import com.mapzen.helpers.GeometryHelper.getBearing
-import java.lang.Math.toRadians
-
-public class Route {
+public open class Route {
     public val SNAP_PROVIDER: String = "snap"
     public val LOST_THRESHOLD: Int = 50
     public val CLOCKWISE: Int = 90

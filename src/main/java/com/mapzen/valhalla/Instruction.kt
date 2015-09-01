@@ -1,19 +1,13 @@
 package com.mapzen.valhalla
 
-import com.mapzen.helpers.DistanceFormatter
-import com.mapzen.ontheroad.R
-
-import org.json.JSONArray
-import org.json.JSONException
-import org.json.JSONObject
-
-import android.content.Context
 import android.location.Location
 import android.util.Log
-
+import com.mapzen.helpers.DistanceFormatter
+import org.json.JSONException
+import org.json.JSONObject
 import java.util.Locale
 
-public class Instruction {
+public open class Instruction {
     public val NONE : Int = 0
     public val START : Int = 1
     public val START_RIGHT : Int = 2
