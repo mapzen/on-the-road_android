@@ -1,20 +1,13 @@
 package com.mapzen.valhalla
 
-import com.mapzen.helpers.DistanceFormatter
-import com.mapzen.ontheroad.R
-
-import org.json.JSONArray
-import org.json.JSONException
-import org.json.JSONObject
-
-import android.content.Context
 import android.location.Location
 import android.util.Log
-
+import com.mapzen.helpers.DistanceFormatter
+import org.json.JSONException
+import org.json.JSONObject
 import java.util.Locale
 
-
-public class Instruction {
+public open class Instruction {
     public val NONE : Int = 0
     public val START : Int = 1
     public val START_RIGHT : Int = 2
@@ -90,18 +83,23 @@ public class Instruction {
 
     throws(JSONException::class)
     public fun getName(): String {
-        if(json!!.getInt("type") == DESTINATION) {
+        if (json?.getInt("type") == DESTINATION) {
             return "You have arrived at your destination."
         }
-        var streetName = "";
-        val numStreetNames = (json!!.getJSONArray("street_names").length())
-        for(i in 0..numStreetNames - 1) {
-            streetName += json!!.getJSONArray("street_names").get(i);
-            if((numStreetNames > 1) && (i < numStreetNames - 1)) {
-                streetName += "/"
+
+        if (json?.has("street_names") ?: false) {
+            var streetName = "";
+            val numStreetNames = (json!!.getJSONArray("street_names").length())
+            for(i in 0..numStreetNames - 1) {
+                streetName += json!!.getJSONArray("street_names").get(i);
+                if((numStreetNames > 1) && (i < numStreetNames - 1)) {
+                    streetName += "/"
+                }
             }
+            return streetName;
         }
-        return streetName;
+
+        return json?.getString("instruction") ?: ""
     }
 
     public fun getFormattedDistance(): String {
@@ -190,7 +188,6 @@ public class Instruction {
             Log.e("Json exception", "Unable to get bearing", e)
             return false
         }
-
     }
 
     throws(JSONException::class)

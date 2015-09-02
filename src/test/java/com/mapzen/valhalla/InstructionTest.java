@@ -2,11 +2,8 @@ package com.mapzen.valhalla;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
-import com.mapzen.helpers.DistanceFormatter;
-import com.mapzen.ontheroad.R;
 
 import org.apache.commons.io.FileUtils;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -22,8 +19,6 @@ import java.util.Locale;
 import static com.mapzen.TestUtils.getLocation;
 import static java.lang.System.getProperty;
 import static org.fest.assertions.api.Assertions.assertThat;
-import static org.robolectric.Robolectric.application;
-
 
 @RunWith(RobolectricTestRunner.class)
 public class InstructionTest {
@@ -66,11 +61,11 @@ public class InstructionTest {
         STREET_NOT_FOUND = STREET_NOT_FOUND1;
     }
 
-    private com.mapzen.valhalla.Instruction instruction;
+    private Instruction instruction;
 
     @Before
     public void setup() throws Exception {
-        instruction = new com.mapzen.valhalla.Instruction(JSON);
+        instruction = new Instruction(JSON);
         Locale.setDefault(Locale.US);
     }
 
@@ -134,49 +129,49 @@ public class InstructionTest {
 
     @Test
     public void hasNdirectionAngle() throws Exception {
-        com.mapzen.valhalla.Instruction i = getInstructionWithDirection("N");
+        Instruction i = getInstructionWithDirection("N");
         assertThat(i.getDirectionAngle()).isEqualTo(0f);
     }
 
     @Test
     public void hasNEdirectionAngle() throws Exception {
-        com.mapzen.valhalla.Instruction i = getInstructionWithDirection("NE");
+        Instruction i = getInstructionWithDirection("NE");
         assertThat(i.getDirectionAngle()).isEqualTo(315f);
     }
 
     @Test
     public void hasEdirectionAngle() throws Exception {
-        com.mapzen.valhalla.Instruction i = getInstructionWithDirection("E");
+        Instruction i = getInstructionWithDirection("E");
         assertThat(i.getDirectionAngle()).isEqualTo(270f);
     }
 
     @Test
     public void hasSEdirectionAngle() throws Exception {
-        com.mapzen.valhalla.Instruction i = getInstructionWithDirection("SE");
+        Instruction i = getInstructionWithDirection("SE");
         assertThat(i.getDirectionAngle()).isEqualTo(225f);
     }
 
     @Test
     public void hasSdirectionAngle() throws Exception {
-        com.mapzen.valhalla.Instruction i = getInstructionWithDirection("S");
+        Instruction i = getInstructionWithDirection("S");
         assertThat(i.getDirectionAngle()).isEqualTo(180f);
     }
 
     @Test
     public void hasSWdirectionAngle() throws Exception {
-        com.mapzen.valhalla.Instruction i = getInstructionWithDirection("SW");
+        Instruction i = getInstructionWithDirection("SW");
         assertThat(i.getDirectionAngle()).isEqualTo(135f);
     }
 
     @Test
     public void hasWdirectionAngle() throws Exception {
-        com.mapzen.valhalla.Instruction i = getInstructionWithDirection("W");
+        Instruction i = getInstructionWithDirection("W");
         assertThat(i.getDirectionAngle()).isEqualTo(90f);
     }
 
     @Test
     public void hasNWdirectionAngle() throws Exception {
-        com.mapzen.valhalla.Instruction i = getInstructionWithDirection("NW");
+        Instruction i = getInstructionWithDirection("NW");
         assertThat(i.getDirectionAngle()).isEqualTo(45f);
     }
 
@@ -216,15 +211,15 @@ public class InstructionTest {
 
     @Test
     public void shouldGetCorrectNameWithDualStreetNames() throws JSONException {
-        Instruction ins = new com.mapzen.valhalla.Instruction(DOUBLE_STREET_NAME);
+        Instruction ins = new Instruction(DOUBLE_STREET_NAME);
         assertThat(ins.getName()).isEqualTo("Main Street/PA 29");
     }
 
     @Test
     public void shouldBeEqual() throws Exception {
-        com.mapzen.valhalla.Instruction instruction = new com.mapzen.valhalla.Instruction(JSON);
+        Instruction instruction = new Instruction(JSON);
         instruction.setLocation(getLocation(0, 0));
-        com.mapzen.valhalla.Instruction other = new com.mapzen.valhalla.Instruction(JSON);
+        Instruction other = new Instruction(JSON);
         other.setLocation(getLocation(0, 0));
         assertThat(instruction).isEqualTo(other);
     }
@@ -232,35 +227,51 @@ public class InstructionTest {
     @Test
     public void shouldNotBeEqual() throws Exception {
         instruction.setLocation(getLocation(0, 0));
-        com.mapzen.valhalla.Instruction other = new com.mapzen.valhalla.Instruction(DOUBLE_STREET_NAME);
+        Instruction other = new Instruction(DOUBLE_STREET_NAME);
         other.setLocation(getLocation(0, 0));
         assertThat(instruction).isNotEqualTo(other);
     }
 
-    // Helper methods.
-    private com.mapzen.valhalla.Instruction getInstructionWithDirection(String direction) throws JSONException {
-        int angle = 0;
-        if (direction.equals("NE")) {
-            angle = 315;
-        } else if (direction.equals("E")) {
-            angle = 270;
-        } else if (direction.equals("SE")) {
-            angle = 225;
-        } else if (direction.equals("S")) {
-            angle = 180;
-        } else if (direction.equals("SW")) {
-            angle = 135;
-        } else if (direction.equals("W")) {
-            angle = 90;
-        } else if (direction.equals("NW")) {
-            angle = 45;
-        }
-        Instruction ins = new com.mapzen.valhalla.Instruction(JSON);
-        ins.setBearing(angle);
-        return ins;
+    @Test
+    public void getName_shouldReturnInstructionIfStreetNameNotAvailable() throws Exception {
+        Instruction instruction = new Instruction(STREET_NOT_FOUND);
+        String text = STREET_NOT_FOUND.getString("instruction");
+        assertThat(instruction.getName()).isEqualTo(text);
     }
 
-    private com.mapzen.valhalla.Route getRoute(String name) throws Exception {
+    // Helper methods.
+    private Instruction getInstructionWithDirection(String direction) throws JSONException {
+        int angle = 0;
+        switch (direction) {
+            case "NE":
+                angle = 315;
+                break;
+            case "E":
+                angle = 270;
+                break;
+            case "SE":
+                angle = 225;
+                break;
+            case "S":
+                angle = 180;
+                break;
+            case "SW":
+                angle = 135;
+                break;
+            case "W":
+                angle = 90;
+                break;
+            case "NW":
+                angle = 45;
+                break;
+        }
+
+        final Instruction instruction = new Instruction(JSON);
+        instruction.setBearing(angle);
+        return instruction;
+    }
+
+    private Route getRoute(String name) throws Exception {
         String fileName = getProperty("user.dir");
         File file = new File(fileName + "/src/test/fixtures/" + name + ".route");
         String content = FileUtils.readFileToString(file, "UTF-8");
@@ -279,5 +290,3 @@ public class InstructionTest {
         return fixture;
     }
 }
-
-
