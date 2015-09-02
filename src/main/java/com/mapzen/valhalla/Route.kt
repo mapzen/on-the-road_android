@@ -167,7 +167,7 @@ public open class Route {
                     val totalDistance = distance + lastElement.totalDistance
                     node.totalDistance = totalDistance
                     if (lastNode != null) {
-                        lastNode!!.bearing = getBearing(lastNode!!.getLocation(), node.getLocation())
+                        lastNode.bearing = getBearing(lastNode.getLocation(), node.getLocation())
                     }
                     lastNode!!.legDistance = distance
                 }
@@ -275,7 +275,7 @@ public open class Route {
         }
 
         if (correctedLocation != null) {
-            val distance = correctedLocation!!.distanceTo(location).toDouble()
+            val distance = correctedLocation.distanceTo(location).toDouble()
             // check if results are on the otherside of the globe
             if (Math.round(distance) > CORRECTION_THRESHOLD) {
                 val tmpNode = Node(turnPoint.lat, turnPoint.lng)
@@ -291,6 +291,7 @@ public open class Route {
         if (Math.abs(bearingDelta) > 10 && Math.abs(bearingDelta) < 350) {
             correctedLocation = turnPoint.getLocation()
         }
+
         return correctedLocation!!
     }
 

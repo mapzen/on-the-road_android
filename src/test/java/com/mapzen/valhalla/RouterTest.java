@@ -17,7 +17,6 @@ import org.mockito.MockitoAnnotations;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -25,20 +24,11 @@ import java.util.concurrent.Executors;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class RouterTest {
-    @Captor
-    @SuppressWarnings("unused")
-    ArgumentCaptor<Router.Callback> callback;
-
-    @Captor
-    @SuppressWarnings("unused")
-    ArgumentCaptor<Route> route;
-
-    @Captor
-    @SuppressWarnings("unused")
-    ArgumentCaptor<Integer> statusCode;
+    @Captor ArgumentCaptor<RouteCallback> callback;
+    @Captor ArgumentCaptor<Route> route;
+    @Captor ArgumentCaptor<Integer> statusCode;
 
     Router validRouter;
-
     MockWebServer server;
 
     @Before
@@ -47,7 +37,7 @@ public class RouterTest {
         server.start();
         MockitoAnnotations.initMocks(this);
         double[] loc = new double[] {1.0, 2.0};
-        validRouter = new Router().setLocation(loc).setLocation(loc);
+        validRouter = new ValhallaRouter().setLocation(loc).setLocation(loc);
     }
 
     @After
@@ -94,7 +84,7 @@ public class RouterTest {
         double[] loc1 = { 1.0, 2.0 };
         double[] loc2 = { 3.0, 4.0 };
         double[] loc3 = { 5.0, 6.0 };
-        Router router = new Router()
+        Router router = new ValhallaRouter()
                 .setLocation(loc1)
                 .setLocation(loc2);
         router.clearLocations();
@@ -108,19 +98,19 @@ public class RouterTest {
 
     @Test(expected=MalformedURLException.class)
     public void shouldThrowErrorWhenNoLocation() throws Exception {
-        new Router().getJSONRequest();
+        new ValhallaRouter().getJSONRequest();
     }
 
     @Test(expected=MalformedURLException.class)
     public void shouldThrowErrorWhenOnlyOneLocation() throws Exception {
-        new Router().setLocation(new double[]{1.0, 1.0}).getJSONRequest();
+        new ValhallaRouter().setLocation(new double[]{1.0, 1.0}).getJSONRequest();
     }
 
     @Test
     public void shouldAddLocations() throws Exception {
         double[] loc1 = { 1.0, 2.0 };
         double[] loc2 = { 3.0, 4.0 };
-        JSON json = new Router()
+        JSON json = new ValhallaRouter()
                 .setLocation(loc1)
                 .setLocation(loc2)
                 .getJSONRequest();
@@ -138,8 +128,8 @@ public class RouterTest {
             @Override
             public void run() {
                 String endpoint = server.getUrl("").toString();
-                Router.Callback callback = Mockito.mock(Router.Callback.class);
-                Router router = new Router()
+                RouteCallback callback = Mockito.mock(RouteCallback.class);
+                Router router = new ValhallaRouter()
                         .setEndpoint(endpoint)
                         .setLocation(new double[]{40.659241, -73.983776})
                         .setLocation(new double[]{40.671773, -73.981115});
@@ -158,9 +148,9 @@ public class RouterTest {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                Router.Callback callback = Mockito.mock(Router.Callback.class);
+                RouteCallback callback = Mockito.mock(RouteCallback.class);
                 String endpoint = server.getUrl("").toString();
-                Router router = new Router()
+                Router router = new ValhallaRouter()
                         .setEndpoint(endpoint)
                         .setLocation(new double[]{40.659241, -73.983776})
                         .setLocation(new double[]{40.671773, -73.981115});
@@ -179,9 +169,9 @@ public class RouterTest {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                Router.Callback callback = Mockito.mock(Router.Callback.class);
+                RouteCallback callback = Mockito.mock(RouteCallback.class);
                 String endpoint = server.getUrl("").toString();
-                Router router = new Router()
+                Router router = new ValhallaRouter()
                         .setEndpoint(endpoint)
                         .setLocation(new double[]{40.659241, -73.983776})
                         .setLocation(new double[]{40.671773, -73.981115});
@@ -200,9 +190,9 @@ public class RouterTest {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                Router.Callback callback = Mockito.mock(Router.Callback.class);
+                RouteCallback callback = Mockito.mock(RouteCallback.class);
                 String endpoint = server.getUrl("").toString();
-                Router router = new Router()
+                Router router = new ValhallaRouter()
                         .setEndpoint(endpoint)
                         .setLocation(new double[]{40.659241, -73.983776})
                         .setLocation(new double[]{40.671773, -73.981115});
@@ -222,8 +212,8 @@ public class RouterTest {
             @Override
             public void run() {
                 String endpoint = server.getUrl("").toString();
-                Router.Callback callback = Mockito.mock(Router.Callback.class);
-                Router router = new Router()
+                RouteCallback callback = Mockito.mock(RouteCallback.class);
+                Router router = new ValhallaRouter()
                         .setEndpoint(endpoint)
                         .setLocation(new double[] { 40.659241, -73.983776 })
                         .setLocation(new double[] { 40.671773, -73.981115 });
