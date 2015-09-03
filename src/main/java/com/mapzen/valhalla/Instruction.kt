@@ -47,7 +47,6 @@ public open class Instruction {
     public var liveDistanceToNext: Int = -1
     public var bearing: Int = 0
 
-    throws(JSONException::class)
     public constructor(json: JSONObject) {
         if (json.length() < 6) {
             throw JSONException("too few arguments")
@@ -73,7 +72,6 @@ public open class Instruction {
     }
 
 
-    throws(JSONException::class)
     public fun skip(): Boolean {
         if(json!!.optJSONArray("street_names") == null && json!!.getInt("type") != DESTINATION ) {
             return true
@@ -81,7 +79,6 @@ public open class Instruction {
         return false;
     }
 
-    throws(JSONException::class)
     public fun getName(): String {
         if (json?.getInt("type") == DESTINATION) {
             return "You have arrived at your destination."
@@ -106,12 +103,10 @@ public open class Instruction {
         return DistanceFormatter.format(distance.toInt())
     }
 
-    throws(JSONException::class)
     public fun getBeginPolygonIndex(): Int {
         return json!!.getInt("begin_shape_index");
     }
 
-    throws(JSONException::class)
     public fun getEndPolygonIndex(): Int {
         return json!!.getInt("end_shape_index");
     }
@@ -161,7 +156,6 @@ public open class Instruction {
         return direction
     }
 
-        throws(JSONException::class)
     public fun getRotationBearing(): Int {
         return 360 - bearing
     }
@@ -190,7 +184,6 @@ public open class Instruction {
         }
     }
 
-    throws(JSONException::class)
     private fun parseTurnInstruction(json: JSONObject): Int {
         val turn = json.getString("type")
         return Integer.valueOf(turn)!!
