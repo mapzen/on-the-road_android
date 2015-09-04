@@ -1,0 +1,16 @@
+{
+    begin_shape_index: 10,
+    street_names: [
+        "North Main Street",
+        "SR1001",
+        "PA 611 Business (Unsigned)"
+    ],
+    verbal_post_transition_instruction: "Continue for 800 meters.",
+    time: 91,
+    type: 15,
+    end_shape_index: 21,
+    instruction: "Turn left onto North Main Street/SR1001/PA 611 Business (Unsigned).",
+    length: 0.796,
+    verbal_transition_alert_instruction: "Turn left onto North Main Street.",
+    verbal_pre_transition_instruction: "Turn left onto North Main Street, State Route 10 o1."
+}
