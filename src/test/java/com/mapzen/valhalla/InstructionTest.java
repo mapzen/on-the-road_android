@@ -27,7 +27,7 @@ public class InstructionTest {
     static {
         JSONObject JSON1;
         try {
-            JSON1 = new JSONObject(getInstructionFixture("json_valhalla"));
+            JSON1 = new JSONObject(getInstructionFixture("json_valhalla.instruction"));
         } catch (JSONException e) {
             e.printStackTrace();
             JSON1 = null;
@@ -40,7 +40,8 @@ public class InstructionTest {
     static {
         JSONObject DOUBLE_STREET_NAME1;
         try {
-            DOUBLE_STREET_NAME1 = new JSONObject(getInstructionFixture("double_street_name_valhalla"));
+            DOUBLE_STREET_NAME1 =
+                    new JSONObject(getInstructionFixture("double_street_name.instruction"));
         } catch (JSONException e) {
             e.printStackTrace();
             DOUBLE_STREET_NAME1 = null;
@@ -53,12 +54,25 @@ public class InstructionTest {
     static {
         JSONObject STREET_NOT_FOUND1;
         try {
-            STREET_NOT_FOUND1 = new JSONObject(getInstructionFixture("street_not_found_valhalla"));
+            STREET_NOT_FOUND1 = new JSONObject(getInstructionFixture("street_not_found.instruction"));
         } catch (JSONException e) {
             e.printStackTrace();
             STREET_NOT_FOUND1 = null;
         }
         STREET_NOT_FOUND = STREET_NOT_FOUND1;
+    }
+
+    private static final JSONObject TTS_INSTRUCTION;
+
+    static {
+        JSONObject TTS_INSTRUCTION1;
+        try {
+            TTS_INSTRUCTION1 = new JSONObject(getInstructionFixture("valhalla_tts.instruction"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+            TTS_INSTRUCTION1 = null;
+        }
+        TTS_INSTRUCTION = TTS_INSTRUCTION1;
     }
 
     private Instruction instruction;
@@ -235,8 +249,29 @@ public class InstructionTest {
     @Test
     public void getName_shouldReturnInstructionIfStreetNameNotAvailable() throws Exception {
         Instruction instruction = new Instruction(STREET_NOT_FOUND);
-        String text = STREET_NOT_FOUND.getString("instruction");
-        assertThat(instruction.getName()).isEqualTo(text);
+        String expected = STREET_NOT_FOUND.getString("instruction");
+        assertThat(instruction.getName()).isEqualTo(expected);
+    }
+
+    @Test
+    public void getVerbalPreTransitionInstruction_shouldReturnTtsText() throws Exception {
+        Instruction instruction = new Instruction(TTS_INSTRUCTION);
+        String expected = TTS_INSTRUCTION.getString("verbal_pre_transition_instruction");
+        assertThat(instruction.getVerbalPreTransitionInstruction()).isEqualTo(expected);
+    }
+
+    @Test
+    public void getVerbalTransitionAlertInstruction_shouldReturnTtsText() throws Exception {
+        Instruction instruction = new Instruction(TTS_INSTRUCTION);
+        String expected = TTS_INSTRUCTION.getString("verbal_transition_alert_instruction");
+        assertThat(instruction.getVerbalTransitionAlertInstruction()).isEqualTo(expected);
+    }
+
+    @Test
+    public void getVerbalPostTransitionInstruction_shouldReturnTtsText() throws Exception {
+        Instruction instruction = new Instruction(TTS_INSTRUCTION);
+        String expected = TTS_INSTRUCTION.getString("verbal_post_transition_instruction");
+        assertThat(instruction.getVerbalPostTransitionInstruction()).isEqualTo(expected);
     }
 
     // Helper methods.

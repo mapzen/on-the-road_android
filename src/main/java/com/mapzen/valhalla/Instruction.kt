@@ -168,7 +168,9 @@ public open class Instruction {
             Log.e("Json exception", "Unable to get name", e)
         }
 
-        return java.lang.String.format(Locale.US, "Instruction: (%.5f, %.5f) %s %s LiveDistanceTo: %d", location.getLatitude(), location.getLongitude(), turnInstruction, name, liveDistanceToNext)
+        return java.lang.String.format(Locale.US, "Instruction: (%.5f, %.5f) %s %s" +
+                "LiveDistanceTo: %d", location.getLatitude(), location.getLongitude(),
+                turnInstruction, name, liveDistanceToNext)
     }
 
     override fun equals(obj: Any?): Boolean {
@@ -176,16 +178,21 @@ public open class Instruction {
             return false
         }
         val other = obj as Instruction
-        try {
-            return (turnInstruction == other.turnInstruction && bearing == other.bearing && location.getLatitude() == other.location.getLatitude() && location.getLongitude() == other.location.getLongitude())
-        } catch (e: JSONException) {
-            Log.e("Json exception", "Unable to get bearing", e)
-            return false
-        }
+        return (turnInstruction == other.turnInstruction
+                && bearing == other.bearing
+                && location.getLatitude() == other.location.getLatitude()
+                && location.getLongitude() == other.location.getLongitude())
     }
 
-    private fun parseTurnInstruction(json: JSONObject): Int {
-        val turn = json.getString("type")
-        return Integer.valueOf(turn)!!
-    }
+    private fun parseTurnInstruction(json: JSONObject): Int =
+            json.getInt("type")
+
+    public fun getVerbalPreTransitionInstruction(): String =
+            json?.getString("verbal_pre_transition_instruction") ?: ""
+
+    public fun getVerbalTransitionAlertInstruction(): String =
+            json?.getString("verbal_transition_alert_instruction") ?: ""
+
+    public fun getVerbalPostTransitionInstruction(): String =
+            json?.getString("verbal_post_transition_instruction") ?: ""
 }

@@ -1,0 +1,11 @@
+{
+    begin_shape_index: 45,
+    verbal_post_transition_instruction: "Continue for 70 meters.",
+    time: 40,
+    type: 15,
+    end_shape_index: 46,
+    instruction: "Turn left.",
+    length: 0.065,
+    verbal_transition_alert_instruction: "Turn left.",
+    verbal_pre_transition_instruction: "Turn left."
+}
