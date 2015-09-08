@@ -20,15 +20,12 @@ public open class Route {
     private var poly: ArrayList<Node>? = null
     private var instructions: ArrayList<Instruction>? = null
     public var rawRoute: JSONObject? = null
-        private set
     public var currentLeg: Int = 0
-        protected set
     private val seenInstructions = HashSet<Instruction>()
     private var lost: Boolean = false
     private var lastFixedPoint: Location? = null
     private var currentInstructionIndex: Int = 0
     public var totalDistanceTravelled: Double = 0.0
-        private set
 
     public constructor(jsonString: String) {
         setJsonObject(JSONObject(jsonString))
@@ -38,7 +35,7 @@ public open class Route {
         setJsonObject(jsonObject)
     }
 
-    public fun setJsonObject(jsonObject: JSONObject) {
+    public open fun setJsonObject(jsonObject: JSONObject) {
         this.rawRoute = jsonObject
         if (foundRoute()) {
             initializePolyline(jsonObject.getJSONObject("trip").getJSONArray("legs").getJSONObject(0).getString("shape"))
@@ -46,31 +43,30 @@ public open class Route {
         }
     }
 
-    public fun getTotalDistance(): Int {
+    public open fun getTotalDistance(): Int {
         return Math.round(poly!!.get(poly!!.size() - 1).totalDistance).toInt()
     }
 
-    public fun getStatus(): Int? {
+    public open fun getStatus(): Int? {
         if (rawRoute!!.optJSONObject("trip") == null) {
             return -1
         }
         return rawRoute!!.optJSONObject("trip").getInt("status")
     }
 
-    public fun foundRoute(): Boolean {
+    public open fun foundRoute(): Boolean {
         return getStatus() == 0
     }
 
-    throws(JSONException::class)
-    public fun getTotalTime(): Int {
+    public open fun getTotalTime(): Int {
         return getSummary().getInt("time")
     }
 
-    public fun getDistanceToNextInstruction(): Int {
+    public open fun getDistanceToNextInstruction(): Int {
         return getCurrentInstruction().liveDistanceToNext
     }
 
-    public fun getRemainingDistanceToDestination(): Int {
+    public open fun getRemainingDistanceToDestination(): Int {
         return instructions!!.get(instructions!!.size() - 1).liveDistanceToNext
     }
 
@@ -88,20 +84,23 @@ public open class Route {
         }
     }
 
-    public fun getRouteInstructions(): ArrayList<Instruction> {
-        var accumulatedDistance = 0
-        for (instruction in instructions!!) {
-            instruction.location = poly!!.get(instruction.getBeginPolygonIndex()).getLocation()
-            if (instruction.liveDistanceToNext < 0) {
-                accumulatedDistance += instruction.distance
-                instruction.liveDistanceToNext = accumulatedDistance
+    public open fun getRouteInstructions(): ArrayList<Instruction>? {
+        if (instructions != null) {
+            var accumulatedDistance = 0
+            for (instruction in instructions!!) {
+                instruction.location = poly!!.get(instruction.getBeginPolygonIndex()).getLocation()
+                if (instruction.liveDistanceToNext < 0) {
+                    accumulatedDistance += instruction.distance
+                    instruction.liveDistanceToNext = accumulatedDistance
+                }
             }
         }
-        return instructions!!
+
+        return instructions
     }
 
 
-    public fun getGeometry(): ArrayList<Location> {
+    public open fun getGeometry(): ArrayList<Location> {
         val geometry = ArrayList<Location>()
         for (node in poly!!) {
             geometry.add(node.getLocation())
@@ -109,14 +108,14 @@ public open class Route {
         return geometry
     }
 
-    public fun getStartCoordinates(): Location {
+    public open fun getStartCoordinates(): Location {
         val location = Location(SNAP_PROVIDER)
         location.setLatitude(poly!!.get(0).lat)
         location.setLongitude(poly!!.get(0).lng)
         return location
     }
 
-    public fun isLost(): Boolean {
+    public open fun isLost(): Boolean {
         return lost
     }
 
@@ -179,15 +178,15 @@ public open class Route {
         return poly!!
     }
 
-    public fun getCurrentRotationBearing(): Double {
+    public open fun getCurrentRotationBearing(): Double {
         return 360 - poly!!.get(currentLeg).bearing
     }
 
-    public fun rewind() {
+    public open fun rewind() {
         currentLeg = 0
     }
 
-    public fun snapToRoute(originalPoint: Location): Location? {
+    public open fun snapToRoute(originalPoint: Location): Location? {
         Ln.d("Snapping => currentLeg: " + currentLeg.toString())
         Ln.d("Snapping => originalPoint: " + originalPoint.getLatitude().toString() + ", " + originalPoint.getLongitude().toString())
 
@@ -250,7 +249,7 @@ public open class Route {
         updateAllInstructions()
     }
 
-    public fun updateAllInstructions() {
+    public open fun updateAllInstructions() {
         // this constructs a distance table
         // and calculates from it
         // 3 instruction has the distance of
@@ -351,15 +350,15 @@ public open class Route {
         return loc
     }
 
-    public fun getSeenInstructions(): Set<Instruction> {
+    public open fun getSeenInstructions(): Set<Instruction> {
         return seenInstructions
     }
 
-    public fun addSeenInstruction(instruction: Instruction) {
+    public open fun addSeenInstruction(instruction: Instruction) {
         seenInstructions.add(instruction)
     }
 
-    public fun getNextInstruction(): Instruction? {
+    public open fun getNextInstruction(): Instruction? {
         val nextInstructionIndex = currentInstructionIndex + 1
         if (nextInstructionIndex >= instructions!!.size()) {
             return null
@@ -368,7 +367,11 @@ public open class Route {
         }
     }
 
-    public fun getCurrentInstruction(): Instruction {
+    public open fun getNextInstructionIndex(): Int? {
+        return instructions?.indexOf(getNextInstruction())
+    }
+
+    public open fun getCurrentInstruction(): Instruction {
         return instructions!!.get(currentInstructionIndex)
     }
 
@@ -381,7 +384,7 @@ public open class Route {
         }
     }
 
-    public fun getAccurateStartPoint(): Location {
+    public open fun getAccurateStartPoint(): Location {
         return poly!!.get(0).getLocation()
     }
 }

@@ -174,9 +174,14 @@ public open class Instruction {
     }
 
     override fun equals(obj: Any?): Boolean {
+        if (obj == null) {
+            return false
+        }
+
         if (javaClass != obj!!.javaClass) {
             return false
         }
+
         val other = obj as Instruction
         return (turnInstruction == other.turnInstruction
                 && bearing == other.bearing

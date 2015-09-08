@@ -5,6 +5,9 @@ import com.mapzen.valhalla.Route;
 import com.mapzen.valhalla.RouteTest;
 
 import org.fest.assertions.data.Offset;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,6 +15,7 @@ import org.robolectric.RobolectricTestRunner;
 
 import android.location.Location;
 
+import static com.mapzen.helpers.DistanceFormatter.METERS_IN_ONE_MILE;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
@@ -50,26 +54,26 @@ public class RouteEngineTest {
     }
 
     @Test
-    public void onApproachInstruction_shouldReturnIndex() throws Exception {
+    public void onAlertInstruction_shouldReturnIndex() throws Exception {
         Location start = route.getRouteInstructions().get(0).getLocation();
         routeEngine.onLocationChanged(start);
         Location preLoc = getTestLocation(40.743486, -73.988273);
         routeEngine.onLocationChanged(preLoc);
         Location loc = route.getRouteInstructions().get(1).getLocation();
         routeEngine.onLocationChanged(loc);
-        assertThat(listener.approachIndex).isEqualTo(0);
+        assertThat(listener.alertIndex).isEqualTo(0);
     }
 
     @Test
-    public void onApproachInstruction_shouldNotFireForDestination() throws Exception {
+    public void onAlertInstruction_shouldNotFireForDestination() throws Exception {
         routeEngine.onLocationChanged(route.getRouteInstructions().get(3).getLocation());
-        assertThat(listener.approachIndex).isNotEqualTo(3);
+        assertThat(listener.alertIndex).isNotEqualTo(3);
     }
 
     @Test
-    public void onApproachInstruction_shouldFireAtStart() throws Exception {
+    public void onAlertInstruction_shouldFireAtStart() throws Exception {
         routeEngine.onLocationChanged(route.getRouteInstructions().get(0).getLocation());
-        assertThat(listener.approachIndex).isEqualTo(0);
+        assertThat(listener.alertIndex).isEqualTo(0);
     }
 
     @Test
@@ -172,16 +176,92 @@ public class RouteEngineTest {
         assertThat(listener.routeComplete).isFalse();
     }
 
-    private static class TestRouteListener implements RouteEngine.RouteListener {
+    @Test
+    public void onApproachInstruction_shouldNotifyAtOneMile() throws Exception {
+        TestRoute route = new TestRoute();
+        route.distanceToNextInstruction = METERS_IN_ONE_MILE;
+        routeEngine.setRoute(route);
+        routeEngine.onLocationChanged(getTestLocation());
+        assertThat(listener.approachIndex).isEqualTo(1);
+        assertThat(listener.milestone).isEqualTo(RouteEngine.Milestone.ONE_MILE);
+    }
+
+    @Test
+    public void onApproachInstruction_shouldNotifyAtQuarterMile() throws Exception {
+        TestRoute route = new TestRoute();
+        route.distanceToNextInstruction = METERS_IN_ONE_MILE / 4;
+        routeEngine.setRoute(route);
+        routeEngine.onLocationChanged(getTestLocation());
+        assertThat(listener.approachIndex).isEqualTo(1);
+        assertThat(listener.milestone).isEqualTo(RouteEngine.Milestone.QUARTER_MILE);
+    }
+
+    @Test
+    public void onApproachInstruction_shouldNotNotifyTwiceForOneMile() throws Exception {
+        TestRoute route = new TestRoute();
+        route.distanceToNextInstruction = METERS_IN_ONE_MILE;
+        routeEngine.setRoute(route);
+        routeEngine.onLocationChanged(getTestLocation());
+        listener.approachIndex = -1;
+        routeEngine.onLocationChanged(getTestLocation());
+        assertThat(listener.approachIndex).isEqualTo(-1);
+    }
+
+    @Test
+    public void onApproachInstruction_shouldNotNotifyTwiceForQuarterMile() throws Exception {
+        TestRoute route = new TestRoute();
+        route.distanceToNextInstruction = METERS_IN_ONE_MILE / 4;
+        routeEngine.setRoute(route);
+        routeEngine.onLocationChanged(getTestLocation());
+        listener.approachIndex = -1;
+        routeEngine.onLocationChanged(getTestLocation());
+        assertThat(listener.approachIndex).isEqualTo(-1);
+    }
+
+    private static class TestRoute extends Route {
+        private double distanceToNextInstruction = 0;
+
+        public TestRoute() {
+            super(new JSONObject());
+        }
+
+        @Nullable @Override public Location snapToRoute(@NotNull Location originalPoint) {
+            return getTestLocation();
+        }
+
+        @Override public boolean isLost() {
+            return false;
+        }
+
+        @Override public int getDistanceToNextInstruction() {
+            return (int) distanceToNextInstruction;
+        }
+
+        @Nullable @Override public Integer getNextInstructionIndex() {
+            return 1;
+        }
+
+        @Override public int getRemainingDistanceToDestination() {
+            return 0;
+        }
+
+        @Nullable @Override public Instruction getNextInstruction() {
+            return null;
+        }
+    }
+
+    private static class TestRouteListener implements RouteListener {
         private Location originalLocation;
         private Location snapLocation;
 
         private boolean recalculating = false;
         private int approachIndex = -1;
+        private int alertIndex = -1;
         private int completeIndex = -1;
         private int distanceToNextInstruction = -1;
         private int distanceToDestination = -1;
         private boolean routeComplete = false;
+        private RouteEngine.Milestone milestone;
 
         @Override
         public void onRecalculate(Location location) {
@@ -195,8 +275,14 @@ public class RouteEngineTest {
         }
 
         @Override
-        public void onApproachInstruction(int index) {
+        public void onApproachInstruction(int index, RouteEngine.Milestone milestone) {
             approachIndex = index;
+            this.milestone = milestone;
+        }
+
+        @Override
+        public void onAlertInstruction(int index) {
+            alertIndex = index;
         }
 
         @Override
@@ -214,6 +300,10 @@ public class RouteEngineTest {
         public void onRouteComplete() {
             routeComplete = true;
         }
+    }
+
+    public static Location getTestLocation() {
+        return getTestLocation(0, 0);
     }
 
     public static Location getTestLocation(double lat, double lng) {
