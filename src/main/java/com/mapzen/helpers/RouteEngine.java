@@ -14,9 +14,9 @@ import static com.mapzen.helpers.DistanceFormatter.METERS_IN_ONE_MILE;
  * route, and notifies listener of significant routing events.
  */
 public class RouteEngine {
-    public static final int APPROACH_RADIUS = 20;
-    public static final int ALERT_RADIUS = 20;
-    public static final int DESTINATION_RADIUS = 20;
+    public static final int APPROACH_RADIUS = 50;
+    public static final int ALERT_RADIUS = 50;
+    public static final int DESTINATION_RADIUS = 30;
 
     public enum RouteState {
         START,
@@ -49,7 +49,7 @@ public class RouteEngine {
         snapLocation();
 
         if (routeState == RouteState.START) {
-            listener.onAlertInstruction(0);
+            listener.onApproachInstruction(0);
             routeState = RouteState.PRE_INSTRUCTION;
         }
 
@@ -71,8 +71,9 @@ public class RouteEngine {
                 && route.getDistanceToNextInstruction() < ALERT_RADIUS
                 && route.getNextInstructionIndex() != null) {
             final int nextIndex = route.getNextInstructionIndex();
-            listener.onAlertInstruction(nextIndex);
+            listener.onApproachInstruction(nextIndex);
             routeState = RouteState.INSTRUCTION;
+            lastMilestoneUpdate = null;
         }
 
         final Instruction nextInstruction = route.getNextInstruction();
@@ -92,7 +93,7 @@ public class RouteEngine {
                 && lastMilestoneUpdate != milestone
                 && route.getNextInstructionIndex() != null) {
             final int nextIndex = route.getNextInstructionIndex();
-            listener.onApproachInstruction(nextIndex, milestone);
+            listener.onMilestoneReached(nextIndex, milestone);
             lastMilestoneUpdate = milestone;
         }
     }

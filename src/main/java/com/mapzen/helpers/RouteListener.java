@@ -19,12 +19,12 @@ public interface RouteListener {
     /**
      * Invoked to give advance warning of an upcoming maneuver at designated milestones.
      */
-    public void onApproachInstruction(int index, RouteEngine.Milestone milestone);
+    public void onMilestoneReached(int index, RouteEngine.Milestone milestone);
 
     /**
      * Invoked when next instruction maneuver is imminent.
      */
-    public void onAlertInstruction(int index);
+    public void onApproachInstruction(int index);
 
     /**
      * Invoked after instruction maneuver is completed. (ex. finished making turn)

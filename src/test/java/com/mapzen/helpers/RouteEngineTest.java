@@ -54,26 +54,26 @@ public class RouteEngineTest {
     }
 
     @Test
-    public void onAlertInstruction_shouldReturnIndex() throws Exception {
+    public void onApproachInstruction_shouldReturnIndex() throws Exception {
         Location start = route.getRouteInstructions().get(0).getLocation();
         routeEngine.onLocationChanged(start);
         Location preLoc = getTestLocation(40.743486, -73.988273);
         routeEngine.onLocationChanged(preLoc);
         Location loc = route.getRouteInstructions().get(1).getLocation();
         routeEngine.onLocationChanged(loc);
-        assertThat(listener.alertIndex).isEqualTo(0);
+        assertThat(listener.approachIndex).isEqualTo(0);
     }
 
     @Test
-    public void onAlertInstruction_shouldNotFireForDestination() throws Exception {
+    public void onApproachInstruction_shouldNotFireForDestination() throws Exception {
         routeEngine.onLocationChanged(route.getRouteInstructions().get(3).getLocation());
-        assertThat(listener.alertIndex).isNotEqualTo(3);
+        assertThat(listener.approachIndex).isNotEqualTo(3);
     }
 
     @Test
-    public void onAlertInstruction_shouldFireAtStart() throws Exception {
+    public void onApproachInstruction_shouldFireAtStart() throws Exception {
         routeEngine.onLocationChanged(route.getRouteInstructions().get(0).getLocation());
-        assertThat(listener.alertIndex).isEqualTo(0);
+        assertThat(listener.approachIndex).isEqualTo(0);
     }
 
     @Test
@@ -177,45 +177,45 @@ public class RouteEngineTest {
     }
 
     @Test
-    public void onApproachInstruction_shouldNotifyAtOneMile() throws Exception {
+    public void onMilestoneReached_shouldNotifyAtOneMile() throws Exception {
         TestRoute route = new TestRoute();
         route.distanceToNextInstruction = METERS_IN_ONE_MILE;
         routeEngine.setRoute(route);
         routeEngine.onLocationChanged(getTestLocation());
-        assertThat(listener.approachIndex).isEqualTo(1);
+        assertThat(listener.milestoneIndex).isEqualTo(1);
         assertThat(listener.milestone).isEqualTo(RouteEngine.Milestone.ONE_MILE);
     }
 
     @Test
-    public void onApproachInstruction_shouldNotifyAtQuarterMile() throws Exception {
+    public void onMilestoneReached_shouldNotifyAtQuarterMile() throws Exception {
         TestRoute route = new TestRoute();
         route.distanceToNextInstruction = METERS_IN_ONE_MILE / 4;
         routeEngine.setRoute(route);
         routeEngine.onLocationChanged(getTestLocation());
-        assertThat(listener.approachIndex).isEqualTo(1);
+        assertThat(listener.milestoneIndex).isEqualTo(1);
         assertThat(listener.milestone).isEqualTo(RouteEngine.Milestone.QUARTER_MILE);
     }
 
     @Test
-    public void onApproachInstruction_shouldNotNotifyTwiceForOneMile() throws Exception {
+    public void onMilestoneReached_shouldNotNotifyTwiceForOneMile() throws Exception {
         TestRoute route = new TestRoute();
         route.distanceToNextInstruction = METERS_IN_ONE_MILE;
         routeEngine.setRoute(route);
         routeEngine.onLocationChanged(getTestLocation());
-        listener.approachIndex = -1;
+        listener.milestoneIndex = -1;
         routeEngine.onLocationChanged(getTestLocation());
-        assertThat(listener.approachIndex).isEqualTo(-1);
+        assertThat(listener.milestoneIndex).isEqualTo(-1);
     }
 
     @Test
-    public void onApproachInstruction_shouldNotNotifyTwiceForQuarterMile() throws Exception {
+    public void onMilestoneReached_shouldNotNotifyTwiceForQuarterMile() throws Exception {
         TestRoute route = new TestRoute();
         route.distanceToNextInstruction = METERS_IN_ONE_MILE / 4;
         routeEngine.setRoute(route);
         routeEngine.onLocationChanged(getTestLocation());
-        listener.approachIndex = -1;
+        listener.milestoneIndex = -1;
         routeEngine.onLocationChanged(getTestLocation());
-        assertThat(listener.approachIndex).isEqualTo(-1);
+        assertThat(listener.milestoneIndex).isEqualTo(-1);
     }
 
     private static class TestRoute extends Route {
@@ -255,8 +255,8 @@ public class RouteEngineTest {
         private Location snapLocation;
 
         private boolean recalculating = false;
+        private int milestoneIndex = -1;
         private int approachIndex = -1;
-        private int alertIndex = -1;
         private int completeIndex = -1;
         private int distanceToNextInstruction = -1;
         private int distanceToDestination = -1;
@@ -275,14 +275,14 @@ public class RouteEngineTest {
         }
 
         @Override
-        public void onApproachInstruction(int index, RouteEngine.Milestone milestone) {
-            approachIndex = index;
+        public void onMilestoneReached(int index, RouteEngine.Milestone milestone) {
+            milestoneIndex = index;
             this.milestone = milestone;
         }
 
         @Override
-        public void onAlertInstruction(int index) {
-            alertIndex = index;
+        public void onApproachInstruction(int index) {
+            approachIndex = index;
         }
 
         @Override
