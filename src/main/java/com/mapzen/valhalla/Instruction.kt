@@ -174,9 +174,14 @@ public open class Instruction {
     }
 
     override fun equals(obj: Any?): Boolean {
+        if (obj == null) {
+            return false
+        }
+
         if (javaClass != obj!!.javaClass) {
             return false
         }
+
         val other = obj as Instruction
         return (turnInstruction == other.turnInstruction
                 && bearing == other.bearing
@@ -187,12 +192,27 @@ public open class Instruction {
     private fun parseTurnInstruction(json: JSONObject): Int =
             json.getInt("type")
 
-    public fun getVerbalPreTransitionInstruction(): String =
-            json?.getString("verbal_pre_transition_instruction") ?: ""
+    public fun getVerbalPreTransitionInstruction(): String {
+        if (json?.has("verbal_pre_transition_instruction") ?: false) {
+            return json?.getString("verbal_pre_transition_instruction") ?: ""
+        }
 
-    public fun getVerbalTransitionAlertInstruction(): String =
-            json?.getString("verbal_transition_alert_instruction") ?: ""
+        return ""
+    }
 
-    public fun getVerbalPostTransitionInstruction(): String =
-            json?.getString("verbal_post_transition_instruction") ?: ""
+    public fun getVerbalTransitionAlertInstruction(): String {
+        if (json?.has("verbal_transition_alert_instruction") ?: false) {
+            return json?.getString("verbal_transition_alert_instruction") ?: ""
+        }
+
+        return ""
+    }
+
+    public fun getVerbalPostTransitionInstruction(): String {
+        if (json?.has("verbal_post_transition_instruction") ?: false) {
+            return json?.getString("verbal_post_transition_instruction") ?: ""
+        }
+
+        return ""
+    }
 }

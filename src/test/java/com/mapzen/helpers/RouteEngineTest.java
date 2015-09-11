@@ -5,6 +5,9 @@ import com.mapzen.valhalla.Route;
 import com.mapzen.valhalla.RouteTest;
 
 import org.fest.assertions.data.Offset;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,6 +15,7 @@ import org.robolectric.RobolectricTestRunner;
 
 import android.location.Location;
 
+import static com.mapzen.helpers.DistanceFormatter.METERS_IN_ONE_MILE;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
@@ -172,16 +176,92 @@ public class RouteEngineTest {
         assertThat(listener.routeComplete).isFalse();
     }
 
-    private static class TestRouteListener implements RouteEngine.RouteListener {
+    @Test
+    public void onMilestoneReached_shouldNotifyAtOneMile() throws Exception {
+        TestRoute route = new TestRoute();
+        route.distanceToNextInstruction = METERS_IN_ONE_MILE;
+        routeEngine.setRoute(route);
+        routeEngine.onLocationChanged(getTestLocation());
+        assertThat(listener.milestoneIndex).isEqualTo(1);
+        assertThat(listener.milestone).isEqualTo(RouteEngine.Milestone.ONE_MILE);
+    }
+
+    @Test
+    public void onMilestoneReached_shouldNotifyAtQuarterMile() throws Exception {
+        TestRoute route = new TestRoute();
+        route.distanceToNextInstruction = METERS_IN_ONE_MILE / 4;
+        routeEngine.setRoute(route);
+        routeEngine.onLocationChanged(getTestLocation());
+        assertThat(listener.milestoneIndex).isEqualTo(1);
+        assertThat(listener.milestone).isEqualTo(RouteEngine.Milestone.QUARTER_MILE);
+    }
+
+    @Test
+    public void onMilestoneReached_shouldNotNotifyTwiceForOneMile() throws Exception {
+        TestRoute route = new TestRoute();
+        route.distanceToNextInstruction = METERS_IN_ONE_MILE;
+        routeEngine.setRoute(route);
+        routeEngine.onLocationChanged(getTestLocation());
+        listener.milestoneIndex = -1;
+        routeEngine.onLocationChanged(getTestLocation());
+        assertThat(listener.milestoneIndex).isEqualTo(-1);
+    }
+
+    @Test
+    public void onMilestoneReached_shouldNotNotifyTwiceForQuarterMile() throws Exception {
+        TestRoute route = new TestRoute();
+        route.distanceToNextInstruction = METERS_IN_ONE_MILE / 4;
+        routeEngine.setRoute(route);
+        routeEngine.onLocationChanged(getTestLocation());
+        listener.milestoneIndex = -1;
+        routeEngine.onLocationChanged(getTestLocation());
+        assertThat(listener.milestoneIndex).isEqualTo(-1);
+    }
+
+    private static class TestRoute extends Route {
+        private double distanceToNextInstruction = 0;
+
+        public TestRoute() {
+            super(new JSONObject());
+        }
+
+        @Nullable @Override public Location snapToRoute(@NotNull Location originalPoint) {
+            return getTestLocation();
+        }
+
+        @Override public boolean isLost() {
+            return false;
+        }
+
+        @Override public int getDistanceToNextInstruction() {
+            return (int) distanceToNextInstruction;
+        }
+
+        @Nullable @Override public Integer getNextInstructionIndex() {
+            return 1;
+        }
+
+        @Override public int getRemainingDistanceToDestination() {
+            return 0;
+        }
+
+        @Nullable @Override public Instruction getNextInstruction() {
+            return null;
+        }
+    }
+
+    private static class TestRouteListener implements RouteListener {
         private Location originalLocation;
         private Location snapLocation;
 
         private boolean recalculating = false;
+        private int milestoneIndex = -1;
         private int approachIndex = -1;
         private int completeIndex = -1;
         private int distanceToNextInstruction = -1;
         private int distanceToDestination = -1;
         private boolean routeComplete = false;
+        private RouteEngine.Milestone milestone;
 
         @Override
         public void onRecalculate(Location location) {
@@ -192,6 +272,12 @@ public class RouteEngineTest {
         public void onSnapLocation(Location originalLocation, Location snapLocation) {
             this.originalLocation = originalLocation;
             this.snapLocation = snapLocation;
+        }
+
+        @Override
+        public void onMilestoneReached(int index, RouteEngine.Milestone milestone) {
+            milestoneIndex = index;
+            this.milestone = milestone;
         }
 
         @Override
@@ -214,6 +300,10 @@ public class RouteEngineTest {
         public void onRouteComplete() {
             routeComplete = true;
         }
+    }
+
+    public static Location getTestLocation() {
+        return getTestLocation(0, 0);
     }
 
     public static Location getTestLocation(double lat, double lng) {
