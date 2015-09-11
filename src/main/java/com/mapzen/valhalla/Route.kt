@@ -99,12 +99,15 @@ public open class Route {
         return instructions
     }
 
-
     public open fun getGeometry(): ArrayList<Location> {
         val geometry = ArrayList<Location>()
-        for (node in poly!!) {
-            geometry.add(node.getLocation())
+        val polyline = poly
+        if (polyline is ArrayList<Node>) {
+            for (node in polyline) {
+                geometry.add(node.getLocation())
+            }
         }
+
         return geometry
     }
 
@@ -119,12 +122,10 @@ public open class Route {
         return lost
     }
 
-    throws(JSONException::class)
     private fun getViaPoints(): JSONArray {
         return rawRoute!!.getJSONObject("trip").getJSONArray("locations")
     }
 
-    throws(JSONException::class)
     private fun getSummary(): JSONObject {
         return rawRoute!!.getJSONObject("trip").getJSONArray("legs").getJSONObject(0).getJSONObject("summary")
     }
