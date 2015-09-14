@@ -142,6 +142,10 @@ public class RouteEngine {
         }
     }
 
+    public Route getRoute() {
+        return route;
+    }
+
     public void setListener(RouteListener listener) {
         this.listener = listener;
     }
