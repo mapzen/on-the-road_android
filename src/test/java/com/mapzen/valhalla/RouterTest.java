@@ -2,6 +2,7 @@ package com.mapzen.valhalla;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
+import com.google.gson.Gson;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
 
@@ -28,7 +29,7 @@ public class RouterTest {
     @Captor ArgumentCaptor<Route> route;
     @Captor ArgumentCaptor<Integer> statusCode;
 
-    Router validRouter;
+    Router router;
     MockWebServer server;
 
     @Before
@@ -37,7 +38,7 @@ public class RouterTest {
         server.start();
         MockitoAnnotations.initMocks(this);
         double[] loc = new double[] {1.0, 2.0};
-        validRouter = new ValhallaRouter().setLocation(loc).setLocation(loc);
+        router = new ValhallaRouter().setLocation(loc).setLocation(loc);
     }
 
     @After
@@ -47,36 +48,36 @@ public class RouterTest {
 
     @Test
     public void shouldHaveDefaultEndpoint() throws Exception {
-        assertThat(validRouter.getEndpoint()).startsWith("http://valhalla.mapzen.com/");
+        assertThat(router.getEndpoint()).startsWith("http://valhalla.mapzen.com/");
     }
 
     @Test
     public void shouldSetEndpoint() throws Exception {
-        validRouter.setEndpoint("http://testing.com");
-        assertThat(validRouter.getEndpoint()).startsWith("http://testing.com");
+        router.setEndpoint("http://testing.com");
+        assertThat(router.getEndpoint()).startsWith("http://testing.com");
     }
 
     @Test
     public void shouldDefaultToCar() throws Exception {
-        assertThat(validRouter.getJSONRequest().costing).contains("auto");
+        assertThat(router.getJSONRequest().costing).contains("auto");
     }
 
     @Test
     public void shouldSetToCar() throws Exception {
-        validRouter.setDriving();
-        assertThat(validRouter.getJSONRequest().costing).contains("auto");
+        router.setDriving();
+        assertThat(router.getJSONRequest().costing).contains("auto");
     }
 
     @Test
     public void shouldSetToBike() throws Exception {
-        validRouter.setBiking();
-        assertThat(validRouter.getJSONRequest().costing).contains("bicycle");
+        router.setBiking();
+        assertThat(router.getJSONRequest().costing).contains("bicycle");
     }
 
     @Test
     public void shouldSetToFoot() throws Exception {
-        validRouter.setWalking();
-        assertThat(validRouter.getJSONRequest().costing).contains("pedestrian");
+        router.setWalking();
+        assertThat(router.getJSONRequest().costing).contains("pedestrian");
     }
 
     @Test
@@ -224,6 +225,17 @@ public class RouterTest {
                         .isEqualTo(getFixture("brooklyn"));
             }
         });
+    }
+
+    @Test
+    public void setDistanceUnits_shouldAppendUnitsToJson() throws Exception {
+        router.setDistanceUnits(Router.DistanceUnits.MILES);
+        assertThat(new Gson().toJson(router.getJSONRequest()))
+                .contains("\"directions_options\":{\"units\":\"miles\"}");
+
+        router.setDistanceUnits(Router.DistanceUnits.KILOMETERS);
+        assertThat(new Gson().toJson(router.getJSONRequest()))
+                .contains("\"directions_options\":{\"units\":\"kilometers\"}");
     }
 
     private void startServerAndEnqueue(MockResponse response) throws Exception {
