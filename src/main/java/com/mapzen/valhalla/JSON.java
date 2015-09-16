@@ -1,19 +1,20 @@
 package com.mapzen.valhalla;
 
-/**
- * Created by peterjasko on 6/8/15.
- */
-public class JSON {
+import com.google.gson.annotations.SerializedName;
 
-    public location[] locations = new location[2];
+public class JSON {
+    public Location[] locations = new Location[2];
     public String costing;
 
-    public static class location {
-        public location() {
+    @SerializedName("directions_options")
+    public DirectionOptions directionsOptions = new DirectionOptions();
 
-        }
-        public String lat = "";
-        public String lon = "";
+    public static class Location {
+        public String lat;
+        public String lon;
+    }
 
+    public static class DirectionOptions {
+        public String units;
     }
 }

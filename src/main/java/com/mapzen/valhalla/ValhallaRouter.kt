@@ -18,6 +18,7 @@ public open class ValhallaRouter : Router, Runnable {
     private var type = Router.Type.DRIVING
     private val locations = ArrayList<DoubleArray>()
     private var callback: RouteCallback? = null
+    private var units: Router.DistanceUnits = Router.DistanceUnits.KILOMETERS
 
     override fun setApiKey(key: String): Router {
         API_KEY = key
@@ -41,6 +42,11 @@ public open class ValhallaRouter : Router, Runnable {
 
     override fun setLocation(point: DoubleArray): Router {
         this.locations.add(point)
+        return this
+    }
+
+    override fun setDistanceUnits(units: Router.DistanceUnits): Router {
+        this.units = units
         return this
     }
 
@@ -110,13 +116,14 @@ public open class ValhallaRouter : Router, Runnable {
             throw  MalformedURLException();
         }
         var json: JSON = JSON();
-        json.locations[0] = JSON.location()
-        json.locations[1] = JSON.location()
+        json.locations[0] = JSON.Location()
+        json.locations[1] = JSON.Location()
         json.locations[0].lat = locations.get(0)[0].toString()
         json.locations[0].lon = locations.get(0)[1].toString()
         json.locations[1].lat = locations.get(1)[0].toString()
         json.locations[1].lon = locations.get(1)[1].toString()
         json.costing = this.type.toString()
+        json.directionsOptions.units = this.units.toString()
         return json
     }
 
