@@ -1,5 +1,7 @@
 package com.mapzen.helpers;
 
+import com.mapzen.valhalla.Router.DistanceUnits;
+
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -43,6 +45,37 @@ public final class DistanceFormatter {
      */
     public static String format(int distanceInMeters, boolean realTime) {
         Locale locale = Locale.getDefault();
+        return format(distanceInMeters, realTime, locale);
+    }
+
+    /**
+     * Format distance for display using specified distance units.
+     *
+     * @param distanceInMeters the actual distance in meters.
+     * @param realTime boolean flag for navigation vs. list view.
+     * @param units miles or kilometers.
+     * @return distance string formatted according to the rules of the formatter.
+     */
+    public static String format(int distanceInMeters, boolean realTime, DistanceUnits units) {
+        switch (units) {
+            case MILES:
+                return format(distanceInMeters, realTime, Locale.US);
+            case KILOMETERS:
+                return format(distanceInMeters, realTime, Locale.GERMANY);
+            default:
+                return format(distanceInMeters, realTime, Locale.getDefault());
+        }
+    }
+
+    /**
+     * Format distance for display using specified Locale.
+     *
+     * @param distanceInMeters the actual distance in meters.
+     * @param realTime boolean flag for navigation vs. list view.
+     * @param locale Locale that defines the number format for displaying distance.
+     * @return distance string formatted according to the rules of the formatter.
+     */
+    public static String format(int distanceInMeters, boolean realTime, Locale locale) {
         decimalFormat = (DecimalFormat) NumberFormat.getNumberInstance(locale);
         decimalFormat.applyPattern("#.#");
 
