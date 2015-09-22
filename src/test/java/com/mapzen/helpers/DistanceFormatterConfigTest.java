@@ -32,7 +32,7 @@ public class DistanceFormatterConfigTest {
     @Test
     public void shouldUseGivenDistanceUnits() throws Exception {
         Locale.setDefault(Locale.GERMANY);
-        assertThat(format(1000, false, Router.DistanceUnits.MILES)).isEqualTo("0.6 mi");
+        assertThat(format(1000, false, Router.DistanceUnits.MILES)).isEqualTo("0,6 mi");
 
         Locale.setDefault(Locale.US);
         assertThat(format(1000, false, Router.DistanceUnits.KILOMETERS)).isEqualTo("1 km");

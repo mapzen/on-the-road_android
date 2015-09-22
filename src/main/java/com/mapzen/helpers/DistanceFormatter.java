@@ -57,18 +57,11 @@ public final class DistanceFormatter {
      * @return distance string formatted according to the rules of the formatter.
      */
     public static String format(int distanceInMeters, boolean realTime, DistanceUnits units) {
-        switch (units) {
-            case MILES:
-                return format(distanceInMeters, realTime, Locale.US);
-            case KILOMETERS:
-                return format(distanceInMeters, realTime, Locale.GERMANY);
-            default:
-                return format(distanceInMeters, realTime, Locale.getDefault());
-        }
+        return format(distanceInMeters, realTime, Locale.getDefault(), units);
     }
 
     /**
-     * Format distance for display using specified Locale.
+     * Format distance for display using specified locale.
      *
      * @param distanceInMeters the actual distance in meters.
      * @param realTime boolean flag for navigation vs. list view.
@@ -76,32 +69,61 @@ public final class DistanceFormatter {
      * @return distance string formatted according to the rules of the formatter.
      */
     public static String format(int distanceInMeters, boolean realTime, Locale locale) {
+        if (useMiles(locale)) {
+            return format(distanceInMeters, realTime, locale, DistanceUnits.MILES);
+        } else {
+            return format(distanceInMeters, realTime, locale, DistanceUnits.KILOMETERS);
+        }
+    }
+
+    /**
+     * Format distance for display using specified locale and units.
+     *
+     * @param distanceInMeters the actual distance in meters.
+     * @param realTime boolean flag for navigation vs. list view.
+     * @param locale Locale that defines the number format for displaying distance.
+     * @param units miles or kilometers.
+     * @return distance string formatted according to the rules of the formatter.
+     */
+    public static String format(int distanceInMeters, boolean realTime, Locale locale,
+            DistanceUnits units) {
+
         decimalFormat = (DecimalFormat) NumberFormat.getNumberInstance(locale);
         decimalFormat.applyPattern("#.#");
 
         if (distanceInMeters == 0) {
             return "";
         }
-        if (useMiles(locale)) {
-            double distanceInFeet = distanceInMeters / METERS_IN_ONE_FOOT;
-            if (distanceInFeet < 10) {
-                return formatDistanceLessThanTenFeet(distanceInFeet, realTime);
-            } else if (distanceInFeet < FEET_IN_ONE_MILE / 10) {
-                return formatDistanceOverTenFeet(distanceInFeet);
-            } else {
-                return formatDistanceInMiles(distanceInMeters);
-            }
-        } else {
-            if (distanceInMeters >= 1000) {
-                return formatDistanceGreaterThanKilometer(distanceInMeters);
-            } else if (distanceInMeters > 10) {
-                return formatDistanceLessThanKilometer(distanceInMeters);
-            } else if (distanceInMeters != 0) {
-                return formatShortMeters(distanceInMeters, realTime);
-            }
-        }
 
-        return "";
+        switch (units) {
+            case MILES:
+                return formatMiles(distanceInMeters, realTime);
+            case KILOMETERS:
+                return formatKilometers(distanceInMeters, realTime);
+            default:
+                return "";
+        }
+    }
+
+    private static String formatMiles(int distanceInMeters, boolean realTime) {
+        double distanceInFeet = distanceInMeters / METERS_IN_ONE_FOOT;
+        if (distanceInFeet < 10) {
+            return formatDistanceLessThanTenFeet(distanceInFeet, realTime);
+        } else if (distanceInFeet < FEET_IN_ONE_MILE / 10) {
+            return formatDistanceOverTenFeet(distanceInFeet);
+        } else {
+            return formatDistanceInMiles(distanceInMeters);
+        }
+    }
+
+    private static String formatKilometers(int distanceInMeters, boolean realTime) {
+        if (distanceInMeters >= 1000) {
+            return formatDistanceGreaterThanKilometer(distanceInMeters);
+        } else if (distanceInMeters > 10) {
+            return formatDistanceLessThanKilometer(distanceInMeters);
+        } else {
+            return formatShortMeters(distanceInMeters, realTime);
+        }
     }
 
     private static boolean useMiles(Locale locale) {
