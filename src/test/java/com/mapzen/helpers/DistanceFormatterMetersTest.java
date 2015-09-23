@@ -31,8 +31,13 @@ public class DistanceFormatterMetersTest {
     }
 
     @Test
-    public void distanceMeters_shouldReturnMeters() throws Exception {
-        assertThat(format(999)).isEqualTo("999 m");
+    public void distanceOneTenthKilometer_shouldReturnOneTenth() throws Exception {
+        assertThat(format(100)).isEqualTo("0,1 km");
+    }
+
+    @Test
+    public void distanceLessThan100Meters_shouldReturnMeters() throws Exception {
+        assertThat(format(99)).isEqualTo("99 m");
     }
 
     @Test

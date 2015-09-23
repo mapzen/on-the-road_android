@@ -117,10 +117,10 @@ public final class DistanceFormatter {
     }
 
     private static String formatKilometers(int distanceInMeters, boolean realTime) {
-        if (distanceInMeters >= 1000) {
-            return formatDistanceGreaterThanKilometer(distanceInMeters);
+        if (distanceInMeters >= 100) {
+            return formatDistanceInKilometers(distanceInMeters);
         } else if (distanceInMeters > 10) {
-            return formatDistanceLessThanKilometer(distanceInMeters);
+            return formatDistanceOverTenMeters(distanceInMeters);
         } else {
             return formatShortMeters(distanceInMeters, realTime);
         }
@@ -130,7 +130,7 @@ public final class DistanceFormatter {
         return locale.equals(Locale.US) || locale.equals(Locale.UK);
     }
 
-    private static String formatDistanceLessThanKilometer(int distanceInMeters) {
+    private static String formatDistanceOverTenMeters(int distanceInMeters) {
         return String.format(Locale.getDefault(), "%s m", distanceInMeters);
     }
 
@@ -138,11 +138,11 @@ public final class DistanceFormatter {
         if (realTime) {
             return "now";
         } else {
-            return formatDistanceLessThanKilometer(distanceInMeters);
+            return formatDistanceOverTenMeters(distanceInMeters);
         }
     }
 
-    private static String formatDistanceGreaterThanKilometer(int distanceInMeters) {
+    private static String formatDistanceInKilometers(int distanceInMeters) {
         String value = decimalFormat.format((float) distanceInMeters / 1000);
         return String.format(Locale.getDefault(), "%s km", value);
     }
