@@ -8,6 +8,11 @@ import org.json.JSONObject
 import java.util.Locale
 
 public open class Instruction {
+    companion object {
+        val KM_TO_METERS = 1000
+        val MI_TO_METERS = 1609.344
+    }
+
     public val NONE : Int = 0
     public val START : Int = 1
     public val START_RIGHT : Int = 2
@@ -47,19 +52,26 @@ public open class Instruction {
     public var liveDistanceToNext: Int = -1
     public var bearing: Int = 0
 
-    public constructor(json: JSONObject) {
+    public constructor(json: JSONObject) : this(json, Router.DistanceUnits.KILOMETERS) { }
+
+    public constructor(json: JSONObject, units: Router.DistanceUnits) {
         if (json.length() < 6) {
             throw JSONException("too few arguments")
         }
         this.json = json
         turnInstruction = parseTurnInstruction(json)
-        distance = (json.getDouble("length") * 1000).toInt()
+
+        val raw = json.getDouble("length")
+        when (units) {
+            Router.DistanceUnits.KILOMETERS -> distance = Math.round(raw * KM_TO_METERS).toInt()
+            Router.DistanceUnits.MILES -> distance = Math.round(raw * MI_TO_METERS).toInt()
+        }
     }
 
     /**
      * Used for testing. Do not remove.
      */
-    SuppressWarnings("unused")
+    @SuppressWarnings("unused")
     protected constructor() {
     }
 
@@ -70,7 +82,6 @@ public open class Instruction {
     public fun getHumanTurnInstruction(): String? {
         return json?.getString("instruction");
     }
-
 
     public fun skip(): Boolean {
         if(json!!.optJSONArray("street_names") == null && json!!.getInt("type") != DESTINATION ) {
