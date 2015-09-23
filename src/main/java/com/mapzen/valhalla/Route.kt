@@ -4,7 +4,6 @@ import android.location.Location
 import com.f2prateek.ln.Ln
 import com.mapzen.helpers.GeometryHelper.getBearing
 import org.json.JSONArray
-import org.json.JSONException
 import org.json.JSONObject
 import java.lang.Math.toRadians
 import java.util.ArrayList
@@ -26,6 +25,7 @@ public open class Route {
     private var lastFixedPoint: Location? = null
     private var currentInstructionIndex: Int = 0
     public var totalDistanceTravelled: Double = 0.0
+    public var units: Router.DistanceUnits = Router.DistanceUnits.KILOMETERS
 
     public constructor(jsonString: String) {
         setJsonObject(JSONObject(jsonString))
@@ -40,6 +40,14 @@ public open class Route {
         if (foundRoute()) {
             initializePolyline(jsonObject.getJSONObject("trip").getJSONArray("legs").getJSONObject(0).getString("shape"))
             initializeTurnByTurn(jsonObject.getJSONObject("trip").getJSONArray("legs").getJSONObject(0).getJSONArray("maneuvers"))
+            initializeDistanceUnits(jsonObject)
+        }
+    }
+
+    private fun initializeDistanceUnits(jsonObject: JSONObject) {
+        when (jsonObject.getJSONObject("trip").getString("units")) {
+            Router.DistanceUnits.KILOMETERS.toString() -> units = Router.DistanceUnits.KILOMETERS
+            Router.DistanceUnits.MILES.toString() -> units = Router.DistanceUnits.MILES
         }
     }
 
@@ -74,7 +82,7 @@ public open class Route {
         var gapDistance = 0
         this.instructions = ArrayList<Instruction>()
         for (i in 0..instructions.length() - 1) {
-            val instruction = Instruction(instructions.getJSONObject(i))
+            val instruction = Instruction(instructions.getJSONObject(i), units)
             instruction.bearing = Math.ceil(poly!!.get(instruction.getBeginPolygonIndex()).bearing).toInt()
                 var distance = instruction.distance
                 distance += gapDistance
