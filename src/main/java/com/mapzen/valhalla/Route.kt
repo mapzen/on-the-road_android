@@ -38,9 +38,9 @@ public open class Route {
     public open fun setJsonObject(jsonObject: JSONObject) {
         this.rawRoute = jsonObject
         if (foundRoute()) {
+            initializeDistanceUnits(jsonObject)
             initializePolyline(jsonObject.getJSONObject("trip").getJSONArray("legs").getJSONObject(0).getString("shape"))
             initializeTurnByTurn(jsonObject.getJSONObject("trip").getJSONArray("legs").getJSONObject(0).getJSONArray("maneuvers"))
-            initializeDistanceUnits(jsonObject)
         }
     }
 
