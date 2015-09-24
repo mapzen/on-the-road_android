@@ -274,6 +274,18 @@ public class InstructionTest {
         assertThat(instruction.getVerbalPostTransitionInstruction()).isEqualTo(expected);
     }
 
+    @Test
+    public void constructor_shouldParseDistanceInKilometers() throws Exception {
+        Instruction instruction = new Instruction(JSON, Router.DistanceUnits.KILOMETERS);
+        assertThat(instruction.getDistance()).isEqualTo(161);
+    }
+
+    @Test
+    public void constructor_shouldParseDistanceInMiles() throws Exception {
+        Instruction instruction = new Instruction(JSON, Router.DistanceUnits.MILES);
+        assertThat(instruction.getDistance()).isEqualTo(259);
+    }
+
     // Helper methods.
     private Instruction getInstructionWithDirection(String direction) throws JSONException {
         int angle = 0;

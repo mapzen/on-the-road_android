@@ -476,6 +476,15 @@ public class RouteTest {
         }
     }
 
+    @Test
+    public void shouldParseUnits() throws Exception {
+        route = getRoute("brooklyn_valhalla");
+        assertThat(route.getUnits()).isEqualTo(Router.DistanceUnits.KILOMETERS);
+
+        route = getRoute("brooklyn_valhalla_miles");
+        assertThat(route.getUnits()).isEqualTo(Router.DistanceUnits.MILES);
+    }
+
     private ArrayList<Location> getLocationsFromFile(String name) throws Exception {
         String fileName = getProperty("user.dir");
         File file = new File(fileName + "/src/test/fixtures/" + name + ".txt");
