@@ -91,10 +91,6 @@ public open class Instruction {
     }
 
     public fun getName(): String {
-        if (json?.getInt("type") == DESTINATION) {
-            return "You have arrived at your destination."
-        }
-
         if (json?.has("street_names") ?: false) {
             var streetName = "";
             val numStreetNames = (json!!.getJSONArray("street_names").length())
