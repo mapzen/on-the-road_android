@@ -25,7 +25,11 @@ public interface Router {
     public fun setDriving(): Router
     public fun setBiking(): Router
     public fun setLocation(point: DoubleArray): Router
-    public fun setLocation(point: DoubleArray, name: String): Router
+    public fun setLocation(point: DoubleArray,
+            name: String? = null,
+            street: String? = null,
+            city: String? = null,
+            state: String? = null): Router
     public fun setDistanceUnits(units: DistanceUnits): Router
     public fun clearLocations(): Router
     public fun setEndpoint(url: String): Router
