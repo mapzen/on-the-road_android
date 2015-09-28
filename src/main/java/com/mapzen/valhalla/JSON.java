@@ -12,6 +12,18 @@ public class JSON {
     public static class Location {
         public String lat;
         public String lon;
+        public String name;
+
+        public Location(String lat, String lon) {
+            this.lat = lat;
+            this.lon = lon;
+        }
+
+        public Location(String lat, String lon, String name) {
+            this.lat = lat;
+            this.lon = lon;
+            this.name = name;
+        }
     }
 
     public static class DirectionOptions {

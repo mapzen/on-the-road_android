@@ -238,6 +238,20 @@ public class RouterTest {
                 .contains("\"directions_options\":{\"units\":\"kilometers\"}");
     }
 
+    @Test
+    public void setLocation_shouldAppendName() throws Exception {
+        double[] loc = new double[] {1.0, 2.0};
+        router = new ValhallaRouter().setLocation(loc).setLocation(loc, "Acme");
+        assertThat(new Gson().toJson(router.getJSONRequest()))
+                .contains("{\"lat\":\"1.0\",\"lon\":\"2.0\",\"name\":\"Acme\"}");
+    }
+
+    @Test
+    public void setLocation_shouldNotIncludeNameParamIfNotSet() throws Exception {
+        assertThat(new Gson().toJson(router.getJSONRequest()))
+                .doesNotContain("\"name\"");
+    }
+
     private void startServerAndEnqueue(MockResponse response) throws Exception {
         server.enqueue(response);
     }
