@@ -13,6 +13,9 @@ public class JSON {
         public String lat;
         public String lon;
         public String name;
+        public String street;
+        public String city;
+        public String state;
 
         public Location(String lat, String lon) {
             this.lat = lat;
@@ -23,6 +26,16 @@ public class JSON {
             this.lat = lat;
             this.lon = lon;
             this.name = name;
+        }
+
+        public Location(String lat, String lon, String name, String street,
+                String city, String state) {
+            this.lat = lat;
+            this.lon = lon;
+            this.name = name;
+            this.street = street;
+            this.city = city;
+            this.state = state;
         }
     }
 

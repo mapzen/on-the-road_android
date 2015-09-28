@@ -16,9 +16,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.net.URLEncoder;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -241,7 +239,8 @@ public class RouterTest {
     @Test
     public void setLocation_shouldAppendName() throws Exception {
         double[] loc = new double[] {1.0, 2.0};
-        router = new ValhallaRouter().setLocation(loc).setLocation(loc, "Acme");
+        router = new ValhallaRouter().setLocation(loc)
+                .setLocation(loc, "Acme", null, null, null);
         assertThat(new Gson().toJson(router.getJSONRequest()))
                 .contains("{\"lat\":\"1.0\",\"lon\":\"2.0\",\"name\":\"Acme\"}");
     }
@@ -252,12 +251,21 @@ public class RouterTest {
                 .doesNotContain("\"name\"");
     }
 
-    private void startServerAndEnqueue(MockResponse response) throws Exception {
-        server.enqueue(response);
+    @Test
+    public void setLocation_shouldAppendStreetAddress() throws Exception {
+        double[] loc = new double[] {1.0, 2.0};
+        router = new ValhallaRouter()
+                .setLocation(loc).setLocation(loc, "Acme", "North Main Street", "Doylestown", "PA");
+        assertThat(new Gson().toJson(router.getJSONRequest()))
+                .contains("{\"lat\":\"1.0\",\"lon\":\"2.0\","
+                        + "\"name\":\"Acme\","
+                        + "\"street\":\"North Main Street\","
+                        + "\"city\":\"Doylestown\","
+                        + "\"state\":\"PA\"}");
     }
 
-    private static String urlEncode(String raw) throws UnsupportedEncodingException {
-        return URLEncoder.encode(raw, "utf-8");
+    private void startServerAndEnqueue(MockResponse response) throws Exception {
+        server.enqueue(response);
     }
 
     public static String getFixture(String name) {
