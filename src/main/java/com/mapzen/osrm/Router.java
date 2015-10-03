@@ -29,7 +29,7 @@ public class Router implements Runnable {
     private Callback callback;
 
     public enum Type {
-        WALKING("foot"), BIKING("bicycle"), DRIVING("car");
+        WALKING("pedestrian"), BIKING("bicycle"), DRIVING("auto");
         private String type;
 
         Type(String type) {
@@ -94,8 +94,9 @@ public class Router implements Runnable {
         for (double[] point : locations) {
             loc += "&loc=" + String.valueOf(point[0]) + "," + String.valueOf(point[1]);
         }
-        String template = "%s/%s/viaroute?z=%d&output=json&instructions=true&%s";
-        return new URL(String.format(template, endpoint, type, zoomLevel, loc));
+        String template = "%s/viaroute?z=%d&output=json&instructions=true%s&costing=%s"
+                + "&api_key=valhalla-51AYuFM";
+        return new URL(String.format(template, endpoint, zoomLevel, loc, type));
     }
 
     public Router setCallback(Callback callback) {

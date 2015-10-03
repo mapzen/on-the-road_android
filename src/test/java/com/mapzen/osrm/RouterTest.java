@@ -84,25 +84,25 @@ public class RouterTest {
     @Test
     public void shouldDefaultToCar() throws Exception {
         URL url = validRouter.getRouteUrl();
-        assertThat(url.toString()).contains("car/viaroute");
+        assertThat(url.toString()).contains("costing=auto");
     }
 
     @Test
     public void shouldSetToCar() throws Exception {
         URL url = validRouter.setDriving().getRouteUrl();
-        assertThat(url.toString()).contains("car/viaroute");
+        assertThat(url.toString()).contains("costing=auto");
     }
 
     @Test
     public void shouldSetToBike() throws Exception {
         URL url = validRouter.setBiking().getRouteUrl();
-        assertThat(url.toString()).contains("bicycle/viaroute");
+        assertThat(url.toString()).contains("costing=bicycle");
     }
 
     @Test
     public void shouldSetToFoot() throws Exception {
         URL url = validRouter.setWalking().getRouteUrl();
-        assertThat(url.toString()).contains("foot/viaroute");
+        assertThat(url.toString()).contains("costing=pedestrian");
     }
 
     @Test
