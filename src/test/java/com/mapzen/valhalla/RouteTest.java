@@ -239,6 +239,13 @@ public class RouteTest {
     }
 
     @Test
+    public void snapToRoute_shouldSetBearing() throws Exception {
+        Route myroute = getRoute("greenpoint_around_the_block_valhalla");
+        Location snap = myroute.snapToRoute(getLocation(40.659740, -73.987802));
+        assertThat(snap.getBearing()).isNotEqualTo(0);
+    }
+
+    @Test
     public void getCurrentRotationBearing_shouldBeSameAsInstruction() throws Exception {
         Route myroute = getRoute("greenpoint_around_the_block_valhalla");
         assertThat(Math.round(myroute.getCurrentRotationBearing())).

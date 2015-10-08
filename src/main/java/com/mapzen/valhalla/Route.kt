@@ -234,8 +234,8 @@ public open class Route {
         val correctionDistance = originalPoint.distanceTo(lastFixedPoint).toDouble()
         Ln.d("Snapping => correctionDistance: " + correctionDistance.toString())
         Ln.d("Snapping => Lost Threshold: " + LOST_THRESHOLD.toString())
-        Ln.d("original point => " + originalPoint.getLatitude() + ", " + originalPoint.getLongitude())
-        Ln.d("fixed point => " + lastFixedPoint!!.getLatitude() + ", " + lastFixedPoint!!.getLongitude())
+        Ln.d("original point => " + originalPoint.latitude + ", " + originalPoint.longitude)
+        Ln.d("fixed point => " + lastFixedPoint?.latitude + ", " + lastFixedPoint?.longitude)
         if (correctionDistance < LOST_THRESHOLD) {
             updateDistanceTravelled(current)
             return lastFixedPoint
@@ -253,7 +253,8 @@ public open class Route {
             tempDist += poly!!.get(i).legDistance
         }
         if (lastFixedPoint != null) {
-            totalDistanceTravelled = Math.ceil(tempDist + current.getLocation().distanceTo(lastFixedPoint).toDouble())
+            totalDistanceTravelled = Math.ceil(tempDist
+                    + current.getLocation().distanceTo(lastFixedPoint).toDouble())
         }
         updateAllInstructions()
     }
@@ -272,8 +273,10 @@ public open class Route {
     }
 
     private fun snapTo(turnPoint: Node, location: Location): Location {
-        if (java.lang.Double.compare(turnPoint.lat, location.getLatitude()) == 0 && java.lang.Double.compare(turnPoint.lng, location.getLongitude()) == 0) {
+        if (java.lang.Double.compare(turnPoint.lat, location.latitude) == 0
+                && java.lang.Double.compare(turnPoint.lng, location.longitude) == 0) {
             updateDistanceTravelled(turnPoint)
+            location.bearing = turnPoint.bearing.toFloat()
             return location
         }
 
@@ -300,6 +303,7 @@ public open class Route {
             correctedLocation = turnPoint.getLocation()
         }
 
+        correctedLocation?.bearing = turnPoint.getLocation().bearing
         return correctedLocation!!
     }
 
