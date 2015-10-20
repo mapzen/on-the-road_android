@@ -36,13 +36,20 @@ public class RouteTest {
     }
 
     @Test
-    public void hasTotalDistance() throws Throwable {
+    public void hasTotalDistance() throws Exception {
         assertThat(route.getTotalDistance()).isNotEqualTo(0);
     }
 
     @Test
-    public void hasCorrectTotalDistance() throws Throwable {
+    public void hasCorrectTotalDistance() throws Exception {
         assertThat(route.getTotalDistance()).isEqualTo(1541);
+    }
+
+    @Test
+    public void shouldConvertTotalDistanceInMilesToMeters() throws Exception {
+        route = getRoute("valhalla_miles");
+        assertThat(route.getTotalDistance())
+                .isEqualTo((int) Math.round(0.712 * Instruction.MI_TO_METERS));
     }
 
     @Test

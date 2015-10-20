@@ -1,0 +1,103 @@
+{
+    trip: {
+        status: 0,
+        status_message: "Found route between points",
+        legs: [
+            {
+                shape: "asvulArywblCpf@o|Are@b[re@b[~g@`]di@n]ze@r[nc@fYtc@tYfc@tYt_@hX~CxBt@l@zFtDlTvNxBzAxBjAl_@jVxBxA`BxB|ErG~CdE|D~Hl@|@|@hBtD~IbBrFrFz@xRhC",
+                summary: {
+                    length: 0.712,
+                    time: 146
+                },
+                maneuvers: [
+                    {
+                        begin_shape_index: 0,
+                        length: 0.089,
+                        time: 0,
+                        type: 1,
+                        end_shape_index: 1,
+                        instruction: "Go southeast on East 26th Street.",
+                        verbal_pre_transition_instruction: "Go southeast on East 26th Street for 500 feet.",
+                        street_names: [
+                            "East 26th Street"
+                        ]
+                    },
+                    {
+                        begin_shape_index: 1,
+                        street_names: [
+                            "Park Avenue South"
+                        ],
+                        verbal_post_transition_instruction: "Continue for 4 tenths of a mile.",
+                        time: 82,
+                        type: 10,
+                        end_shape_index: 11,
+                        instruction: "Turn right onto Park Avenue South.",
+                        length: 0.439,
+                        verbal_transition_alert_instruction: "Turn right onto Park Avenue South.",
+                        verbal_pre_transition_instruction: "Turn right onto Park Avenue South."
+                    },
+                    {
+                        begin_shape_index: 11,
+                        street_names: [
+                            "Union Square East"
+                        ],
+                        time: 24,
+                        type: 8,
+                        end_shape_index: 26,
+                        instruction: "Continue on Union Square East.",
+                        length: 0.153,
+                        verbal_transition_alert_instruction: "Continue on Union Square East.",
+                        verbal_pre_transition_instruction: "Continue on Union Square East for 2 tenths of a mile."
+                    },
+                    {
+                        begin_shape_index: 26,
+                        street_names: [
+                            "Broadway",
+                            "CHA 34"
+                        ],
+                        verbal_post_transition_instruction: "Continue for 200 feet.",
+                        time: 26,
+                        type: 15,
+                        end_shape_index: 28,
+                        instruction: "Turn left onto Broadway/CHA 34.",
+                        length: 0.031,
+                        verbal_transition_alert_instruction: "Turn left onto Broadway.",
+                        verbal_pre_transition_instruction: "Turn left onto Broadway, CHA 34."
+                    },
+                    {
+                        begin_shape_index: 28,
+                        time: 0,
+                        type: 5,
+                        end_shape_index: 28,
+                        instruction: "Acme Theater (historical) is on the right.",
+                        length: 0,
+                        verbal_transition_alert_instruction: "Acme Theater (historical) will be on the right.",
+                        verbal_pre_transition_instruction: "Acme Theater (historical) is on the right."
+                    }
+                ]
+            }
+        ],
+        units: "miles",
+        summary: {
+            length: 0.712,
+            time: 146
+        },
+        locations: [
+            {
+                lon: -73.986504,
+                lat: 40.742634,
+                type: "break"
+            },
+            {
+                state: "New York",
+                city: "New York",
+                street: "Acme Theater (historical), Manhattan, NY",
+                type: "break",
+                side_of_street: "right",
+                lat: 40.73444,
+                lon: -73.991112,
+                name: "Acme Theater (historical)"
+            }
+        ]
+    }
+}

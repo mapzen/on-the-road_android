@@ -52,7 +52,13 @@ public open class Route {
     }
 
     public open fun getTotalDistance(): Int {
-        return Math.round(poly!!.get(poly!!.size() - 1).totalDistance).toInt()
+        var distance = getSummary().getDouble("length")
+        when (units) {
+            Router.DistanceUnits.KILOMETERS -> distance *= Instruction.KM_TO_METERS
+            Router.DistanceUnits.MILES -> distance *= Instruction.MI_TO_METERS
+        }
+
+        return Math.round(distance).toInt()
     }
 
     public open fun getStatus(): Int? {
@@ -135,7 +141,7 @@ public open class Route {
     }
 
     private fun getSummary(): JSONObject {
-        return rawRoute!!.getJSONObject("trip").getJSONArray("legs").getJSONObject(0).getJSONObject("summary")
+        return rawRoute!!.getJSONObject("trip").getJSONObject("summary")
     }
 
     private fun initializePolyline(encoded: String): ArrayList<Node> {
