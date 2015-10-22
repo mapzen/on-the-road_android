@@ -123,7 +123,7 @@ public open class ValhallaRouter : Router, Runnable {
     }
 
     override fun getJSONRequest(): JSON {
-        if (locations.size() < 2) {
+        if (locations.size < 2) {
             throw  MalformedURLException();
         }
         var json: JSON = JSON();

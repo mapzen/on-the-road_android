@@ -81,7 +81,7 @@ public open class Route {
     }
 
     public open fun getRemainingDistanceToDestination(): Int {
-        return instructions!!.get(instructions!!.size() - 1).liveDistanceToNext
+        return instructions!!.get(instructions!!.size - 1).liveDistanceToNext
     }
 
     private fun initializeTurnByTurn(instructions: JSONArray) {
@@ -149,7 +149,7 @@ public open class Route {
         if (poly == null) {
             poly = ArrayList<Node>()
             var index = 0
-            val len = encoded.length()
+            val len = encoded.length
             var lat = 0
             var lng = 0
             while (index < len) {
@@ -157,7 +157,7 @@ public open class Route {
                 var shift = 0
                 var result = 0
                 do {
-                    b = encoded.charAt(index++).toInt() - 63
+                    b = encoded[index++].toInt() - 63
                     result = result or ((b and 31) shl shift)
                     shift += 5
                 } while (b >= 32)
@@ -166,7 +166,7 @@ public open class Route {
                 shift = 0
                 result = 0
                 do {
-                    b = encoded.charAt(index++).toInt() - 63
+                    b = encoded[index++].toInt() - 63
                     result = result or ((b and 31) shl shift)
                     shift += 5
                 } while (b >= 32)
@@ -176,7 +176,7 @@ public open class Route {
                 val y = lng.toDouble() / 1E6.toDouble()
                 val node = Node(x, y)
                 if (!poly!!.isEmpty()) {
-                    val lastElement = poly!!.get(poly!!.size() - 1)
+                    val lastElement = poly!!.get(poly!!.size - 1)
                     val distance = node.getLocation().distanceTo(lastElement.getLocation()).toDouble()
                     val totalDistance = distance + lastElement.totalDistance
                     node.totalDistance = totalDistance
@@ -205,7 +205,7 @@ public open class Route {
         Ln.d("Snapping => currentLeg: " + currentLeg.toString())
         Ln.d("Snapping => originalPoint: " + originalPoint.getLatitude().toString() + ", " + originalPoint.getLongitude().toString())
 
-        val sizeOfPoly = poly!!.size()
+        val sizeOfPoly = poly!!.size
 
         // we have exhausted options
         if (currentLeg >= sizeOfPoly) {
@@ -379,7 +379,7 @@ public open class Route {
 
     public open fun getNextInstruction(): Instruction? {
         val nextInstructionIndex = currentInstructionIndex + 1
-        if (nextInstructionIndex >= instructions!!.size()) {
+        if (nextInstructionIndex >= instructions!!.size) {
             return null
         } else {
             return instructions!!.get(nextInstructionIndex)
@@ -387,7 +387,7 @@ public open class Route {
     }
 
     public open fun getNextInstructionIndex(): Int? {
-        return instructions?.indexOf(getNextInstruction())
+        return instructions?.indexOfRaw(getNextInstruction())
     }
 
     public open fun getCurrentInstruction(): Instruction {

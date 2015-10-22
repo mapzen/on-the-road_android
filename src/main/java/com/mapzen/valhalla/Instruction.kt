@@ -185,7 +185,7 @@ public open class Instruction {
             return false
         }
 
-        if (javaClass != obj!!.javaClass) {
+        if (javaClass != obj.javaClass) {
             return false
         }
 
