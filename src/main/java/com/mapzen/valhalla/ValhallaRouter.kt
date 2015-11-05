@@ -1,6 +1,6 @@
 package com.mapzen.valhalla
 
-import com.google.common.io.CharStreams
+import com.mapzen.helpers.CharStreams
 import com.google.gson.Gson
 import retrofit.RestAdapter
 import retrofit.RetrofitError
@@ -76,7 +76,6 @@ public open class ValhallaRouter : Router, Runnable {
     }
 
     private fun readInputStream(`in`: InputStream?): String {
-        // TODO: Parse response using GSON
         return CharStreams.toString(InputStreamReader(`in`))
     }
 
