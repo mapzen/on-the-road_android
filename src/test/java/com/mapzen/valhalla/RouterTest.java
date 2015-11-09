@@ -264,6 +264,14 @@ public class RouterTest {
                         + "\"state\":\"PA\"}");
     }
 
+    @Test
+    public void setLocation_shouldIncludeHeading() throws Exception {
+        double[] loc = new double[] {1.0, 2.0};
+        router = new ValhallaRouter().setLocation(loc,180).setLocation(loc);
+        assertThat(new Gson().toJson(router.getJSONRequest()))
+                .contains("{\"lat\":\"1.0\",\"lon\":\"2.0\",\"heading\":\"180\"}");
+    }
+
     private void startServerAndEnqueue(MockResponse response) throws Exception {
         server.enqueue(response);
     }

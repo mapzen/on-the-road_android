@@ -16,16 +16,17 @@ public class JSON {
         public String street;
         public String city;
         public String state;
+        public String heading;
 
         public Location(String lat, String lon) {
             this.lat = lat;
             this.lon = lon;
         }
 
-        public Location(String lat, String lon, String name) {
+        public Location(String lat, String lon, String heading) {
             this.lat = lat;
             this.lon = lon;
-            this.name = name;
+            this.heading = heading;
         }
 
         public Location(String lat, String lon, String name, String street,
