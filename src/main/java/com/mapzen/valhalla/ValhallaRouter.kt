@@ -12,7 +12,7 @@ import java.net.MalformedURLException
 import java.util.ArrayList
 
 public open class ValhallaRouter : Router, Runnable {
-    private val DEFAULT_URL = "http://valhalla.mapzen.com/"
+    private val DEFAULT_URL = "https://valhalla.mapzen.com/"
     private var API_KEY = "";
     private var endpoint: String = DEFAULT_URL
     private var type = Router.Type.DRIVING
