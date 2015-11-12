@@ -46,7 +46,7 @@ public class RouterTest {
 
     @Test
     public void shouldHaveDefaultEndpoint() throws Exception {
-        assertThat(router.getEndpoint()).startsWith("http://valhalla.mapzen.com/");
+        assertThat(router.getEndpoint()).startsWith("https://valhalla.mapzen.com/");
     }
 
     @Test
