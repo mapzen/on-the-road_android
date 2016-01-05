@@ -29,13 +29,24 @@ public class RouteEngineTest {
         route = RouteTest.getRoute("ace_hotel_valhalla");
         listener = new TestRouteListener();
         routeEngine = new RouteEngine();
-        routeEngine.setRoute(route);
         routeEngine.setListener(listener);
+        routeEngine.setRoute(route);
     }
 
     @Test
     public void shouldNotBeNull() throws Exception {
         assertThat(routeEngine).isNotNull();
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void setRoute_shouldCheckForListener() throws Exception {
+        routeEngine.setListener(null);
+        routeEngine.setRoute(route);
+    }
+
+    @Test
+    public void setRoute_shouldNotifyOnRouteStart() throws Exception {
+        assertThat(listener.started).isTrue();
     }
 
     @Test
@@ -55,13 +66,12 @@ public class RouteEngineTest {
 
     @Test
     public void onApproachInstruction_shouldReturnIndex() throws Exception {
-        Location start = route.getRouteInstructions().get(0).getLocation();
-        routeEngine.onLocationChanged(start);
-        Location preLoc = getTestLocation(40.743486, -73.988273);
-        routeEngine.onLocationChanged(preLoc);
-        Location loc = route.getRouteInstructions().get(1).getLocation();
-        routeEngine.onLocationChanged(loc);
-        assertThat(listener.approachIndex).isEqualTo(0);
+        TestRoute route = new TestRoute();
+        route.distanceToNextInstruction = METERS_IN_ONE_MILE;
+        route.distanceToNextInstruction = RouteEngine.ALERT_RADIUS - 1;
+        routeEngine.setRoute(route);
+        routeEngine.onLocationChanged(getTestLocation());
+        assertThat(listener.approachIndex).isEqualTo(1);
     }
 
     @Test
@@ -71,9 +81,9 @@ public class RouteEngineTest {
     }
 
     @Test
-    public void onApproachInstruction_shouldFireAtStart() throws Exception {
+    public void onApproachInstruction_shouldNotFireAtStart() throws Exception {
         routeEngine.onLocationChanged(route.getRouteInstructions().get(0).getLocation());
-        assertThat(listener.approachIndex).isEqualTo(0);
+        assertThat(listener.approachIndex).isEqualTo(-1);
     }
 
     @Test
@@ -157,13 +167,6 @@ public class RouteEngineTest {
     public void onRouteComplete_shouldTriggerAtDestination() throws Exception {
         routeEngine.onLocationChanged(route.getRouteInstructions().get(3).getLocation());
         assertThat(listener.routeComplete).isTrue();
-    }
-
-    @Test
-    public void onLocationChange_shouldNotBeLostIfItNeverSnapped() throws Exception {
-        Location loc = getTestLocation(0, 0);
-        routeEngine.onLocationChanged(loc);
-        assertThat(listener.recalculating).isFalse();
     }
 
     @Test
@@ -254,6 +257,7 @@ public class RouteEngineTest {
         private Location originalLocation;
         private Location snapLocation;
 
+        private boolean started = false;
         private boolean recalculating = false;
         private int milestoneIndex = -1;
         private int approachIndex = -1;
@@ -262,6 +266,11 @@ public class RouteEngineTest {
         private int distanceToDestination = -1;
         private boolean routeComplete = false;
         private RouteEngine.Milestone milestone;
+
+        @Override
+        public void onRouteStart() {
+            started = true;
+        }
 
         @Override
         public void onRecalculate(Location location) {

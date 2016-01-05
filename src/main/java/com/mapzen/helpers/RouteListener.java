@@ -7,6 +7,11 @@ import android.location.Location;
  */
 public interface RouteListener {
     /**
+     * Invoked at the beginning of a new route.
+     */
+    public void onRouteStart();
+
+    /**
      * Invoked when the given location is off course and the route needs to be recalculated.
      */
     public void onRecalculate(Location location);
