@@ -19,7 +19,6 @@ public class RouteEngine {
     public static final int DESTINATION_RADIUS = 30;
 
     public enum RouteState {
-        START,
         PRE_INSTRUCTION,
         INSTRUCTION,
         COMPLETE,
@@ -47,11 +46,6 @@ public class RouteEngine {
 
         this.location = location;
         snapLocation();
-
-        if (routeState == RouteState.START) {
-            listener.onApproachInstruction(0);
-            routeState = RouteState.PRE_INSTRUCTION;
-        }
 
         if (routeState == RouteState.COMPLETE) {
             listener.onUpdateDistance(0, 0);
@@ -110,11 +104,9 @@ public class RouteEngine {
             listener.onRouteComplete();
         }
 
-        if (routeState != RouteState.START) {
-            if (route.isLost()) {
-                routeState = RouteState.LOST;
-                listener.onRecalculate(location);
-            }
+        if (route.isLost()) {
+            routeState = RouteState.LOST;
+            listener.onRecalculate(location);
         }
     }
 
@@ -134,12 +126,18 @@ public class RouteEngine {
     }
 
     public void setRoute(Route route) {
+        if (listener == null) {
+            throw new IllegalStateException("Route listener is null");
+        }
+
         this.route = route;
-        routeState = RouteState.START;
         instructions = route.getRouteInstructions();
         if (instructions != null) {
             currentInstruction = instructions.get(0);
         }
+
+        listener.onRouteStart();
+        routeState = RouteState.PRE_INSTRUCTION;
     }
 
     public Route getRoute() {
