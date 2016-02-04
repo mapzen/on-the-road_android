@@ -489,7 +489,7 @@ public open class Route {
     }
 
     public open fun getNextInstructionIndex(): Int? {
-        return instructions!!.indexOfRaw(getNextInstruction())
+        return instructions?.indexOf(getNextInstruction())
     }
 
     public open fun getCurrentInstruction(): Instruction {
