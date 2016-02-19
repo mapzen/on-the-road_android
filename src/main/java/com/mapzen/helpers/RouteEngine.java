@@ -26,6 +26,7 @@ public class RouteEngine {
     }
 
     public enum Milestone {
+        TWO_MILE,
         ONE_MILE,
         QUARTER_MILE
     }
@@ -39,6 +40,13 @@ public class RouteEngine {
     private ArrayList<Instruction> instructions;
     private Milestone lastMilestoneUpdate;
 
+    /**
+     * Sets {@link RouteEngine#location} and snaps it to the {@link RouteEngine#route}. Checks that
+     * {@link RouteEngine#routeState} is not {@link RouteState#COMPLETE} or {@link RouteState#LOST}
+     * before notifying the listener of any milestones, approach instructions, or completed
+     * instructions
+     *
+     */
     public void onLocationChanged(final Location location) {
         if (routeState == RouteState.COMPLETE) {
             return;
@@ -58,6 +66,7 @@ public class RouteEngine {
             return;
         }
 
+        checkApproachMilestone(Milestone.TWO_MILE, METERS_IN_ONE_MILE * 2);
         checkApproachMilestone(Milestone.ONE_MILE, METERS_IN_ONE_MILE);
         checkApproachMilestone(Milestone.QUARTER_MILE, METERS_IN_ONE_MILE / 4);
 
@@ -92,6 +101,10 @@ public class RouteEngine {
         }
     }
 
+    /**
+     * Snap {@link RouteEngine#route} to {@link RouteEngine#location},
+     * call listener method, and update {@link RouteEngine#routeState} if arrived or if lost
+     */
     private void snapLocation() {
         snapLocation = route.snapToRoute(location);
 
@@ -125,6 +138,13 @@ public class RouteEngine {
         return route.getRouteInstructions().get(destinationIndex).getLocation();
     }
 
+    /**
+     * Sets the route for engine, gets route instructions, calls listener method to notify that the
+     * route has started, and updates route state to {@link RouteState.PRE_INSTRUCTION}
+     *
+     * Listener must be set before calling this or IllegalStateException is thrown
+     * @param route
+     */
     public void setRoute(Route route) {
         if (listener == null) {
             throw new IllegalStateException("Route listener is null");
@@ -144,6 +164,10 @@ public class RouteEngine {
         return route;
     }
 
+    /**
+     * There must be a listener to call {@link #setRoute(Route)} on the engine
+     * @param listener
+     */
     public void setListener(RouteListener listener) {
         this.listener = listener;
     }
