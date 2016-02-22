@@ -2,9 +2,7 @@
 
 [![Circle CI Build Status](https://circleci.com/gh/mapzen/on-the-road.png?circle-token=654423209f8f63b35432f450450069ce44bb5729)](https://circleci.com/gh/mapzen/on-the-road)
 
-This library has two main responsibilities, it acts as a java client for [The Open Source Routing Machine (OSRM)][2] and it handles client side location correction, specifically snapping the client’s location along road. By default the endpoint is pointed at Mapzen's hosted services but this can be configured
-to use your own hosted version as well. [Learn how to host your own][6] or use the service provided by [osrm at http://router.project-osrm.org][5].
-Keep in mind that this library focuses on our hosted version.
+This library has two main responsibilities, it acts as an Android client for [Mapzen Turn-by-Turn][2] (powered by [Valhalla][5]) and it handles client-side location correction, specifically snapping the client’s location along road.
 
 We accept feature requests as suggestions or patches.
 
@@ -15,7 +13,7 @@ We accept feature requests as suggestions or patches.
 To construct a Route object from two or more locations you obtain a Router object and specify your options.
 
 ```java
-Router.getRouter().setEndpoint("http://example.com") //defaults to http://osrm.test.mapzen.com 
+Router.getRouter()
 	.setDriving() // Driving is default (setBiking, setWalking also available)
 	.setLocation(new double[]{lat, lng}) // required
 	.setLocation(new double[]{lat, lng}) // required
@@ -123,7 +121,7 @@ see https://github.com/mapzen/on-the-road_web-tester
 
 #### Download AAR
 
-Download the [latest AAR][1].
+Download the [latest SNAPSHOT][1].
 
 #### Maven
 
@@ -133,7 +131,7 @@ Include dependency using Maven.
 <dependency>
   <groupId>com.mapzen</groupId>
   <artifactId>on-the-road</artifactId>
-  <version>0.5</version>
+  <version>0.8-SNAPSHOT</version>
   <type>aar</type>
 </dependency>
 ```
@@ -143,12 +141,11 @@ Include dependency using Maven.
 Include dependency using Gradle.
 
 ```groovy
-compile 'com.mapzen:on-the-road:0.5@aar'
+compile 'com.mapzen:on-the-road:0.8-SNAPSHOT@aar'
 ```
 
-[1]: http://search.maven.org/remotecontent?filepath=com/mapzen/on-the-road/0.5/on-the-road-0.5.aar
-[2]: http://project-osrm.org/ 
-[3]: https://github.com/mapzen/player-services
+[1]: https://oss.sonatype.org/content/repositories/snapshots/com/mapzen/on-the-road/0.8-SNAPSHOT/
+[2]: https://mapzen.com/projects/valhalla/
+[3]: https://github.com/mapzen/lost
 [4]: http://www.movable-type.co.uk/scripts/latlong.html
-[5]: https://github.com/DennisOSRM/Project-OSRM/wiki/API%20Usage%20Policy
-[6]: https://github.com/DennisOSRM/Project-OSRM/wiki/Running-OSRM
+[5]: https://github.com/valhalla
