@@ -15,7 +15,7 @@ import static com.mapzen.helpers.DistanceFormatter.METERS_IN_ONE_MILE;
  */
 public class RouteEngine {
     public static final int APPROACH_RADIUS = 50;
-    public static final int ALERT_RADIUS = 50;
+    public static final int ALERT_RADIUS = 100;
     public static final int DESTINATION_RADIUS = 30;
 
     public enum RouteState {
