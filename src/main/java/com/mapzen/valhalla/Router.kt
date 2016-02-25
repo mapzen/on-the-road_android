@@ -1,5 +1,7 @@
 package com.mapzen.valhalla
 
+import retrofit.RestAdapter
+
 public interface Router {
     public enum class Type(private val type: String) {
         WALKING("pedestrian"),
@@ -38,4 +40,5 @@ public interface Router {
     public fun setCallback(callback: RouteCallback): Router
     public fun fetch()
     public fun getJSONRequest(): JSON
+    public fun setLogLevel(logLevel: RestAdapter.LogLevel): Router
 }
