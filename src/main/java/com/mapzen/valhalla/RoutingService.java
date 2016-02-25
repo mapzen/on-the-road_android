@@ -7,5 +7,5 @@ public interface RoutingService {
     @GET("/route")
     public void getRoute(@Query("json") String json,
                          @Query("api_key") String apiKey,
-                         retrofit.Callback<ValhallaRouter.Result> callback);
+                         retrofit.Callback<String> callback);
 }

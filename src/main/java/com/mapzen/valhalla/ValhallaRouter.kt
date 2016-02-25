@@ -2,10 +2,10 @@ package com.mapzen.valhalla
 
 import com.google.gson.Gson
 import com.mapzen.helpers.CharStreams
+import com.mapzen.helpers.ResultConverter
 import retrofit.RestAdapter
 import retrofit.RetrofitError
 import retrofit.client.Response
-import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.net.MalformedURLException
@@ -100,6 +100,7 @@ public open class ValhallaRouter : Router, Runnable {
 
     override fun run() {
         var restAdapter: RestAdapter = RestAdapter.Builder()
+                .setConverter(ResultConverter())
                 .setEndpoint(DEFAULT_URL)
                 .setLogLevel(logLevel)
                 .build()
@@ -108,24 +109,15 @@ public open class ValhallaRouter : Router, Runnable {
         var gson: Gson = Gson();
         routingService.getRoute(gson.toJson(getJSONRequest()).toString(),
                 API_KEY,
-                ((object : retrofit.Callback<Result> {
+                object : retrofit.Callback<String> {
                     override fun failure(error: RetrofitError?) {
-                        callback!!.failure(207)
+                        callback?.failure(207)
                     }
 
-                    override fun success(t: Result?, response: Response) {
-                        if (response.getBody() != null) {
-                            try {
-                                var input = response.getBody().`in`()
-                                callback!!.success(Route(readInputStream(input)))
-                                input.close()
-                            } catch (e: IOException) {
-                                e.printStackTrace()
-                            }
-                        }
+                    override fun success(result: String, response: Response) {
+                        callback?.success(Route(result))
                     }
-
-                }) as retrofit.Callback<Result> ))
+                })
     }
 
     override fun getJSONRequest(): JSON {
@@ -138,10 +130,6 @@ public open class ValhallaRouter : Router, Runnable {
         json.costing = this.type.toString()
         json.directionsOptions.units = this.units.toString()
         return json
-    }
-
-    public class Result {
-        // Retrofit placeholder. Replace with result object after migrating to GSON (see above).
     }
 
     override fun setLogLevel(logLevel: RestAdapter.LogLevel): Router {
