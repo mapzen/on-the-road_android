@@ -1,7 +1,7 @@
 package com.mapzen.valhalla
 
-import com.mapzen.helpers.CharStreams
 import com.google.gson.Gson
+import com.mapzen.helpers.CharStreams
 import retrofit.RestAdapter
 import retrofit.RetrofitError
 import retrofit.client.Response
@@ -19,10 +19,11 @@ public open class ValhallaRouter : Router, Runnable {
     private val locations = ArrayList<JSON.Location>()
     private var callback: RouteCallback? = null
     private var units: Router.DistanceUnits = Router.DistanceUnits.KILOMETERS
+    private var logLevel: RestAdapter.LogLevel = RestAdapter.LogLevel.NONE
 
     override fun setApiKey(key: String): Router {
         API_KEY = key
-        return this;
+        return this
     }
 
     override fun setWalking(): Router {
@@ -100,7 +101,7 @@ public open class ValhallaRouter : Router, Runnable {
     override fun run() {
         var restAdapter: RestAdapter = RestAdapter.Builder()
                 .setEndpoint(DEFAULT_URL)
-                .setLogLevel(RestAdapter.LogLevel.FULL)
+                .setLogLevel(logLevel)
                 .build()
 
         var routingService = RestAdapterFactory(restAdapter).getRoutingService();
@@ -141,5 +142,10 @@ public open class ValhallaRouter : Router, Runnable {
 
     public class Result {
         // Retrofit placeholder. Replace with result object after migrating to GSON (see above).
+    }
+
+    override fun setLogLevel(logLevel: RestAdapter.LogLevel): Router {
+        this.logLevel = logLevel
+        return this
     }
 }
