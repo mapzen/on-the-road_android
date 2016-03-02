@@ -41,6 +41,4 @@ public interface Router {
     public fun fetch()
     public fun getJSONRequest(): JSON
     public fun setLogLevel(logLevel: RestAdapter.LogLevel): Router
-    public fun setDntEnabled(enabled: Boolean): Router
-    public fun isDntEnabled(): Boolean
 }
