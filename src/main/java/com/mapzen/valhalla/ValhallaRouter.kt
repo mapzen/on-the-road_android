@@ -3,6 +3,7 @@ package com.mapzen.valhalla
 import com.google.gson.Gson
 import com.mapzen.helpers.CharStreams
 import com.mapzen.helpers.ResultConverter
+import retrofit.RequestInterceptor
 import retrofit.RestAdapter
 import retrofit.RetrofitError
 import retrofit.client.Response
@@ -20,6 +21,12 @@ public open class ValhallaRouter : Router, Runnable {
     private var callback: RouteCallback? = null
     private var units: Router.DistanceUnits = Router.DistanceUnits.KILOMETERS
     private var logLevel: RestAdapter.LogLevel = RestAdapter.LogLevel.NONE
+    protected var dntEnabled: Boolean = true
+
+    companion object {
+        private val HEADER_DNT = "DNT"
+        private val VALUE_DNT = "1"
+    }
 
     override fun setApiKey(key: String): Router {
         API_KEY = key
@@ -103,6 +110,11 @@ public open class ValhallaRouter : Router, Runnable {
                 .setConverter(ResultConverter())
                 .setEndpoint(DEFAULT_URL)
                 .setLogLevel(logLevel)
+                .setRequestInterceptor { request ->
+                    if (this.dntEnabled) {
+                        request?.addHeader(HEADER_DNT, VALUE_DNT)
+                    }
+                }
                 .build()
 
         var routingService = RestAdapterFactory(restAdapter).getRoutingService();
@@ -135,5 +147,14 @@ public open class ValhallaRouter : Router, Runnable {
     override fun setLogLevel(logLevel: RestAdapter.LogLevel): Router {
         this.logLevel = logLevel
         return this
+    }
+
+    override fun setDntEnabled(enabled: Boolean): Router {
+        this.dntEnabled = enabled
+        return this
+    }
+
+    override fun isDntEnabled(): Boolean {
+        return this.dntEnabled
     }
 }

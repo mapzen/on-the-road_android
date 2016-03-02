@@ -5,6 +5,7 @@ import com.google.common.io.Files;
 import com.google.gson.Gson;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
+import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
 import org.json.JSONException;
 import org.junit.After;
@@ -79,6 +80,11 @@ public class RouterTest {
     }
 
     @Test
+    public void shouldSendDntByDefault() {
+        assertThat(router.isDntEnabled()).isTrue();
+    }
+
+    @Test
     public void shouldClearLocations() throws Exception {
         double[] loc1 = { 1.0, 2.0 };
         double[] loc2 = { 3.0, 4.0 };
@@ -130,8 +136,8 @@ public class RouterTest {
                 RouteCallback callback = Mockito.mock(RouteCallback.class);
                 Router router = new ValhallaRouter()
                         .setEndpoint(endpoint)
-                        .setLocation(new double[]{40.659241, -73.983776})
-                        .setLocation(new double[]{40.671773, -73.981115});
+                        .setLocation(new double[] { 40.659241, -73.983776 })
+                        .setLocation(new double[] { 40.671773, -73.981115 });
                 router.setCallback(callback);
                 router.fetch();
                 Mockito.verify(callback).success(route.capture());
@@ -193,8 +199,8 @@ public class RouterTest {
                 String endpoint = server.getUrl("").toString();
                 Router router = new ValhallaRouter()
                         .setEndpoint(endpoint)
-                        .setLocation(new double[]{40.659241, -73.983776})
-                        .setLocation(new double[]{40.671773, -73.981115});
+                        .setLocation(new double[] { 40.659241, -73.983776 })
+                        .setLocation(new double[] { 40.671773, -73.981115 });
                 router.setCallback(callback);
                 router.fetch();
                 Mockito.verify(callback).failure(statusCode.capture());
@@ -267,10 +273,61 @@ public class RouterTest {
     @Test
     public void setLocation_shouldIncludeHeading() throws Exception {
         double[] loc = new double[] {1.0, 2.0};
-        router = new ValhallaRouter().setLocation(loc,180).setLocation(loc);
+        router = new ValhallaRouter().setLocation(loc, 180).setLocation(loc);
         assertThat(new Gson().toJson(router.getJSONRequest()))
                 .contains("{\"lat\":\"1.0\",\"lon\":\"2.0\",\"heading\":\"180\"}");
     }
+
+    @Test
+    public void setDntEnabled_shouldSendHeader() throws Exception {
+        startServerAndEnqueue(new MockResponse());
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                String endpoint = server.getUrl("").toString();
+                Router router = new ValhallaRouter()
+                        .setEndpoint(endpoint)
+                        .setLocation(new double[] { 40.659241, -73.983776 })
+                        .setLocation(new double[] { 40.671773, -73.981115 });
+                router.fetch();
+                RecordedRequest request = null;
+                try {
+                    request = server.takeRequest();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                assertThat(request.getHeader("DNT")).isNotNull();
+                assertThat(request.getHeader("DNT")).isEqualTo("1");
+            }
+        });
+    }
+
+    @Test
+    public void setDntDisabled_shouldNotSendHeader() throws Exception {
+        startServerAndEnqueue(new MockResponse());
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                String endpoint = server.getUrl("").toString();
+                Router router = new ValhallaRouter()
+                        .setEndpoint(endpoint)
+                        .setLocation(new double[] { 40.659241, -73.983776 })
+                        .setLocation(new double[] { 40.671773, -73.981115 });
+                router.setDntEnabled(false);
+                router.fetch();
+                RecordedRequest request = null;
+                try {
+                    request = server.takeRequest();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                assertThat(request.getHeader("DNT")).isNull();
+            }
+        });
+    }
+
 
     private void startServerAndEnqueue(MockResponse response) throws Exception {
         server.enqueue(response);
