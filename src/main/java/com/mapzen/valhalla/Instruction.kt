@@ -90,6 +90,23 @@ public open class Instruction {
         return false;
     }
 
+    public fun getBeginStreetNames(): String {
+        if (json?.has("begin_street_names") ?: false) {
+            var streetName = "";
+            val numStreetNames = (json!!.getJSONArray("begin_street_names").length())
+            for(i in 0..numStreetNames - 1) {
+                streetName += json!!.getJSONArray("begin_street_names").get(i);
+                if((numStreetNames > 1) && (i < numStreetNames - 1)) {
+                    streetName += "/"
+                }
+            }
+            return streetName;
+        }
+
+        return ""
+    }
+
+
     public fun getName(): String {
         if (json?.has("street_names") ?: false) {
             var streetName = "";
