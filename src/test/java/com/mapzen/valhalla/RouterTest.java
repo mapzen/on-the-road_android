@@ -328,6 +328,18 @@ public class RouterTest {
         });
     }
 
+    @Test
+    public void setEndpoint_shouldUpdateBaseRequestUrl() throws Exception {
+        startServerAndEnqueue(new MockResponse());
+        String endpoint = server.getUrl("/test").toString();
+        Router router = new ValhallaRouter()
+                .setEndpoint(endpoint)
+                .setLocation(new double[] { 40.659241, -73.983776 })
+                .setLocation(new double[] { 40.671773, -73.981115 });
+        ((ValhallaRouter) router).run();
+        RecordedRequest request = server.takeRequest();
+        assertThat(request.getPath()).contains("/test");
+    }
 
     private void startServerAndEnqueue(MockResponse response) throws Exception {
         server.enqueue(response);
