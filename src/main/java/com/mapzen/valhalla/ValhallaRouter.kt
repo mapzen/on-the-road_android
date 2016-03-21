@@ -25,7 +25,7 @@ public open class ValhallaRouter : Router, Runnable {
     private var callback: RouteCallback? = null
     private var units: Router.DistanceUnits = Router.DistanceUnits.KILOMETERS
     private var logLevel: RestAdapter.LogLevel = RestAdapter.LogLevel.NONE
-    protected var dntEnabled: Boolean = true
+    protected var dntEnabled: Boolean = false
 
     override fun setApiKey(key: String): Router {
         API_KEY = key

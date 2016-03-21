@@ -80,8 +80,8 @@ public class RouterTest {
     }
 
     @Test
-    public void shouldSendDntByDefault() {
-        assertThat(router.isDntEnabled()).isTrue();
+    public void shouldNotSendDntByDefault() {
+        assertThat(router.isDntEnabled()).isFalse();
     }
 
     @Test
@@ -281,51 +281,30 @@ public class RouterTest {
     @Test
     public void setDntEnabled_shouldSendHeader() throws Exception {
         startServerAndEnqueue(new MockResponse());
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                String endpoint = server.getUrl("").toString();
-                Router router = new ValhallaRouter()
-                        .setEndpoint(endpoint)
-                        .setLocation(new double[] { 40.659241, -73.983776 })
-                        .setLocation(new double[] { 40.671773, -73.981115 });
-                router.fetch();
-                RecordedRequest request = null;
-                try {
-                    request = server.takeRequest();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                assertThat(request.getHeader("DNT")).isNotNull();
-                assertThat(request.getHeader("DNT")).isEqualTo("1");
-            }
-        });
+        String endpoint = server.getUrl("").toString();
+        Router router = new ValhallaRouter()
+                .setEndpoint(endpoint)
+                .setLocation(new double[] { 40.659241, -73.983776 })
+                .setLocation(new double[] { 40.671773, -73.981115 })
+                .setDntEnabled(true);
+        ((ValhallaRouter) router).run();
+        RecordedRequest request = server.takeRequest();
+        assertThat(request.getHeader("DNT")).isNotNull();
+        assertThat(request.getHeader("DNT")).isEqualTo("1");
     }
 
     @Test
     public void setDntDisabled_shouldNotSendHeader() throws Exception {
         startServerAndEnqueue(new MockResponse());
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                String endpoint = server.getUrl("").toString();
-                Router router = new ValhallaRouter()
-                        .setEndpoint(endpoint)
-                        .setLocation(new double[] { 40.659241, -73.983776 })
-                        .setLocation(new double[] { 40.671773, -73.981115 });
-                router.setDntEnabled(false);
-                router.fetch();
-                RecordedRequest request = null;
-                try {
-                    request = server.takeRequest();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                assertThat(request.getHeader("DNT")).isNull();
-            }
-        });
+        String endpoint = server.getUrl("").toString();
+        Router router = new ValhallaRouter()
+                .setEndpoint(endpoint)
+                .setLocation(new double[] { 40.659241, -73.983776 })
+                .setLocation(new double[] { 40.671773, -73.981115 })
+                .setDntEnabled(false);
+        ((ValhallaRouter) router).run();
+        RecordedRequest request = server.takeRequest();
+        assertThat(request.getHeader("DNT")).isNull();
     }
 
     @Test
