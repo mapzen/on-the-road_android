@@ -3,7 +3,6 @@ package com.mapzen.valhalla
 import com.google.gson.Gson
 import com.mapzen.helpers.CharStreams
 import com.mapzen.helpers.ResultConverter
-import retrofit.RequestInterceptor
 import retrofit.RestAdapter
 import retrofit.RetrofitError
 import retrofit.client.Response
@@ -13,7 +12,12 @@ import java.net.MalformedURLException
 import java.util.ArrayList
 
 public open class ValhallaRouter : Router, Runnable {
-    private val DEFAULT_URL = "https://valhalla.mapzen.com/"
+    companion object {
+        public const val DEFAULT_URL = "https://valhalla.mapzen.com/"
+        private const val HEADER_DNT = "DNT"
+        private const val VALUE_DNT = "1"
+    }
+
     private var API_KEY = "";
     private var endpoint: String = DEFAULT_URL
     private var type = Router.Type.DRIVING
@@ -21,12 +25,7 @@ public open class ValhallaRouter : Router, Runnable {
     private var callback: RouteCallback? = null
     private var units: Router.DistanceUnits = Router.DistanceUnits.KILOMETERS
     private var logLevel: RestAdapter.LogLevel = RestAdapter.LogLevel.NONE
-    protected var dntEnabled: Boolean = true
-
-    companion object {
-        private val HEADER_DNT = "DNT"
-        private val VALUE_DNT = "1"
-    }
+    protected var dntEnabled: Boolean = false
 
     override fun setApiKey(key: String): Router {
         API_KEY = key
@@ -108,7 +107,7 @@ public open class ValhallaRouter : Router, Runnable {
     override fun run() {
         var restAdapter: RestAdapter = RestAdapter.Builder()
                 .setConverter(ResultConverter())
-                .setEndpoint(DEFAULT_URL)
+                .setEndpoint(endpoint)
                 .setLogLevel(logLevel)
                 .setRequestInterceptor { request ->
                     if (this.dntEnabled) {
