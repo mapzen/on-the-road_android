@@ -220,6 +220,7 @@ public class RouteTest {
     public void snapToRoute_shouldRealizeItsLost() throws Exception {
         Location lost;
         Route myroute = getRoute("greenpoint_around_the_block_valhalla");
+        myroute.snapToRoute(getLocation(40.660480, -73.988908));
         lost = getLocation(40.662046, -73.987089);
         Location snapped = myroute.snapToRoute(lost);
         assertThat(snapped).isNull();
@@ -253,14 +254,6 @@ public class RouteTest {
     }
 
     @Test
-    public void getCurrentRotationBearing_shouldBeSameAsInstruction() throws Exception {
-        Route myroute = getRoute("greenpoint_around_the_block_valhalla");
-        assertThat(Math.round(myroute.getCurrentRotationBearing())).
-                isEqualTo(myroute.getRouteInstructions().get(0).getRotationBearing());
-    }
-
-
-    @Test
     public void snapToRoute_shouldNotGoAgainstBearing() throws Exception {
         Route myroute = getRoute("greenpoint_around_the_block_valhalla");
         Location correctedLocation = myroute.snapToRoute(getLocation(40.660835, -73.989436));
@@ -268,6 +261,41 @@ public class RouteTest {
                 .isEqualTo(myroute.getGeometry().get(0).getLatitude());
         assertThat(correctedLocation.getLongitude())
                 .isEqualTo(myroute.getGeometry().get(0).getLongitude());
+    }
+
+    @Test
+    public void snapToRoute_shouldNotRecalculateWhenBeginningRoute() throws Exception {
+        Route route = getRoute("greenpoint_around_the_block_valhalla");
+        Location location = getLocation(40.662046, -73.987089);
+        Location snapped = route.snapToRoute(location);
+        assertThat(snapped.getLatitude()).isEqualTo(location.getLatitude());
+        assertThat(snapped.getLongitude()).isEqualTo(location.getLongitude());
+    }
+
+    @Test
+    public void snapToRoute_shouldNotRecalculateWhenBeginningRouteAndGoingTowardsPolyLine() throws Exception {
+        Route route = getRoute("greenpoint_around_the_block_valhalla");
+        route.snapToRoute(getLocation(40.662046, -73.987089));
+        Location location = getLocation(40.661786, -73.987561);
+        Location snapped = route.snapToRoute(location);
+        assertThat(snapped.getLatitude()).isEqualTo(location.getLatitude());
+        assertThat(snapped.getLongitude()).isEqualTo(location.getLongitude());
+    }
+
+    @Test
+    public void snapToRoute_shouldRecalculateWhenTravellingAndFarFromRoute() throws Exception {
+        Route route = getRoute("greenpoint_around_the_block_valhalla");
+        route.snapToRoute(getLocation(40.660326, -73.988687)); //along route
+        Location lost = getLocation(40.661986, -73.987014); // off route
+        Location snapped = route.snapToRoute(lost);
+        assertThat(snapped).isNull();
+    }
+
+    @Test
+    public void getCurrentRotationBearing_shouldBeSameAsInstruction() throws Exception {
+        Route myroute = getRoute("greenpoint_around_the_block_valhalla");
+        assertThat(Math.round(myroute.getCurrentRotationBearing())).
+                isEqualTo(myroute.getRouteInstructions().get(0).getRotationBearing());
     }
 
     @Test
