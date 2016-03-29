@@ -121,7 +121,7 @@ see https://github.com/mapzen/on-the-road_web-tester
 
 #### Download AAR
 
-Download the [latest SNAPSHOT][1].
+Download the [latest AAR][1].
 
 #### Maven
 
@@ -131,7 +131,7 @@ Include dependency using Maven.
 <dependency>
   <groupId>com.mapzen</groupId>
   <artifactId>on-the-road</artifactId>
-  <version>0.8-SNAPSHOT</version>
+  <version>0.8.1</version>
   <type>aar</type>
 </dependency>
 ```
@@ -141,10 +141,10 @@ Include dependency using Maven.
 Include dependency using Gradle.
 
 ```groovy
-compile 'com.mapzen:on-the-road:0.8-SNAPSHOT@aar'
+compile 'com.mapzen:on-the-road:0.8.1@aar'
 ```
 
-[1]: https://oss.sonatype.org/content/repositories/snapshots/com/mapzen/on-the-road/0.8-SNAPSHOT/
+[1]: https://oss.sonatype.org/content/repositories/snapshots/com/mapzen/on-the-road/0.8.1/
 [2]: https://mapzen.com/projects/valhalla/
 [3]: https://github.com/mapzen/lost
 [4]: http://www.movable-type.co.uk/scripts/latlong.html
