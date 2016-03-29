@@ -144,7 +144,7 @@ Include dependency using Gradle.
 compile 'com.mapzen:on-the-road:0.8.1@aar'
 ```
 
-[1]: https://oss.sonatype.org/content/repositories/snapshots/com/mapzen/on-the-road/0.8.1/
+[1]: http://search.maven.org/remotecontent?filepath=com/mapzen/on-the-road/0.8.1/on-the-road-0.8.1.aar
 [2]: https://mapzen.com/projects/valhalla/
 [3]: https://github.com/mapzen/lost
 [4]: http://www.movable-type.co.uk/scripts/latlong.html
