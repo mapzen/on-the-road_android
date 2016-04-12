@@ -13,7 +13,7 @@ We accept feature requests as suggestions or patches.
 To construct a Route object from two or more locations you obtain a Router object and specify your options.
 
 ```java
-Router.getRouter()
+new ValhallaRouter()
 	.setDriving() // Driving is default (setBiking, setWalking also available)
 	.setLocation(new double[]{lat, lng}) // required
 	.setLocation(new double[]{lat, lng}) // required
