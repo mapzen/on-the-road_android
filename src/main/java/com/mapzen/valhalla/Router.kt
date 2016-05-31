@@ -2,8 +2,8 @@ package com.mapzen.valhalla
 
 import retrofit.RestAdapter
 
-public interface Router {
-    public enum class Type(private val type: String) {
+interface Router {
+    enum class Type(private val type: String) {
         WALKING("pedestrian"),
         BIKING("bicycle"),
         DRIVING("auto");
@@ -13,7 +13,7 @@ public interface Router {
         }
     }
 
-    public enum class DistanceUnits(private val units: String) {
+    enum class DistanceUnits(private val units: String) {
         MILES("miles"),
         KILOMETERS("kilometers");
 
@@ -22,25 +22,25 @@ public interface Router {
         }
     }
 
-    public fun setApiKey(key: String): Router
-    public fun setWalking(): Router
-    public fun setDriving(): Router
-    public fun setBiking(): Router
-    public fun setLocation(point: DoubleArray): Router
-    public fun setLocation(point: DoubleArray, heading: Float): Router
-    public fun setLocation(point: DoubleArray,
+    fun setApiKey(key: String): Router
+    fun setWalking(): Router
+    fun setDriving(): Router
+    fun setBiking(): Router
+    fun setLocation(point: DoubleArray): Router
+    fun setLocation(point: DoubleArray, heading: Float): Router
+    fun setLocation(point: DoubleArray,
             name: String? = null,
             street: String? = null,
             city: String? = null,
             state: String? = null): Router
-    public fun setDistanceUnits(units: DistanceUnits): Router
-    public fun clearLocations(): Router
-    public fun setEndpoint(url: String): Router
-    public fun getEndpoint(): String
-    public fun setCallback(callback: RouteCallback): Router
-    public fun fetch()
-    public fun getJSONRequest(): JSON
-    public fun setLogLevel(logLevel: RestAdapter.LogLevel): Router
-    public fun setDntEnabled(enabled: Boolean): Router
-    public fun isDntEnabled(): Boolean
+    fun setDistanceUnits(units: DistanceUnits): Router
+    fun clearLocations(): Router
+    fun setEndpoint(url: String): Router
+    fun getEndpoint(): String
+    fun setCallback(callback: RouteCallback): Router
+    fun fetch()
+    fun getJSONRequest(): JSON
+    fun setLogLevel(logLevel: RestAdapter.LogLevel): Router
+    fun setDntEnabled(enabled: Boolean): Router
+    fun isDntEnabled(): Boolean
 }

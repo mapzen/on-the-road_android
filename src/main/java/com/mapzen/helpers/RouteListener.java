@@ -1,6 +1,6 @@
 package com.mapzen.helpers;
 
-import android.location.Location;
+import com.mapzen.model.Location;
 
 /**
  * {@link RouteEngine} callback interface.

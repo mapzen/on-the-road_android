@@ -1,40 +1,40 @@
 package com.mapzen.valhalla
 
-import android.location.Location
 import com.mapzen.helpers.GeometryHelper.getBearing
+import com.mapzen.model.Location
 import org.json.JSONArray
 import org.json.JSONObject
 import java.lang.Math.toRadians
 import java.util.ArrayList
 import java.util.HashSet
 
-public open class Route {
+open class Route {
 
     private val TAG = Route::class.java.simpleName
 
     companion object {
-        public const val KEY_TRIP = "trip"
-        public const val KEY_LEGS = "legs"
-        public const val KEY_SHAPE = "shape"
-        public const val KEY_MANEUVERS = "maneuvers"
-        public const val KEY_UNITS = "units"
-        public const val KEY_LENGTH = "length"
-        public const val KEY_STATUS = "status"
-        public const val KEY_TIME = "time"
-        public const val KEY_LOCATIONS = "locations"
-        public const val KEY_SUMMARY = "summary"
-        public const val SNAP_PROVIDER: String = "snap"
-        public const val CLOSE_TO_DESTINATION_THRESHOLD_METERS: Int = 20
-        public const val CLOSE_TO_NEXT_LEG_THRESHOLD_METERS: Int = 5
-        public const val LOST_THRESHOLD_METERS: Int = 50
-        public const val CORRECTION_THRESHOLD_METERS: Int = 1000
-        public const val CLOCKWISE_DEGREES: Double = 90.0
-        public const val COUNTERCLOCKWISE_DEGREES: Double = -90.0
-        public const val REVERSE_DEGREES: Int = 180
-        public const val LOCATION_FUZZY_EQUAL_THRESHOLD_DEGREES: Double = 0.00001
+        const val KEY_TRIP = "trip"
+        const val KEY_LEGS = "legs"
+        const val KEY_SHAPE = "shape"
+        const val KEY_MANEUVERS = "maneuvers"
+        const val KEY_UNITS = "units"
+        const val KEY_LENGTH = "length"
+        const val KEY_STATUS = "status"
+        const val KEY_TIME = "time"
+        const val KEY_LOCATIONS = "locations"
+        const val KEY_SUMMARY = "summary"
+        const val SNAP_PROVIDER: String = "snap"
+        const val CLOSE_TO_DESTINATION_THRESHOLD_METERS: Int = 20
+        const val CLOSE_TO_NEXT_LEG_THRESHOLD_METERS: Int = 5
+        const val LOST_THRESHOLD_METERS: Int = 50
+        const val CORRECTION_THRESHOLD_METERS: Int = 1000
+        const val CLOCKWISE_DEGREES: Double = 90.0
+        const val COUNTERCLOCKWISE_DEGREES: Double = -90.0
+        const val REVERSE_DEGREES: Int = 180
+        const val LOCATION_FUZZY_EQUAL_THRESHOLD_DEGREES: Double = 0.00001
     }
 
-    public lateinit var rawRoute: JSONObject
+    lateinit var rawRoute: JSONObject
     /**
      * Because https://valhalla.mapzen.com/route does not use http status codes, "status" key
      * in response can indicate too many requests in which case no poly line will be present
@@ -45,8 +45,8 @@ public open class Route {
      * in response can indicate too many requests in which case no instructions will be present
      */
     private var instructions: ArrayList<Instruction>? = null
-    public var units: Router.DistanceUnits = Router.DistanceUnits.KILOMETERS
-    public var currentLeg: Int = 0
+    var units: Router.DistanceUnits = Router.DistanceUnits.KILOMETERS
+    var currentLeg: Int = 0
     private val seenInstructions = HashSet<Instruction>()
     private var lost: Boolean = false
     /**
@@ -54,18 +54,18 @@ public open class Route {
      */
     private var lastFixedLocation: Location? = null
     private var currentInstructionIndex: Int = 0
-    public var totalDistanceTravelled: Double = 0.0
+    var totalDistanceTravelled: Double = 0.0
     private var beginningRouteLostThresholdMeters: Int? = null
 
-    public constructor(jsonString: String) {
+    constructor(jsonString: String) {
         setJsonObject(JSONObject(jsonString))
     }
 
-    public constructor(jsonObject: JSONObject) {
+    constructor(jsonObject: JSONObject) {
         setJsonObject(jsonObject)
     }
 
-    public fun setJsonObject(jsonObject: JSONObject) {
+    fun setJsonObject(jsonObject: JSONObject) {
         this.rawRoute = jsonObject
         if (foundRoute()) {
             initializeDistanceUnits(jsonObject)
@@ -145,7 +145,7 @@ public open class Route {
         }
     }
 
-    public open fun getTotalDistance(): Int {
+    open fun getTotalDistance(): Int {
         var distance = getSummary().getDouble(KEY_LENGTH)
         when (units) {
             Router.DistanceUnits.KILOMETERS -> distance *= Instruction.KM_TO_METERS
@@ -155,30 +155,30 @@ public open class Route {
         return Math.round(distance).toInt()
     }
 
-    public open fun getStatus(): Int? {
+    open fun getStatus(): Int? {
         if (rawRoute.optJSONObject(KEY_TRIP) == null) {
             return -1
         }
         return rawRoute.optJSONObject(KEY_TRIP).getInt(KEY_STATUS)
     }
 
-    public open fun foundRoute(): Boolean {
+    open fun foundRoute(): Boolean {
         return getStatus() == 0
     }
 
-    public open fun getTotalTime(): Int {
+    open fun getTotalTime(): Int {
         return getSummary().getInt(KEY_TIME)
     }
 
-    public open fun getDistanceToNextInstruction(): Int {
+    open fun getDistanceToNextInstruction(): Int {
         return getCurrentInstruction().liveDistanceToNext
     }
 
-    public open fun getRemainingDistanceToDestination(): Int {
+    open fun getRemainingDistanceToDestination(): Int {
         return instructions!![instructions!!.size - 1].liveDistanceToNext
     }
 
-    public open fun getRouteInstructions(): ArrayList<Instruction>? {
+    open fun getRouteInstructions(): ArrayList<Instruction>? {
         if (instructions == null) {
             return null
         }
@@ -193,7 +193,7 @@ public open class Route {
         return instructions
     }
 
-    public open fun getGeometry(): ArrayList<Location> {
+    open fun getGeometry(): ArrayList<Location> {
         val geometry = ArrayList<Location>()
         val polyline = poly
         if (polyline is ArrayList<Node>) {
@@ -205,14 +205,14 @@ public open class Route {
         return geometry
     }
 
-    public open fun getStartCoordinates(): Location {
+    open fun getStartCoordinates(): Location {
         val location = Location(SNAP_PROVIDER)
         location.latitude = poly!![0].lat
         location.longitude = poly!![0].lng
         return location
     }
 
-    public open fun isLost(): Boolean {
+    open fun isLost(): Boolean {
         return lost
     }
 
@@ -224,11 +224,11 @@ public open class Route {
         return rawRoute.getJSONObject(KEY_TRIP).getJSONObject(KEY_SUMMARY)
     }
 
-    public open fun getCurrentRotationBearing(): Double {
+    open fun getCurrentRotationBearing(): Double {
         return 360 - poly!!.get(currentLeg).bearing
     }
 
-    public open fun rewind() {
+    open fun rewind() {
         currentLeg = 0
     }
 
@@ -244,7 +244,7 @@ public open class Route {
      *  @param currentLocation User's current location
      *  @return location along path that user's location is snapped to, or null if lost
      */
-    public open fun snapToRoute(currentLocation: Location): Location? {
+    open fun snapToRoute(currentLocation: Location): Location? {
         val sizeOfPoly = poly!!.size
 
         // we are lost
@@ -333,7 +333,7 @@ public open class Route {
         updateAllInstructions()
     }
 
-    public open fun updateAllInstructions() {
+    open fun updateAllInstructions() {
         // this constructs a distance table
         // and calculates from it
         // 3 instruction has the distance of
@@ -471,15 +471,15 @@ public open class Route {
                 && (deltaLng <= LOCATION_FUZZY_EQUAL_THRESHOLD_DEGREES)
     }
 
-    public open fun getSeenInstructions(): Set<Instruction> {
+    open fun getSeenInstructions(): Set<Instruction> {
         return seenInstructions
     }
 
-    public open fun addSeenInstruction(instruction: Instruction) {
+    open fun addSeenInstruction(instruction: Instruction) {
         seenInstructions.add(instruction)
     }
 
-    public open fun getNextInstruction(): Instruction? {
+    open fun getNextInstruction(): Instruction? {
         val nextInstructionIndex = currentInstructionIndex + 1
         if (nextInstructionIndex >= instructions!!.size) {
             return null
@@ -488,11 +488,11 @@ public open class Route {
         }
     }
 
-    public open fun getNextInstructionIndex(): Int? {
+    open fun getNextInstructionIndex(): Int? {
         return instructions?.indexOf(getNextInstruction())
     }
 
-    public open fun getCurrentInstruction(): Instruction {
+    open fun getCurrentInstruction(): Instruction {
         return instructions!![currentInstructionIndex]
     }
 
@@ -505,7 +505,7 @@ public open class Route {
         }
     }
 
-    public open fun getAccurateStartPoint(): Location {
+    open fun getAccurateStartPoint(): Location {
         return poly!![0].getLocation()
     }
 

@@ -11,9 +11,9 @@ import java.io.InputStreamReader
 import java.net.MalformedURLException
 import java.util.ArrayList
 
-public open class ValhallaRouter : Router, Runnable {
+open class ValhallaRouter : Router, Runnable {
     companion object {
-        public const val DEFAULT_URL = "https://valhalla.mapzen.com/"
+        const val DEFAULT_URL = "https://valhalla.mapzen.com/"
         private const val HEADER_DNT = "DNT"
         private const val VALUE_DNT = "1"
     }
@@ -116,7 +116,7 @@ public open class ValhallaRouter : Router, Runnable {
                 }
                 .build()
 
-        var routingService = RestAdapterFactory(restAdapter).getRoutingService();
+        var routingService = RestAdapterFactory(restAdapter).routingService;
         var gson: Gson = Gson();
         routingService.getRoute(gson.toJson(getJSONRequest()).toString(),
                 API_KEY,

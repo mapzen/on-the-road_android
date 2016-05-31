@@ -1,8 +1,6 @@
 package com.mapzen;
 
-import android.location.Location;
-
-//import static com.mapzen.valhalla.Route.SNAP_PROVIDER;
+import com.mapzen.model.Location;
 
 public class TestUtils {
     static public Location getLocation(double lat, double lng) {

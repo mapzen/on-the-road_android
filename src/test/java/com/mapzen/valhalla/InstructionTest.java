@@ -1,5 +1,7 @@
 package com.mapzen.valhalla;
 
+import com.mapzen.model.Location;
+
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 
@@ -10,8 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-
-import android.location.Location;
 
 import java.io.File;
 import java.util.Locale;

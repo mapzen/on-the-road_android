@@ -1,6 +1,6 @@
 package com.mapzen.helpers;
 
-import android.location.Location;
+import com.mapzen.model.Location;
 
 public class GeometryHelper {
     public static double getBearing(Location p1, Location p2) {

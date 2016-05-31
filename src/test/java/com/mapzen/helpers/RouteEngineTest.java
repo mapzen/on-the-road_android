@@ -1,5 +1,6 @@
 package com.mapzen.helpers;
 
+import com.mapzen.model.Location;
 import com.mapzen.valhalla.Instruction;
 import com.mapzen.valhalla.Route;
 import com.mapzen.valhalla.RouteTest;
@@ -12,8 +13,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-
-import android.location.Location;
 
 import static com.mapzen.helpers.DistanceFormatter.METERS_IN_ONE_MILE;
 import static org.fest.assertions.api.Assertions.assertThat;

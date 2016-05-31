@@ -1,9 +1,8 @@
 package com.mapzen.helpers;
 
+import com.mapzen.model.Location;
 import com.mapzen.valhalla.Instruction;
 import com.mapzen.valhalla.Route;
-
-import android.location.Location;
 
 import java.util.ArrayList;
 
