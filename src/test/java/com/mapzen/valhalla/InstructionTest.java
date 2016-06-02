@@ -1,6 +1,6 @@
 package com.mapzen.valhalla;
 
-import com.mapzen.model.Location;
+import com.mapzen.model.ValhallaLocation;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
@@ -210,7 +210,7 @@ public class InstructionTest {
 
     @Test
     public void canSetCoordinates() throws Exception {
-        Location expected = new Location();
+        ValhallaLocation expected = new ValhallaLocation();
         expected.setLatitude(3.3);
         expected.setLongitude(4.4);
         instruction.setLocation(expected);

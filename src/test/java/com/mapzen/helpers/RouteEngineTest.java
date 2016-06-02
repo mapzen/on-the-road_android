@@ -1,6 +1,6 @@
 package com.mapzen.helpers;
 
-import com.mapzen.model.Location;
+import com.mapzen.model.ValhallaLocation;
 import com.mapzen.valhalla.Instruction;
 import com.mapzen.valhalla.Route;
 import com.mapzen.valhalla.RouteTest;
@@ -57,7 +57,7 @@ public class RouteEngineTest {
 
     @Test
     public void onSnapLocation_shouldReturnCorrectedLocation() throws Exception {
-        Location location = getTestLocation(40.7444114, -73.9904202);
+        ValhallaLocation location = getTestLocation(40.7444114, -73.9904202);
         routeEngine.onLocationChanged(location);
         assertThat(listener.originalLocation).isEqualsToByComparingFields(location);
         assertThat(listener.snapLocation).isEqualsToByComparingFields(route.snapToRoute(location));
@@ -124,7 +124,7 @@ public class RouteEngineTest {
 
     @Test
     public void onUpdateDistance_shouldCountdownInstructionDistance() throws Exception {
-        Location location = getTestLocation(40.743810, -73.989053); // 26th & Broadway
+        ValhallaLocation location = getTestLocation(40.743810, -73.989053); // 26th & Broadway
         routeEngine.onLocationChanged(route.getRouteInstructions().get(0).getLocation());
         routeEngine.onLocationChanged(location);
 
@@ -135,12 +135,12 @@ public class RouteEngineTest {
     @Test
     public void onUpdateDistance_shouldCountdownDistanceToDestinationAlongRoute() throws Exception {
         Instruction instruction = route.getRouteInstructions().get(0);
-        Location location = getTestLocation(40.743810, -73.989053); // 26th & Broadway
+        ValhallaLocation location = getTestLocation(40.743810, -73.989053); // 26th & Broadway
         routeEngine.onLocationChanged(instruction.getLocation());
         routeEngine.onLocationChanged(location);
 
-        Location snapLocation = route.snapToRoute(location);
-        Location nextInstruction = route.getRouteInstructions().get(1).getLocation();
+        ValhallaLocation snapLocation = route.snapToRoute(location);
+        ValhallaLocation nextInstruction = route.getRouteInstructions().get(1).getLocation();
         int distanceToNextInstruction = (int) snapLocation.distanceTo(nextInstruction);
         int expected = route.getTotalDistance() - instruction.getDistance()
                 + distanceToNextInstruction;
@@ -227,7 +227,8 @@ public class RouteEngineTest {
             super(new JSONObject());
         }
 
-        @Nullable @Override public Location snapToRoute(@NotNull Location originalPoint) {
+        @Nullable @Override public ValhallaLocation snapToRoute(@NotNull
+        ValhallaLocation originalPoint) {
             return getTestLocation();
         }
 
@@ -253,8 +254,8 @@ public class RouteEngineTest {
     }
 
     private static class TestRouteListener implements RouteListener {
-        private Location originalLocation;
-        private Location snapLocation;
+        private ValhallaLocation originalLocation;
+        private ValhallaLocation snapLocation;
 
         private boolean started = false;
         private boolean recalculating = false;
@@ -272,12 +273,12 @@ public class RouteEngineTest {
         }
 
         @Override
-        public void onRecalculate(Location location) {
+        public void onRecalculate(ValhallaLocation location) {
             recalculating = true;
         }
 
         @Override
-        public void onSnapLocation(Location originalLocation, Location snapLocation) {
+        public void onSnapLocation(ValhallaLocation originalLocation, ValhallaLocation snapLocation) {
             this.originalLocation = originalLocation;
             this.snapLocation = snapLocation;
         }
@@ -310,12 +311,12 @@ public class RouteEngineTest {
         }
     }
 
-    public static Location getTestLocation() {
+    public static ValhallaLocation getTestLocation() {
         return getTestLocation(0, 0);
     }
 
-    public static Location getTestLocation(double lat, double lng) {
-        Location location = new Location();
+    public static ValhallaLocation getTestLocation(double lat, double lng) {
+        ValhallaLocation location = new ValhallaLocation();
         location.setLatitude(lat);
         location.setLongitude(lng);
         return location;

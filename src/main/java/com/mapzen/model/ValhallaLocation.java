@@ -5,7 +5,7 @@ package com.mapzen.model;
  *
  * <p>A location can consist of a latitude, longitude, and bearing.
  */
-public class Location {
+public class ValhallaLocation {
 
   private double mLatitude = 0.0;
   private double mLongitude = 0.0;
@@ -23,20 +23,20 @@ public class Location {
   // Scratchpad
   private final float[] mResults = new float[2];
 
-  public Location() {
+  public ValhallaLocation() {
   }
 
   /**
-   * Construct a new Location object that is copied from an existing one.
+   * Construct a new ValhallaLocation object that is copied from an existing one.
    */
-  public Location(Location l) {
+  public ValhallaLocation(ValhallaLocation l) {
     set(l);
   }
 
   /**
    * Sets the contents of the location to the values from the given location.
    */
-  public void set(Location l) {
+  public void set(ValhallaLocation l) {
     mLatitude = l.mLatitude;
     mLongitude = l.mLongitude;
     mHasBearing = l.mHasBearing;
@@ -152,7 +152,7 @@ public class Location {
    * @param dest the destination location
    * @return the approximate distance in meters
    */
-  public float distanceTo(Location dest) {
+  public float distanceTo(ValhallaLocation dest) {
     // See if we already have the result
     synchronized (mResults) {
       if (mLatitude != mLat1 || mLongitude != mLon1 ||
@@ -180,7 +180,7 @@ public class Location {
    * @param dest the destination location
    * @return the initial bearing in degrees
    */
-  public float bearingTo(Location dest) {
+  public float bearingTo(ValhallaLocation dest) {
     synchronized (mResults) {
       // See if we already have the result
       if (mLatitude != mLat1 || mLongitude != mLon1 ||

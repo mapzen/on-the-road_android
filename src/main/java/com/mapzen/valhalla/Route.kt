@@ -1,7 +1,7 @@
 package com.mapzen.valhalla
 
 import com.mapzen.helpers.GeometryHelper.getBearing
-import com.mapzen.model.Location
+import com.mapzen.model.ValhallaLocation
 import org.json.JSONArray
 import org.json.JSONObject
 import java.lang.Math.toRadians
@@ -9,8 +9,6 @@ import java.util.ArrayList
 import java.util.HashSet
 
 open class Route {
-
-    private val TAG = Route::class.java.simpleName
 
     companion object {
         const val KEY_TRIP = "trip"
@@ -51,7 +49,7 @@ open class Route {
     /**
      * Snapped location along route poly line
      */
-    private var lastFixedLocation: Location? = null
+    private var lastFixedLocation: ValhallaLocation? = null
     private var currentInstructionIndex: Int = 0
     var totalDistanceTravelled: Double = 0.0
     private var beginningRouteLostThresholdMeters: Int? = null
@@ -192,8 +190,8 @@ open class Route {
         return instructions
     }
 
-    open fun getGeometry(): ArrayList<Location> {
-        val geometry = ArrayList<Location>()
+    open fun getGeometry(): ArrayList<ValhallaLocation> {
+        val geometry = ArrayList<ValhallaLocation>()
         val polyline = poly
         if (polyline is ArrayList<Node>) {
             for (node in polyline) {
@@ -204,8 +202,8 @@ open class Route {
         return geometry
     }
 
-    open fun getStartCoordinates(): Location {
-        val location = Location()
+    open fun getStartCoordinates(): ValhallaLocation {
+        val location = ValhallaLocation()
         location.latitude = poly!![0].lat
         location.longitude = poly!![0].lng
         return location
@@ -243,7 +241,7 @@ open class Route {
      *  @param currentLocation User's current location
      *  @return location along path that user's location is snapped to, or null if lost
      */
-    open fun snapToRoute(currentLocation: Location): Location? {
+    open fun snapToRoute(currentLocation: ValhallaLocation): ValhallaLocation? {
         val sizeOfPoly = poly!!.size
 
         // we are lost
@@ -300,10 +298,10 @@ open class Route {
     }
 
     /**
-     * If the distance from {@param Location} to last node in poly is less than
+     * If the distance from {@param ValhallaLocation} to last node in poly is less than
      * {@link CLOSE_TO_DESTINATION_THRESHOLD} user is close to destination
      */
-    private fun closeToDestination(location: Location): Boolean {
+    private fun closeToDestination(location: ValhallaLocation): Boolean {
         val destination = poly!![poly!!.size - 1]
         val distanceToDestination = destination.getLocation().distanceTo(location).toDouble()
         return (Math.floor(distanceToDestination) < CLOSE_TO_DESTINATION_THRESHOLD_METERS)
@@ -313,7 +311,7 @@ open class Route {
      * If the distance from this location to the last fixed location is almost the length of the
      * leg, then we are close to the next leg
      */
-    private fun closeToNextLeg(location: Location, legDistance: Double): Boolean {
+    private fun closeToNextLeg(location: ValhallaLocation, legDistance: Double): Boolean {
         return location.distanceTo(lastFixedLocation) >
                 legDistance - CLOSE_TO_NEXT_LEG_THRESHOLD_METERS
     }
@@ -350,9 +348,9 @@ open class Route {
      *
      *  @param node Current node user is at along poly line (potentially near a turn along route)
      *  @param location Current location of user
-     *  @return Location along route to snap to
+     *  @return ValhallaLocation along route to snap to
      */
-    private fun snapTo(node: Node, location: Location): Location {
+    private fun snapTo(node: Node, location: ValhallaLocation): ValhallaLocation {
         // if lat/lng of node and location are same, just update location's bearing to node
         // and snap to it
         if (fuzzyEqual(node.getLocation(), location)) {
@@ -396,7 +394,7 @@ open class Route {
      * @param location User's current location
      * @param degreeOffset Degrees to offset node bearing
      */
-    private fun snapTo(node: Node, location: Location, degreeOffset: Double): Location? {
+    private fun snapTo(node: Node, location: ValhallaLocation, degreeOffset: Double): ValhallaLocation? {
         val lat1 = toRadians(node.lat)
         val lon1 = toRadians(node.lng)
         val lat2 = toRadians(location.latitude)
@@ -454,7 +452,7 @@ open class Route {
         // normalise to -180..+180º
         val lon3 = ((lon1 + dLon13) + 3 * Math.PI) % (2 * Math.PI) - Math.PI
 
-        val loc = Location()
+        val loc = ValhallaLocation()
         loc.latitude = Math.toDegrees(lat3)
         loc.longitude = Math.toDegrees(lon3)
         return loc
@@ -463,7 +461,7 @@ open class Route {
     /**
      * Determine if these two locations are more or less the same to avoid doing extra calculations
      */
-    private fun fuzzyEqual(l1: Location, l2: Location): Boolean {
+    private fun fuzzyEqual(l1: ValhallaLocation, l2: ValhallaLocation): Boolean {
         val deltaLat = Math.abs(l1.latitude - l2.latitude)
         val deltaLng = Math.abs(l1.longitude - l2.longitude)
         return (deltaLat <= LOCATION_FUZZY_EQUAL_THRESHOLD_DEGREES)
@@ -504,7 +502,7 @@ open class Route {
         }
     }
 
-    open fun getAccurateStartPoint(): Location {
+    open fun getAccurateStartPoint(): ValhallaLocation {
         return poly!![0].getLocation()
     }
 

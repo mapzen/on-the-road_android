@@ -7,11 +7,11 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 public class LocationTest {
 
-  Location location;
+  ValhallaLocation location;
 
   @Before
   public void setup() {
-    location = new Location();
+    location = new ValhallaLocation();
   }
 
   @Test
@@ -44,12 +44,12 @@ public class LocationTest {
 
   @Test
   public void distanceTo_shouldReturnThreeHundredThousand() {
-    Location l1 = new Location();
+    ValhallaLocation l1 = new ValhallaLocation();
     l1.setLatitude(37.5);
     l1.setLongitude(-74.0);
     l1.setBearing(1.5f);
 
-    Location l2 = new Location();
+    ValhallaLocation l2 = new ValhallaLocation();
     l2.setLatitude(40.5);
     l2.setLongitude(-75.0);
     l2.setBearing(0.5f);
@@ -60,12 +60,12 @@ public class LocationTest {
 
   @Test
   public void bearingTo_shouldReturnNegativeFourteen() {
-    Location l1 = new Location();
+    ValhallaLocation l1 = new ValhallaLocation();
     l1.setLatitude(37.5);
     l1.setLongitude(-74.0);
     l1.setBearing(1.5f);
 
-    Location l2 = new Location();
+    ValhallaLocation l2 = new ValhallaLocation();
     l2.setLatitude(40.5);
     l2.setLongitude(-75.0);
     l2.setBearing(0.5f);

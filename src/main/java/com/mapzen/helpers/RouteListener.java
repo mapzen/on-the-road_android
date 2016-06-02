@@ -1,6 +1,6 @@
 package com.mapzen.helpers;
 
-import com.mapzen.model.Location;
+import com.mapzen.model.ValhallaLocation;
 
 /**
  * {@link RouteEngine} callback interface.
@@ -14,12 +14,12 @@ public interface RouteListener {
     /**
      * Invoked when the given location is off course and the route needs to be recalculated.
      */
-    public void onRecalculate(Location location);
+    public void onRecalculate(ValhallaLocation location);
 
     /**
      * Invoked each time a raw location update is snapped to the on route position.
      */
-    public void onSnapLocation(Location originalLocation, Location snapLocation);
+    public void onSnapLocation(ValhallaLocation originalLocation, ValhallaLocation snapLocation);
 
     /**
      * Invoked to give advance warning of an upcoming maneuver at designated milestones.

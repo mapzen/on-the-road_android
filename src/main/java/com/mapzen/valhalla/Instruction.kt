@@ -1,7 +1,7 @@
 package com.mapzen.valhalla
 
 import com.mapzen.helpers.DistanceFormatter
-import com.mapzen.model.Location
+import com.mapzen.model.ValhallaLocation
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.Locale
@@ -10,44 +10,15 @@ open class Instruction {
     companion object {
         val KM_TO_METERS = 1000
         val MI_TO_METERS = 1609.344
+        //full list of types defined: https://mapzen.com/documentation/turn-by-turn/api-reference/
+        val MANEUVER_TYPE_DESTINATION : Int = 4
     }
-
-    val NONE : Int = 0
-    val START : Int = 1
-    val START_RIGHT : Int = 2
-    val START_LEFT : Int = 3
-    val DESTINATION : Int = 4
-    val DESTINATION_RIGHT : Int = 5
-    val DESTINATION_LEFT : Int = 6
-    val BECOMES : Int = 7
-    val CONTINUE : Int = 8
-    val SLIGHT_RIGHT : Int = 9
-    val RIGHT : Int = 10
-    val SHARP_RIGHT : Int = 11
-    val U_TURN_RIGHT: Int = 12
-    val U_TURN_LEFT : Int = 13
-    val SHARP_LEFT : Int = 14
-    val LEFT : Int = 15
-    val SLIGHT_LEFT : Int = 16
-    val RAMP_STRAIGHT : Int = 17
-    val RAMP_RIGHT : Int = 18
-    val RAMP_LEFT : Int = 19
-    val EXIT_RIGHT : Int = 20
-    val EXIT_LEFT : Int = 21
-    val STAY_STRAIGHT : Int = 22
-    val STAY_RIGHT : Int = 23
-    val STAY_LEFT : Int = 24
-    val MERGE : Int = 25
-    val ROUNDABOUT_ENTER : Int = 26
-    val ROUNDABOUT_EXIT: Int = 27
-    val FERRY_ENTER: Int = 28
-    val FERRY_EXIT: Int = 29
 
     private var json: JSONObject? = null;
 
     var turnInstruction: Int = 0
     var distance: Int = 0
-    var location: Location = Location()
+    var location: ValhallaLocation = ValhallaLocation()
     var liveDistanceToNext: Int = -1
     var bearing: Int = 0
 
@@ -80,13 +51,6 @@ open class Instruction {
 
     fun getHumanTurnInstruction(): String? {
         return json?.getString("instruction");
-    }
-
-    fun skip(): Boolean {
-        if(json!!.optJSONArray("street_names") == null && json!!.getInt("type") != DESTINATION ) {
-            return true
-        }
-        return false;
     }
 
     fun getBeginStreetNames(): String {

@@ -1,6 +1,6 @@
 package com.mapzen.helpers;
 
-import com.mapzen.model.Location;
+import com.mapzen.model.ValhallaLocation;
 import com.mapzen.valhalla.Instruction;
 import com.mapzen.valhalla.Route;
 
@@ -33,8 +33,8 @@ public class RouteEngine {
     private Route route;
     private RouteState routeState;
     private RouteListener listener;
-    private Location location;
-    private Location snapLocation;
+    private ValhallaLocation location;
+    private ValhallaLocation snapLocation;
     private Instruction currentInstruction;
     private ArrayList<Instruction> instructions;
     private Milestone lastMilestoneUpdate;
@@ -46,7 +46,7 @@ public class RouteEngine {
      * instructions
      *
      */
-    public void onLocationChanged(final Location location) {
+    public void onLocationChanged(final ValhallaLocation location) {
         if (routeState == RouteState.COMPLETE) {
             return;
         }
@@ -128,7 +128,7 @@ public class RouteEngine {
                 && snapLocation.distanceTo(getLocationForDestination()) < DESTINATION_RADIUS;
     }
 
-    private Location getLocationForDestination() {
+    private ValhallaLocation getLocationForDestination() {
         if (route.getRouteInstructions() == null) {
             return null;
         }
