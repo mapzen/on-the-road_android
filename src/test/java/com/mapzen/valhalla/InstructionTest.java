@@ -1,5 +1,7 @@
 package com.mapzen.valhalla;
 
+import com.mapzen.model.ValhallaLocation;
+
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 
@@ -10,8 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-
-import android.location.Location;
 
 import java.io.File;
 import java.util.Locale;
@@ -210,7 +210,7 @@ public class InstructionTest {
 
     @Test
     public void canSetCoordinates() throws Exception {
-        Location expected = new Location("snap");
+        ValhallaLocation expected = new ValhallaLocation();
         expected.setLatitude(3.3);
         expected.setLongitude(4.4);
         instruction.setLocation(expected);

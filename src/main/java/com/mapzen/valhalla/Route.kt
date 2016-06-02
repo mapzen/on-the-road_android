@@ -1,40 +1,37 @@
 package com.mapzen.valhalla
 
-import android.location.Location
 import com.mapzen.helpers.GeometryHelper.getBearing
+import com.mapzen.model.ValhallaLocation
 import org.json.JSONArray
 import org.json.JSONObject
 import java.lang.Math.toRadians
 import java.util.ArrayList
 import java.util.HashSet
 
-public open class Route {
-
-    private val TAG = Route::class.java.simpleName
+open class Route {
 
     companion object {
-        public const val KEY_TRIP = "trip"
-        public const val KEY_LEGS = "legs"
-        public const val KEY_SHAPE = "shape"
-        public const val KEY_MANEUVERS = "maneuvers"
-        public const val KEY_UNITS = "units"
-        public const val KEY_LENGTH = "length"
-        public const val KEY_STATUS = "status"
-        public const val KEY_TIME = "time"
-        public const val KEY_LOCATIONS = "locations"
-        public const val KEY_SUMMARY = "summary"
-        public const val SNAP_PROVIDER: String = "snap"
-        public const val CLOSE_TO_DESTINATION_THRESHOLD_METERS: Int = 20
-        public const val CLOSE_TO_NEXT_LEG_THRESHOLD_METERS: Int = 5
-        public const val LOST_THRESHOLD_METERS: Int = 50
-        public const val CORRECTION_THRESHOLD_METERS: Int = 1000
-        public const val CLOCKWISE_DEGREES: Double = 90.0
-        public const val COUNTERCLOCKWISE_DEGREES: Double = -90.0
-        public const val REVERSE_DEGREES: Int = 180
-        public const val LOCATION_FUZZY_EQUAL_THRESHOLD_DEGREES: Double = 0.00001
+        const val KEY_TRIP = "trip"
+        const val KEY_LEGS = "legs"
+        const val KEY_SHAPE = "shape"
+        const val KEY_MANEUVERS = "maneuvers"
+        const val KEY_UNITS = "units"
+        const val KEY_LENGTH = "length"
+        const val KEY_STATUS = "status"
+        const val KEY_TIME = "time"
+        const val KEY_LOCATIONS = "locations"
+        const val KEY_SUMMARY = "summary"
+        const val CLOSE_TO_DESTINATION_THRESHOLD_METERS: Int = 20
+        const val CLOSE_TO_NEXT_LEG_THRESHOLD_METERS: Int = 5
+        const val LOST_THRESHOLD_METERS: Int = 50
+        const val CORRECTION_THRESHOLD_METERS: Int = 1000
+        const val CLOCKWISE_DEGREES: Double = 90.0
+        const val COUNTERCLOCKWISE_DEGREES: Double = -90.0
+        const val REVERSE_DEGREES: Int = 180
+        const val LOCATION_FUZZY_EQUAL_THRESHOLD_DEGREES: Double = 0.00001
     }
 
-    public lateinit var rawRoute: JSONObject
+    lateinit var rawRoute: JSONObject
     /**
      * Because https://valhalla.mapzen.com/route does not use http status codes, "status" key
      * in response can indicate too many requests in which case no poly line will be present
@@ -45,27 +42,27 @@ public open class Route {
      * in response can indicate too many requests in which case no instructions will be present
      */
     private var instructions: ArrayList<Instruction>? = null
-    public var units: Router.DistanceUnits = Router.DistanceUnits.KILOMETERS
-    public var currentLeg: Int = 0
+    var units: Router.DistanceUnits = Router.DistanceUnits.KILOMETERS
+    var currentLeg: Int = 0
     private val seenInstructions = HashSet<Instruction>()
     private var lost: Boolean = false
     /**
      * Snapped location along route poly line
      */
-    private var lastFixedLocation: Location? = null
+    private var lastFixedLocation: ValhallaLocation? = null
     private var currentInstructionIndex: Int = 0
-    public var totalDistanceTravelled: Double = 0.0
+    var totalDistanceTravelled: Double = 0.0
     private var beginningRouteLostThresholdMeters: Int? = null
 
-    public constructor(jsonString: String) {
+    constructor(jsonString: String) {
         setJsonObject(JSONObject(jsonString))
     }
 
-    public constructor(jsonObject: JSONObject) {
+    constructor(jsonObject: JSONObject) {
         setJsonObject(jsonObject)
     }
 
-    public fun setJsonObject(jsonObject: JSONObject) {
+    fun setJsonObject(jsonObject: JSONObject) {
         this.rawRoute = jsonObject
         if (foundRoute()) {
             initializeDistanceUnits(jsonObject)
@@ -145,7 +142,7 @@ public open class Route {
         }
     }
 
-    public open fun getTotalDistance(): Int {
+    open fun getTotalDistance(): Int {
         var distance = getSummary().getDouble(KEY_LENGTH)
         when (units) {
             Router.DistanceUnits.KILOMETERS -> distance *= Instruction.KM_TO_METERS
@@ -155,30 +152,30 @@ public open class Route {
         return Math.round(distance).toInt()
     }
 
-    public open fun getStatus(): Int? {
+    open fun getStatus(): Int? {
         if (rawRoute.optJSONObject(KEY_TRIP) == null) {
             return -1
         }
         return rawRoute.optJSONObject(KEY_TRIP).getInt(KEY_STATUS)
     }
 
-    public open fun foundRoute(): Boolean {
+    open fun foundRoute(): Boolean {
         return getStatus() == 0
     }
 
-    public open fun getTotalTime(): Int {
+    open fun getTotalTime(): Int {
         return getSummary().getInt(KEY_TIME)
     }
 
-    public open fun getDistanceToNextInstruction(): Int {
+    open fun getDistanceToNextInstruction(): Int {
         return getCurrentInstruction().liveDistanceToNext
     }
 
-    public open fun getRemainingDistanceToDestination(): Int {
+    open fun getRemainingDistanceToDestination(): Int {
         return instructions!![instructions!!.size - 1].liveDistanceToNext
     }
 
-    public open fun getRouteInstructions(): ArrayList<Instruction>? {
+    open fun getRouteInstructions(): ArrayList<Instruction>? {
         if (instructions == null) {
             return null
         }
@@ -193,8 +190,8 @@ public open class Route {
         return instructions
     }
 
-    public open fun getGeometry(): ArrayList<Location> {
-        val geometry = ArrayList<Location>()
+    open fun getGeometry(): ArrayList<ValhallaLocation> {
+        val geometry = ArrayList<ValhallaLocation>()
         val polyline = poly
         if (polyline is ArrayList<Node>) {
             for (node in polyline) {
@@ -205,14 +202,14 @@ public open class Route {
         return geometry
     }
 
-    public open fun getStartCoordinates(): Location {
-        val location = Location(SNAP_PROVIDER)
+    open fun getStartCoordinates(): ValhallaLocation {
+        val location = ValhallaLocation()
         location.latitude = poly!![0].lat
         location.longitude = poly!![0].lng
         return location
     }
 
-    public open fun isLost(): Boolean {
+    open fun isLost(): Boolean {
         return lost
     }
 
@@ -224,11 +221,11 @@ public open class Route {
         return rawRoute.getJSONObject(KEY_TRIP).getJSONObject(KEY_SUMMARY)
     }
 
-    public open fun getCurrentRotationBearing(): Double {
+    open fun getCurrentRotationBearing(): Double {
         return 360 - poly!!.get(currentLeg).bearing
     }
 
-    public open fun rewind() {
+    open fun rewind() {
         currentLeg = 0
     }
 
@@ -244,7 +241,7 @@ public open class Route {
      *  @param currentLocation User's current location
      *  @return location along path that user's location is snapped to, or null if lost
      */
-    public open fun snapToRoute(currentLocation: Location): Location? {
+    open fun snapToRoute(currentLocation: ValhallaLocation): ValhallaLocation? {
         val sizeOfPoly = poly!!.size
 
         // we are lost
@@ -301,10 +298,10 @@ public open class Route {
     }
 
     /**
-     * If the distance from {@param Location} to last node in poly is less than
+     * If the distance from {@param ValhallaLocation} to last node in poly is less than
      * {@link CLOSE_TO_DESTINATION_THRESHOLD} user is close to destination
      */
-    private fun closeToDestination(location: Location): Boolean {
+    private fun closeToDestination(location: ValhallaLocation): Boolean {
         val destination = poly!![poly!!.size - 1]
         val distanceToDestination = destination.getLocation().distanceTo(location).toDouble()
         return (Math.floor(distanceToDestination) < CLOSE_TO_DESTINATION_THRESHOLD_METERS)
@@ -314,7 +311,7 @@ public open class Route {
      * If the distance from this location to the last fixed location is almost the length of the
      * leg, then we are close to the next leg
      */
-    private fun closeToNextLeg(location: Location, legDistance: Double): Boolean {
+    private fun closeToNextLeg(location: ValhallaLocation, legDistance: Double): Boolean {
         return location.distanceTo(lastFixedLocation) >
                 legDistance - CLOSE_TO_NEXT_LEG_THRESHOLD_METERS
     }
@@ -333,7 +330,7 @@ public open class Route {
         updateAllInstructions()
     }
 
-    public open fun updateAllInstructions() {
+    open fun updateAllInstructions() {
         // this constructs a distance table
         // and calculates from it
         // 3 instruction has the distance of
@@ -351,9 +348,9 @@ public open class Route {
      *
      *  @param node Current node user is at along poly line (potentially near a turn along route)
      *  @param location Current location of user
-     *  @return Location along route to snap to
+     *  @return ValhallaLocation along route to snap to
      */
-    private fun snapTo(node: Node, location: Location): Location {
+    private fun snapTo(node: Node, location: ValhallaLocation): ValhallaLocation {
         // if lat/lng of node and location are same, just update location's bearing to node
         // and snap to it
         if (fuzzyEqual(node.getLocation(), location)) {
@@ -397,7 +394,7 @@ public open class Route {
      * @param location User's current location
      * @param degreeOffset Degrees to offset node bearing
      */
-    private fun snapTo(node: Node, location: Location, degreeOffset: Double): Location? {
+    private fun snapTo(node: Node, location: ValhallaLocation, degreeOffset: Double): ValhallaLocation? {
         val lat1 = toRadians(node.lat)
         val lon1 = toRadians(node.lng)
         val lat2 = toRadians(location.latitude)
@@ -455,7 +452,7 @@ public open class Route {
         // normalise to -180..+180º
         val lon3 = ((lon1 + dLon13) + 3 * Math.PI) % (2 * Math.PI) - Math.PI
 
-        val loc = Location(SNAP_PROVIDER)
+        val loc = ValhallaLocation()
         loc.latitude = Math.toDegrees(lat3)
         loc.longitude = Math.toDegrees(lon3)
         return loc
@@ -464,22 +461,22 @@ public open class Route {
     /**
      * Determine if these two locations are more or less the same to avoid doing extra calculations
      */
-    private fun fuzzyEqual(l1: Location, l2: Location): Boolean {
+    private fun fuzzyEqual(l1: ValhallaLocation, l2: ValhallaLocation): Boolean {
         val deltaLat = Math.abs(l1.latitude - l2.latitude)
         val deltaLng = Math.abs(l1.longitude - l2.longitude)
         return (deltaLat <= LOCATION_FUZZY_EQUAL_THRESHOLD_DEGREES)
                 && (deltaLng <= LOCATION_FUZZY_EQUAL_THRESHOLD_DEGREES)
     }
 
-    public open fun getSeenInstructions(): Set<Instruction> {
+    open fun getSeenInstructions(): Set<Instruction> {
         return seenInstructions
     }
 
-    public open fun addSeenInstruction(instruction: Instruction) {
+    open fun addSeenInstruction(instruction: Instruction) {
         seenInstructions.add(instruction)
     }
 
-    public open fun getNextInstruction(): Instruction? {
+    open fun getNextInstruction(): Instruction? {
         val nextInstructionIndex = currentInstructionIndex + 1
         if (nextInstructionIndex >= instructions!!.size) {
             return null
@@ -488,11 +485,11 @@ public open class Route {
         }
     }
 
-    public open fun getNextInstructionIndex(): Int? {
+    open fun getNextInstructionIndex(): Int? {
         return instructions?.indexOf(getNextInstruction())
     }
 
-    public open fun getCurrentInstruction(): Instruction {
+    open fun getCurrentInstruction(): Instruction {
         return instructions!![currentInstructionIndex]
     }
 
@@ -505,7 +502,7 @@ public open class Route {
         }
     }
 
-    public open fun getAccurateStartPoint(): Location {
+    open fun getAccurateStartPoint(): ValhallaLocation {
         return poly!![0].getLocation()
     }
 

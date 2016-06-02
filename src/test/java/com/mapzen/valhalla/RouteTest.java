@@ -1,5 +1,7 @@
 package com.mapzen.valhalla;
 
+import com.mapzen.model.ValhallaLocation;
+
 import com.google.common.io.Files;
 
 import org.apache.commons.io.FileUtils;
@@ -9,8 +11,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-
-import android.location.Location;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -82,7 +82,7 @@ public class RouteTest {
 
     @Test
     public void hasCorrectTurnByTurnCoordinatesInBrooklyn() throws Exception {
-        ArrayList<Location> points = new ArrayList<Location>();
+        ArrayList<ValhallaLocation> points = new ArrayList<ValhallaLocation>();
         points.add(getLocation(40.66071, -73.98933));
         points.add(getLocation(40.65982, -73.98784));
         points.add(getLocation(40.65925, -73.98843));
@@ -91,10 +91,10 @@ public class RouteTest {
         points.add(getLocation(40.66631, -73.98909));
         Route brooklynRoute = getRoute("brooklyn_valhalla");
 
-        ListIterator<Location> expectedPoints = points.listIterator();
+        ListIterator<ValhallaLocation> expectedPoints = points.listIterator();
         for(Instruction instruction: brooklynRoute.getRouteInstructions()) {
-            Location expectedPoint = expectedPoints.next();
-            Location instructionPoint = instruction.getLocation();
+            ValhallaLocation expectedPoint = expectedPoints.next();
+            ValhallaLocation instructionPoint = instruction.getLocation();
 
             // ceiling it as the precision of the double is not identical on the sixth digit
             assertThat(Math.ceil(instructionPoint.getLatitude()))
@@ -149,7 +149,7 @@ public class RouteTest {
     @Test
     public void shouldHaveStartCoordinates() throws Exception {
         route = getRoute("brooklyn_valhalla");
-        Location expected = getLocation(40.660708, -73.989332);
+        ValhallaLocation expected = getLocation(40.660708, -73.989332);
         assertThat(route.getStartCoordinates()).isEqualsToByComparingFields(expected);
     }
 
@@ -163,8 +163,8 @@ public class RouteTest {
     @Test
     public void snapToRoute_shouldStayOnLeg() throws Exception {
         Route myroute = getRoute("greenpoint_around_the_block_valhalla");
-        Location stayOnRoute = getLocation(40.660250, -73.988105);
-        Location snapped = myroute.snapToRoute(stayOnRoute);
+        ValhallaLocation stayOnRoute = getLocation(40.660250, -73.988105);
+        ValhallaLocation snapped = myroute.snapToRoute(stayOnRoute);
         assertThat(myroute.getCurrentLeg()).isEqualTo(0);
         assertThat(snapped).isNotNull();
         assertThat(snapped).isNotEqualTo(myroute.getStartCoordinates());
@@ -173,8 +173,8 @@ public class RouteTest {
     @Test
     public void snapToRoute_shouldReturnSameLocationWhenItMatchesNode() throws Exception {
         Route myroute = getRoute("greenpoint_around_the_block_valhalla");
-        Location cornerLocation = myroute.getGeometry().get(0);
-        Location snapped = myroute.snapToRoute(cornerLocation);
+        ValhallaLocation cornerLocation = myroute.getGeometry().get(0);
+        ValhallaLocation snapped = myroute.snapToRoute(cornerLocation);
         assertThat(myroute.getCurrentLeg()).isEqualTo(0);
         assertThat(snapped).isEqualTo(cornerLocation);
     }
@@ -182,7 +182,7 @@ public class RouteTest {
     @Test
     public void snapToRoute_shouldSnapToBeginning() throws Exception {
         Route myroute = getRoute("greenpoint_around_the_block_valhalla");
-        Location snapped = myroute.snapToRoute(getLocation(40.660860, -73.989602));
+        ValhallaLocation snapped = myroute.snapToRoute(getLocation(40.660860, -73.989602));
         assertThat(snapped.getLongitude()).isEqualTo(myroute.getStartCoordinates().getLongitude());
         assertThat(snapped.getLatitude()).isEqualTo(myroute.getStartCoordinates().getLatitude());
     }
@@ -191,47 +191,47 @@ public class RouteTest {
     public void snapToRoute_shouldSnapToNextLeg() throws Exception {
         // these points are behind the new line
         Route myroute = getRoute("greenpoint_around_the_block_valhalla");
-        Location expected = myroute.getGeometry().get(1);
-        Location snapToNextLeg1 = getLocation(40.659740, -73.987802);
+        ValhallaLocation expected = myroute.getGeometry().get(1);
+        ValhallaLocation snapToNextLeg1 = getLocation(40.659740, -73.987802);
         assertThat(myroute.snapToRoute(snapToNextLeg1)).isEqualsToByComparingFields(expected);
         myroute.rewind();
-        Location snapToNextLeg2 = getLocation(40.659762, -73.987821);
+        ValhallaLocation snapToNextLeg2 = getLocation(40.659762, -73.987821);
         assertThat(myroute.snapToRoute(snapToNextLeg2)).isEqualsToByComparingFields(expected);
         myroute.rewind();
-        Location snapToNextLeg3 = getLocation(40.659781, -73.987890);
+        ValhallaLocation snapToNextLeg3 = getLocation(40.659781, -73.987890);
         assertThat(myroute.snapToRoute(snapToNextLeg3)).isEqualsToByComparingFields(expected);
     }
 
     @Test
     public void snapToRoute_shouldAdvanceToNextLegButNotSnapToThatBeginning() throws Exception {
         Route myroute = getRoute("greenpoint_around_the_block_valhalla");
-        Location justAroundTheCorner1 = getLocation(40.659826, -73.987838);
-        Location snappedTo1 = myroute.snapToRoute(justAroundTheCorner1);
+        ValhallaLocation justAroundTheCorner1 = getLocation(40.659826, -73.987838);
+        ValhallaLocation snappedTo1 = myroute.snapToRoute(justAroundTheCorner1);
         assertThat(snappedTo1).isNotEqualTo(route.getGeometry().get(1));
         assertThat(myroute.getCurrentLeg()).isEqualTo(1);
         myroute.rewind();
-        Location justAroundTheCorner2 = getLocation(40.659847, -73.987835);
-        Location snappedTo2 = myroute.snapToRoute(justAroundTheCorner2);
+        ValhallaLocation justAroundTheCorner2 = getLocation(40.659847, -73.987835);
+        ValhallaLocation snappedTo2 = myroute.snapToRoute(justAroundTheCorner2);
         assertThat(snappedTo2).isNotEqualTo(myroute.getGeometry().get(1));
         assertThat(myroute.getCurrentLeg()).isEqualTo(1);
     }
 
     @Test
     public void snapToRoute_shouldRealizeItsLost() throws Exception {
-        Location lost;
+        ValhallaLocation lost;
         Route myroute = getRoute("greenpoint_around_the_block_valhalla");
         myroute.snapToRoute(getLocation(40.660480, -73.988908));
         lost = getLocation(40.662046, -73.987089);
-        Location snapped = myroute.snapToRoute(lost);
+        ValhallaLocation snapped = myroute.snapToRoute(lost);
         assertThat(snapped).isNull();
     }
 
     @Test
     public void snapToRoute_shouldRealizeLostTooFarFromRoute() throws Exception {
-        Location lost;
+        ValhallaLocation lost;
         Route myroute = getRoute("greenpoint_around_the_block_valhalla");
         lost = getLocation(40.658742, -73.987235);
-        Location snapped = myroute.snapToRoute(lost);
+        ValhallaLocation snapped = myroute.snapToRoute(lost);
         assertThat(snapped).isNull();
         assertThat(myroute.isLost()).isTrue();
     }
@@ -239,24 +239,24 @@ public class RouteTest {
     @Test
     public void snapToRoute_shouldBeFinalDestination() throws Exception {
         Route myroute = getRoute("greenpoint_around_the_block_valhalla");
-        Location foundIt = getLocation(40.661434, -73.989030);
-        Location snapped = myroute.snapToRoute(foundIt);
-        ArrayList<Location> geometry = myroute.getGeometry();
-        Location expected = geometry.get(geometry.size() - 1);
+        ValhallaLocation foundIt = getLocation(40.661434, -73.989030);
+        ValhallaLocation snapped = myroute.snapToRoute(foundIt);
+        ArrayList<ValhallaLocation> geometry = myroute.getGeometry();
+        ValhallaLocation expected = geometry.get(geometry.size() - 1);
         assertThat(snapped).isEqualsToByComparingFields(expected);
     }
 
     @Test
     public void snapToRoute_shouldSetBearing() throws Exception {
         Route myroute = getRoute("greenpoint_around_the_block_valhalla");
-        Location snap = myroute.snapToRoute(getLocation(40.659740, -73.987802));
+        ValhallaLocation snap = myroute.snapToRoute(getLocation(40.659740, -73.987802));
         assertThat(snap.getBearing()).isNotEqualTo(0);
     }
 
     @Test
     public void snapToRoute_shouldNotGoAgainstBearing() throws Exception {
         Route myroute = getRoute("greenpoint_around_the_block_valhalla");
-        Location correctedLocation = myroute.snapToRoute(getLocation(40.660835, -73.989436));
+        ValhallaLocation correctedLocation = myroute.snapToRoute(getLocation(40.660835, -73.989436));
         assertThat(correctedLocation.getLatitude())
                 .isEqualTo(myroute.getGeometry().get(0).getLatitude());
         assertThat(correctedLocation.getLongitude())
@@ -266,8 +266,8 @@ public class RouteTest {
     @Test
     public void snapToRoute_shouldNotRecalculateWhenBeginningRoute() throws Exception {
         Route route = getRoute("greenpoint_around_the_block_valhalla");
-        Location location = getLocation(40.662046, -73.987089);
-        Location snapped = route.snapToRoute(location);
+        ValhallaLocation location = getLocation(40.662046, -73.987089);
+        ValhallaLocation snapped = route.snapToRoute(location);
         assertThat(snapped.getLatitude()).isEqualTo(location.getLatitude());
         assertThat(snapped.getLongitude()).isEqualTo(location.getLongitude());
     }
@@ -276,8 +276,8 @@ public class RouteTest {
     public void snapToRoute_shouldNotRecalculateWhenBeginningRouteAndGoingTowardsPolyLine() throws Exception {
         Route route = getRoute("greenpoint_around_the_block_valhalla");
         route.snapToRoute(getLocation(40.662046, -73.987089));
-        Location location = getLocation(40.661786, -73.987561);
-        Location snapped = route.snapToRoute(location);
+        ValhallaLocation location = getLocation(40.661786, -73.987561);
+        ValhallaLocation snapped = route.snapToRoute(location);
         assertThat(snapped.getLatitude()).isEqualTo(location.getLatitude());
         assertThat(snapped.getLongitude()).isEqualTo(location.getLongitude());
     }
@@ -286,8 +286,8 @@ public class RouteTest {
     public void snapToRoute_shouldRecalculateWhenTravellingAndFarFromRoute() throws Exception {
         Route route = getRoute("greenpoint_around_the_block_valhalla");
         route.snapToRoute(getLocation(40.660326, -73.988687)); //along route
-        Location lost = getLocation(40.661986, -73.987014); // off route
-        Location snapped = route.snapToRoute(lost);
+        ValhallaLocation lost = getLocation(40.661986, -73.987014); // off route
+        ValhallaLocation snapped = route.snapToRoute(lost);
         assertThat(snapped).isNull();
     }
 
@@ -350,7 +350,7 @@ public class RouteTest {
     @Test
     public void getRouteInstructions_shouldAttachCorrectLocation() throws Exception {
         Route myroute = getRoute("brooklyn_valhalla");
-        ArrayList<Location> locations = myroute.getGeometry();
+        ArrayList<ValhallaLocation> locations = myroute.getGeometry();
         ArrayList<Instruction> instructions = myroute.getRouteInstructions();
         for(Instruction instruction: instructions) {
             assertThat(instruction.getLocation().getLatitude())
@@ -391,7 +391,7 @@ public class RouteTest {
     public void getDistanceToNextInstruction_shouldbe78() throws Exception {
         Route myroute = getRoute("ace_hotel_valhalla");
         myroute.getRouteInstructions();
-        Location loc = getLocation(40.743814, -73.989035);
+        ValhallaLocation loc = getLocation(40.743814, -73.989035);
         myroute.snapToRoute(loc);
         assertThat((double) myroute.getDistanceToNextInstruction())
                 .isEqualTo(233, Offset.offset(1.0));
@@ -466,13 +466,13 @@ public class RouteTest {
     public void getCurrentInstruction_shouldReturnOneThatHasntyetbeencompleted() throws Exception {
         Route myroute = getRoute("ace_hotel_valhalla");
         ArrayList<Instruction> instructions = myroute.getRouteInstructions();
-        Location cornerOf26thAndBroadway = getLocation(40.743814, -73.989035);
+        ValhallaLocation cornerOf26thAndBroadway = getLocation(40.743814, -73.989035);
         myroute.snapToRoute(cornerOf26thAndBroadway);
         assertThat(myroute.getCurrentInstruction()).isEqualTo(instructions.get(0));
-        Location cornerOf26thAnd5thAve = getLocation(40.74277, -73.98660);
+        ValhallaLocation cornerOf26thAnd5thAve = getLocation(40.74277, -73.98660);
         myroute.snapToRoute(cornerOf26thAnd5thAve);
         assertThat(myroute.getCurrentInstruction()).isEqualTo(instructions.get(1));
-        Location cornerOf26thAndMadison = getLocation(40.74463, -73.98525);
+        ValhallaLocation cornerOf26thAndMadison = getLocation(40.74463, -73.98525);
         myroute.snapToRoute(cornerOf26thAndMadison);
         assertThat(myroute.getCurrentInstruction()).isEqualTo(instructions.get(2));
     }
@@ -505,7 +505,7 @@ public class RouteTest {
     public void snapToRoute_shouldUpdateAllLiveDistances() throws Exception {
         Route myroute = getRoute("ace_hotel_valhalla");
         ArrayList<Instruction> instructions = myroute.getRouteInstructions();
-        Location cornerOf26thAndBroadway = getLocation(40.743814, -73.989035);
+        ValhallaLocation cornerOf26thAndBroadway = getLocation(40.743814, -73.989035);
         int[] before = new int[instructions.size()];
         for (Instruction instruction : instructions) {
             before[instructions.indexOf(instruction)] = (int) instruction.getLiveDistanceToNext();
@@ -527,13 +527,13 @@ public class RouteTest {
         assertThat(route.getUnits()).isEqualTo(Router.DistanceUnits.MILES);
     }
 
-    private ArrayList<Location> getLocationsFromFile(String name) throws Exception {
+    private ArrayList<ValhallaLocation> getLocationsFromFile(String name) throws Exception {
         String fileName = getProperty("user.dir");
         File file = new File(fileName + "/src/test/fixtures/" + name + ".txt");
-        ArrayList<Location> allLocations = new ArrayList<Location>();
+        ArrayList<ValhallaLocation> allLocations = new ArrayList<ValhallaLocation>();
         for(String locations: Files.readLines(file, defaultCharset())) {
             String[] latLng = locations.split(",");
-            Location location = new Location("test");
+            ValhallaLocation location = new ValhallaLocation();
             location.setLatitude(Double.valueOf(latLng[0]));
             location.setLongitude(Double.valueOf(latLng[1]));
             allLocations.add(location);

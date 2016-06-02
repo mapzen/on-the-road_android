@@ -1,14 +1,14 @@
 package com.mapzen.valhalla
 
-import android.location.Location
+import com.mapzen.model.ValhallaLocation
 
-public open class Node(public val lat: Double, public val lng: Double) {
+open class Node(val lat: Double, val lng: Double) {
     var totalDistance: Double = 0.0
     var bearing: Double = 0.0
     var legDistance: Double = 0.0
 
-    public fun getLocation(): Location {
-        val loc = Location("snap")
+    fun getLocation(): ValhallaLocation {
+        val loc = ValhallaLocation()
         loc.latitude = lat
         loc.longitude = lng
         loc.bearing = bearing.toFloat()

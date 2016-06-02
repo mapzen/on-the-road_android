@@ -1,60 +1,30 @@
 package com.mapzen.valhalla
 
-import android.location.Location
-import android.util.Log
 import com.mapzen.helpers.DistanceFormatter
+import com.mapzen.model.ValhallaLocation
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.Locale
 
-public open class Instruction {
+open class Instruction {
     companion object {
         val KM_TO_METERS = 1000
         val MI_TO_METERS = 1609.344
+        //full list of types defined: https://mapzen.com/documentation/turn-by-turn/api-reference/
+        val MANEUVER_TYPE_DESTINATION : Int = 4
     }
-
-    public val NONE : Int = 0
-    public val START : Int = 1
-    public val START_RIGHT : Int = 2
-    public val START_LEFT : Int = 3
-    public val DESTINATION : Int = 4
-    public val DESTINATION_RIGHT : Int = 5
-    public val DESTINATION_LEFT : Int = 6
-    public val BECOMES : Int = 7
-    public val CONTINUE : Int = 8
-    public val SLIGHT_RIGHT : Int = 9
-    public val RIGHT : Int = 10
-    public val SHARP_RIGHT : Int = 11
-    public val U_TURN_RIGHT: Int = 12
-    public val U_TURN_LEFT : Int = 13
-    public val SHARP_LEFT : Int = 14
-    public val LEFT : Int = 15
-    public val SLIGHT_LEFT : Int = 16
-    public val RAMP_STRAIGHT : Int = 17
-    public val RAMP_RIGHT : Int = 18
-    public val RAMP_LEFT : Int = 19
-    public val EXIT_RIGHT : Int = 20
-    public val EXIT_LEFT : Int = 21
-    public val STAY_STRAIGHT : Int = 22
-    public val STAY_RIGHT : Int = 23
-    public val STAY_LEFT : Int = 24
-    public val MERGE : Int = 25
-    public val ROUNDABOUT_ENTER : Int = 26
-    public val ROUNDABOUT_EXIT: Int = 27
-    public val FERRY_ENTER: Int = 28
-    public val FERRY_EXIT: Int = 29
 
     private var json: JSONObject? = null;
 
-    public var turnInstruction: Int = 0
-    public var distance: Int = 0
-    public var location: Location = Location("snap")
-    public var liveDistanceToNext: Int = -1
-    public var bearing: Int = 0
+    var turnInstruction: Int = 0
+    var distance: Int = 0
+    var location: ValhallaLocation = ValhallaLocation()
+    var liveDistanceToNext: Int = -1
+    var bearing: Int = 0
 
-    public constructor(json: JSONObject) : this(json, Router.DistanceUnits.KILOMETERS) { }
+    constructor(json: JSONObject) : this(json, Router.DistanceUnits.KILOMETERS) { }
 
-    public constructor(json: JSONObject, units: Router.DistanceUnits) {
+    constructor(json: JSONObject, units: Router.DistanceUnits) {
         if (json.length() < 6) {
             throw JSONException("too few arguments")
         }
@@ -75,22 +45,15 @@ public open class Instruction {
     protected constructor() {
     }
 
-    public fun getIntegerInstruction(): Int {
+    fun getIntegerInstruction(): Int {
        return turnInstruction;
     }
 
-    public fun getHumanTurnInstruction(): String? {
+    fun getHumanTurnInstruction(): String? {
         return json?.getString("instruction");
     }
 
-    public fun skip(): Boolean {
-        if(json!!.optJSONArray("street_names") == null && json!!.getInt("type") != DESTINATION ) {
-            return true
-        }
-        return false;
-    }
-
-    public fun getBeginStreetNames(): String {
+    fun getBeginStreetNames(): String {
         if (json?.has("begin_street_names") ?: false) {
             var streetName = "";
             val numStreetNames = (json!!.getJSONArray("begin_street_names").length())
@@ -107,7 +70,7 @@ public open class Instruction {
     }
 
 
-    public fun getName(): String {
+    fun getName(): String {
         if (json?.has("street_names") ?: false) {
             var streetName = "";
             val numStreetNames = (json!!.getJSONArray("street_names").length())
@@ -123,19 +86,19 @@ public open class Instruction {
         return json?.getString("instruction") ?: ""
     }
 
-    public fun getFormattedDistance(): String {
+    fun getFormattedDistance(): String {
         return DistanceFormatter.format(distance.toInt())
     }
 
-    public fun getBeginPolygonIndex(): Int {
+    fun getBeginPolygonIndex(): Int {
         return json!!.getInt("begin_shape_index");
     }
 
-    public fun getEndPolygonIndex(): Int {
+    fun getEndPolygonIndex(): Int {
         return json!!.getInt("end_shape_index");
     }
 
-    public fun getDirectionAngle(): Float {
+    fun getDirectionAngle(): Float {
         val direction = bearing
         var angle: Float = 0.0f
         if (direction >= 315.0 && direction <= 360.0 ) {
@@ -158,7 +121,7 @@ public open class Instruction {
         return angle
     }
 
-    public fun getDirection(): String {
+    fun getDirection(): String {
         var direction = ""
         if (bearing >= 315.0 && bearing >= 360.0 ) {
             direction = "NE"
@@ -180,7 +143,7 @@ public open class Instruction {
         return direction
     }
 
-    public fun getRotationBearing(): Int {
+    fun getRotationBearing(): Int {
         return 360 - bearing
     }
 
@@ -189,11 +152,11 @@ public open class Instruction {
         try {
             name = getName()
         } catch (e: JSONException) {
-            Log.e("Json exception", "Unable to get name", e)
+            System.out.println("Json exception unable to get name" + e.stackTrace)
         }
 
         return java.lang.String.format(Locale.US, "Instruction: (%.5f, %.5f) %s %s" +
-                "LiveDistanceTo: %d", location.getLatitude(), location.getLongitude(),
+                "LiveDistanceTo: %d", location.latitude, location.longitude,
                 turnInstruction, name, liveDistanceToNext)
     }
 
@@ -209,14 +172,14 @@ public open class Instruction {
         val other = obj as Instruction
         return (turnInstruction == other.turnInstruction
                 && bearing == other.bearing
-                && location.getLatitude() == other.location.getLatitude()
-                && location.getLongitude() == other.location.getLongitude())
+                && location.latitude == other.location.latitude
+                && location.longitude == other.location.longitude)
     }
 
     private fun parseTurnInstruction(json: JSONObject): Int =
             json.getInt("type")
 
-    public fun getVerbalPreTransitionInstruction(): String {
+    fun getVerbalPreTransitionInstruction(): String {
         if (json?.has("verbal_pre_transition_instruction") ?: false) {
             return json?.getString("verbal_pre_transition_instruction") ?: ""
         }
@@ -224,7 +187,7 @@ public open class Instruction {
         return ""
     }
 
-    public fun getVerbalTransitionAlertInstruction(): String {
+    fun getVerbalTransitionAlertInstruction(): String {
         if (json?.has("verbal_transition_alert_instruction") ?: false) {
             return json?.getString("verbal_transition_alert_instruction") ?: ""
         }
@@ -232,7 +195,7 @@ public open class Instruction {
         return ""
     }
 
-    public fun getVerbalPostTransitionInstruction(): String {
+    fun getVerbalPostTransitionInstruction(): String {
         if (json?.has("verbal_post_transition_instruction") ?: false) {
             return json?.getString("verbal_post_transition_instruction") ?: ""
         }

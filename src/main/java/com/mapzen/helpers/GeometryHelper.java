@@ -1,9 +1,9 @@
 package com.mapzen.helpers;
 
-import android.location.Location;
+import com.mapzen.model.ValhallaLocation;
 
 public class GeometryHelper {
-    public static double getBearing(Location p1, Location p2) {
+    public static double getBearing(ValhallaLocation p1, ValhallaLocation p2) {
         return (p1.bearingTo(p2)+360) % 360;
     }
 }

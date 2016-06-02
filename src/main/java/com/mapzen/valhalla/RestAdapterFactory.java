@@ -1,6 +1,5 @@
 package com.mapzen.valhalla;
 
-import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 
 /**
