@@ -1,68 +1,16 @@
 package com.mapzen.model;
 
-import java.text.DecimalFormat;
-import java.util.StringTokenizer;
-
 /**
  * A data class representing a geographic location.
  *
- * <p>A location can consist of a latitude, longitude, timestamp,
- * and other information such as bearing, altitude and velocity.
+ * <p>A location can consist of a latitude, longitude, and bearing.
  */
 public class Location {
-  /**
-   * Constant used to specify formatting of a latitude or longitude
-   * in the form "[+-]DDD.DDDDD where D indicates degrees.
-   */
-  public static final int FORMAT_DEGREES = 0;
 
-  /**
-   * Constant used to specify formatting of a latitude or longitude
-   * in the form "[+-]DDD:MM.MMMMM" where D indicates degrees and
-   * M indicates minutes of arc (1 minute = 1/60th of a degree).
-   */
-  public static final int FORMAT_MINUTES = 1;
-
-  /**
-   * Constant used to specify formatting of a latitude or longitude
-   * in the form "DDD:MM:SS.SSSSS" where D indicates degrees, M
-   * indicates minutes of arc, and S indicates seconds of arc (1
-   * minute = 1/60th of a degree, 1 second = 1/3600th of a degree).
-   */
-  public static final int FORMAT_SECONDS = 2;
-
-  /**
-   * Bundle key for a version of the location that has been fed through
-   * LocationFudger. Allows location providers to flag locations as being
-   * safe for use with ACCESS_COARSE_LOCATION permission.
-   *
-   * @hide
-   */
-  public static final String EXTRA_COARSE_LOCATION = "coarseLocation";
-
-  /**
-   * Bundle key for a version of the location containing no GPS data.
-   * Allows location providers to flag locations as being safe to
-   * feed to LocationFudger.
-   *
-   * @hide
-   */
-  public static final String EXTRA_NO_GPS_LOCATION = "noGPSLocation";
-
-  private String mProvider;
-  private long mTime = 0;
-  private long mElapsedRealtimeNanos = 0;
   private double mLatitude = 0.0;
   private double mLongitude = 0.0;
-  private boolean mHasAltitude = false;
-  private double mAltitude = 0.0f;
-  private boolean mHasSpeed = false;
-  private float mSpeed = 0.0f;
-  private boolean mHasBearing = false;
   private float mBearing = 0.0f;
-  private boolean mHasAccuracy = false;
-  private float mAccuracy = 0.0f;
-  private boolean mIsFromMockProvider = false;
+  private boolean mHasBearing = false;
 
   // Cache the inputs and outputs of computeDistanceAndBearing
   // so calls to distanceTo() and bearingTo() can share work
@@ -75,16 +23,7 @@ public class Location {
   // Scratchpad
   private final float[] mResults = new float[2];
 
-  /**
-   * Construct a new Location with a named provider.
-   *
-   * <p>By default time, latitude and longitude are 0, and the location
-   * has no bearing, altitude, speed, accuracy or extras.
-   *
-   * @param provider the name of the provider that generated this location
-   */
-  public Location(String provider) {
-    mProvider = provider;
+  public Location() {
   }
 
   /**
@@ -98,159 +37,10 @@ public class Location {
    * Sets the contents of the location to the values from the given location.
    */
   public void set(Location l) {
-    mProvider = l.mProvider;
-    mTime = l.mTime;
-    mElapsedRealtimeNanos = l.mElapsedRealtimeNanos;
     mLatitude = l.mLatitude;
     mLongitude = l.mLongitude;
-    mHasAltitude = l.mHasAltitude;
-    mAltitude = l.mAltitude;
-    mHasSpeed = l.mHasSpeed;
-    mSpeed = l.mSpeed;
     mHasBearing = l.mHasBearing;
     mBearing = l.mBearing;
-    mHasAccuracy = l.mHasAccuracy;
-    mAccuracy = l.mAccuracy;
-    mIsFromMockProvider = l.mIsFromMockProvider;
-  }
-
-  /**
-   * Clears the contents of the location.
-   */
-  public void reset() {
-    mProvider = null;
-    mTime = 0;
-    mElapsedRealtimeNanos = 0;
-    mLatitude = 0;
-    mLongitude = 0;
-    mHasAltitude = false;
-    mAltitude = 0;
-    mHasSpeed = false;
-    mSpeed = 0;
-    mHasBearing = false;
-    mBearing = 0;
-    mHasAccuracy = false;
-    mAccuracy = 0;
-    mIsFromMockProvider = false;
-  }
-
-  /**
-   * Converts a coordinate to a String representation. The outputType
-   * may be one of FORMAT_DEGREES, FORMAT_MINUTES, or FORMAT_SECONDS.
-   * The coordinate must be a valid double between -180.0 and 180.0.
-   *
-   * @throws IllegalArgumentException if coordinate is less than
-   * -180.0, greater than 180.0, or is not a number.
-   * @throws IllegalArgumentException if outputType is not one of
-   * FORMAT_DEGREES, FORMAT_MINUTES, or FORMAT_SECONDS.
-   */
-  public static String convert(double coordinate, int outputType) {
-    if (coordinate < -180.0 || coordinate > 180.0 ||
-        Double.isNaN(coordinate)) {
-      throw new IllegalArgumentException("coordinate=" + coordinate);
-    }
-    if ((outputType != FORMAT_DEGREES) &&
-        (outputType != FORMAT_MINUTES) &&
-        (outputType != FORMAT_SECONDS)) {
-      throw new IllegalArgumentException("outputType=" + outputType);
-    }
-
-    StringBuilder sb = new StringBuilder();
-
-    // Handle negative values
-    if (coordinate < 0) {
-      sb.append('-');
-      coordinate = -coordinate;
-    }
-
-    DecimalFormat df = new DecimalFormat("###.#####");
-    if (outputType == FORMAT_MINUTES || outputType == FORMAT_SECONDS) {
-      int degrees = (int) Math.floor(coordinate);
-      sb.append(degrees);
-      sb.append(':');
-      coordinate -= degrees;
-      coordinate *= 60.0;
-      if (outputType == FORMAT_SECONDS) {
-        int minutes = (int) Math.floor(coordinate);
-        sb.append(minutes);
-        sb.append(':');
-        coordinate -= minutes;
-        coordinate *= 60.0;
-      }
-    }
-    sb.append(df.format(coordinate));
-    return sb.toString();
-  }
-
-  /**
-   * Converts a String in one of the formats described by
-   * FORMAT_DEGREES, FORMAT_MINUTES, or FORMAT_SECONDS into a
-   * double.
-   *
-   * @throws NullPointerException if coordinate is null
-   * @throws IllegalArgumentException if the coordinate is not
-   * in one of the valid formats.
-   */
-  public static double convert(String coordinate) {
-    // IllegalArgumentException if bad syntax
-    if (coordinate == null) {
-      throw new NullPointerException("coordinate");
-    }
-
-    boolean negative = false;
-    if (coordinate.charAt(0) == '-') {
-      coordinate = coordinate.substring(1);
-      negative = true;
-    }
-
-    StringTokenizer st = new StringTokenizer(coordinate, ":");
-    int tokens = st.countTokens();
-    if (tokens < 1) {
-      throw new IllegalArgumentException("coordinate=" + coordinate);
-    }
-    try {
-      String degrees = st.nextToken();
-      double val;
-      if (tokens == 1) {
-        val = Double.parseDouble(degrees);
-        return negative ? -val : val;
-      }
-
-      String minutes = st.nextToken();
-      int deg = Integer.parseInt(degrees);
-      double min;
-      double sec = 0.0;
-
-      if (st.hasMoreTokens()) {
-        min = Integer.parseInt(minutes);
-        String seconds = st.nextToken();
-        sec = Double.parseDouble(seconds);
-      } else {
-        min = Double.parseDouble(minutes);
-      }
-
-      boolean isNegative180 = negative && (deg == 180) &&
-          (min == 0) && (sec == 0);
-
-      // deg must be in [0, 179] except for the case of -180 degrees
-      if ((deg < 0.0) || (deg > 179 && !isNegative180)) {
-        throw new IllegalArgumentException("coordinate=" + coordinate);
-      }
-      if (min < 0 || min > 59) {
-        throw new IllegalArgumentException("coordinate=" +
-            coordinate);
-      }
-      if (sec < 0 || sec > 59) {
-        throw new IllegalArgumentException("coordinate=" +
-            coordinate);
-      }
-
-      val = deg*3600.0 + min*60.0 + sec;
-      val /= 3600.0;
-      return negative ? -val : val;
-    } catch (NumberFormatException nfe) {
-      throw new IllegalArgumentException("coordinate=" + coordinate);
-    }
   }
 
   private static void computeDistanceAndBearing(double lat1, double lon1,
@@ -355,33 +145,6 @@ public class Location {
   }
 
   /**
-   * Computes the approximate distance in meters between two
-   * locations, and optionally the initial and final bearings of the
-   * shortest path between them.  Distance and bearing are defined using the
-   * WGS84 ellipsoid.
-   *
-   * <p> The computed distance is stored in results[0].  If results has length
-   * 2 or greater, the initial bearing is stored in results[1]. If results has
-   * length 3 or greater, the final bearing is stored in results[2].
-   *
-   * @param startLatitude the starting latitude
-   * @param startLongitude the starting longitude
-   * @param endLatitude the ending latitude
-   * @param endLongitude the ending longitude
-   * @param results an array of floats to hold the results
-   *
-   * @throws IllegalArgumentException if results is null or has length < 1
-   */
-  public static void distanceBetween(double startLatitude, double startLongitude,
-      double endLatitude, double endLongitude, float[] results) {
-    if (results == null || results.length < 1) {
-      throw new IllegalArgumentException("results is null or has length < 1");
-    }
-    computeDistanceAndBearing(startLatitude, startLongitude,
-        endLatitude, endLongitude, results);
-  }
-
-  /**
    * Returns the approximate distance in meters between this
    * location and the given location.  Distance is defined using
    * the WGS84 ellipsoid.
@@ -436,74 +199,6 @@ public class Location {
   }
 
   /**
-   * Returns the name of the provider that generated this fix.
-   *
-   * @return the provider, or null if it has not been set
-   */
-  public String getProvider() {
-    return mProvider;
-  }
-
-  /**
-   * Sets the name of the provider that generated this fix.
-   */
-  public void setProvider(String provider) {
-    mProvider = provider;
-  }
-
-  /**
-   * Return the UTC time of this fix, in milliseconds since January 1, 1970.
-   *
-   * <p>Note that the UTC time on a device is not monotonic: it
-   * can jump forwards or backwards unpredictably. So always use
-   * {@link #getElapsedRealtimeNanos} when calculating time deltas.
-   *
-   * <p>On the other hand, {@link #getTime} is useful for presenting
-   * a human readable time to the user, or for carefully comparing
-   * location fixes across reboot or across devices.
-   *
-   * @return time of fix, in milliseconds since January 1, 1970.
-   */
-  public long getTime() {
-    return mTime;
-  }
-
-  /**
-   * Set the UTC time of this fix, in milliseconds since January 1,
-   * 1970.
-   *
-   * @param time UTC time of this fix, in milliseconds since January 1, 1970
-   */
-  public void setTime(long time) {
-    mTime = time;
-  }
-
-  /**
-   * Return the time of this fix, in elapsed real-time since system boot.
-   *
-   * <p>This value can be reliably compared to
-   * {@link android.os.SystemClock#elapsedRealtimeNanos},
-   * to calculate the age of a fix and to compare Location fixes. This
-   * is reliable because elapsed real-time is guaranteed monotonic for
-   * each system boot and continues to increment even when the system
-   * is in deep sleep (unlike {@link #getTime}.
-   *
-   * @return elapsed real-time of fix, in nanoseconds since system boot.
-   */
-  public long getElapsedRealtimeNanos() {
-    return mElapsedRealtimeNanos;
-  }
-
-  /**
-   * Set the time of this fix, in elapsed real-time since system boot.
-   *
-   * @param time elapsed real-time of fix, in nanoseconds since system boot.
-   */
-  public void setElapsedRealtimeNanos(long time) {
-    mElapsedRealtimeNanos = time;
-  }
-
-  /**
    * Get the latitude, in degrees.
    */
   public double getLatitude() {
@@ -529,88 +224,6 @@ public class Location {
    */
   public void setLongitude(double longitude) {
     mLongitude = longitude;
-  }
-
-  /**
-   * True if this location has an altitude.
-   */
-  public boolean hasAltitude() {
-    return mHasAltitude;
-  }
-
-  /**
-   * Get the altitude if available, in meters above the WGS 84 reference
-   * ellipsoid.
-   *
-   * <p>If this location does not have an altitude then 0.0 is returned.
-   */
-  public double getAltitude() {
-    return mAltitude;
-  }
-
-  /**
-   * Set the altitude, in meters above the WGS 84 reference ellipsoid.
-   *
-   * <p>Following this call {@link #hasAltitude} will return true.
-   */
-  public void setAltitude(double altitude) {
-    mAltitude = altitude;
-    mHasAltitude = true;
-  }
-
-  /**
-   * Remove the altitude from this location.
-   *
-   * <p>Following this call {@link #hasAltitude} will return false,
-   * and {@link #getAltitude} will return 0.0.
-   */
-  public void removeAltitude() {
-    mAltitude = 0.0f;
-    mHasAltitude = false;
-  }
-
-  /**
-   * True if this location has a speed.
-   */
-  public boolean hasSpeed() {
-    return mHasSpeed;
-  }
-
-  /**
-   * Get the speed if it is available, in meters/second over ground.
-   *
-   * <p>If this location does not have a speed then 0.0 is returned.
-   */
-  public float getSpeed() {
-    return mSpeed;
-  }
-
-  /**
-   * Set the speed, in meters/second over ground.
-   *
-   * <p>Following this call {@link #hasSpeed} will return true.
-   */
-  public void setSpeed(float speed) {
-    mSpeed = speed;
-    mHasSpeed = true;
-  }
-
-  /**
-   * Remove the speed from this location.
-   *
-   * <p>Following this call {@link #hasSpeed} will return false,
-   * and {@link #getSpeed} will return 0.0.
-   */
-  public void removeSpeed() {
-    mSpeed = 0.0f;
-    mHasSpeed = false;
-  }
-
-  /**
-   * True if this location has a bearing.
-   */
-  public boolean hasBearing() {
-    return mHasBearing;
   }
 
   /**
@@ -645,96 +258,12 @@ public class Location {
     mHasBearing = true;
   }
 
-  /**
-   * Remove the bearing from this location.
-   *
-   * <p>Following this call {@link #hasBearing} will return false,
-   * and {@link #getBearing} will return 0.0.
-   */
+  public boolean hasBearing() {
+    return mHasBearing;
+  }
+
   public void removeBearing() {
     mBearing = 0.0f;
     mHasBearing = false;
   }
-
-  /**
-   * True if this location has an accuracy.
-   */
-  public boolean hasAccuracy() {
-    return mHasAccuracy;
-  }
-
-  /**
-   * Get the estimated accuracy of this location, in meters.
-   *
-   * <p>We define accuracy as the radius of 68% confidence. In other
-   * words, if you draw a circle centered at this location's
-   * latitude and longitude, and with a radius equal to the accuracy,
-   * then there is a 68% probability that the true location is inside
-   * the circle.
-   *
-   * <p>In statistical terms, it is assumed that location errors
-   * are random with a normal distribution, so the 68% confidence circle
-   * represents one standard deviation. Note that in practice, location
-   * errors do not always follow such a simple distribution.
-   *
-   * <p>This accuracy estimation is only concerned with horizontal
-   * accuracy, and does not indicate the accuracy of bearing,
-   * velocity or altitude if those are included in this Location.
-   */
-  public float getAccuracy() {
-    return mAccuracy;
-  }
-
-  /**
-   * Set the estimated accuracy of this location, meters.
-   *
-   * <p>See {@link #getAccuracy} for the definition of accuracy.
-   *
-   * <p>Following this call {@link #hasAccuracy} will return true.
-   */
-  public void setAccuracy(float accuracy) {
-    mAccuracy = accuracy;
-    mHasAccuracy = true;
-  }
-
-  /**
-   * Remove the accuracy from this location.
-   *
-   * <p>Following this call {@link #hasAccuracy} will return false, and
-   * {@link #getAccuracy} will return 0.0.
-   */
-  public void removeAccuracy() {
-    mAccuracy = 0.0f;
-    mHasAccuracy = false;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder s = new StringBuilder();
-    s.append("Location[");
-    s.append(mProvider);
-    s.append(String.format(" %.6f,%.6f", mLatitude, mLongitude));
-    if (mHasAccuracy) s.append(String.format(" acc=%.0f", mAccuracy));
-    else s.append(" acc=???");
-    if (mTime == 0) {
-      s.append(" t=?!?");
-    }
-    if (mHasAltitude) s.append(" alt=").append(mAltitude);
-    if (mHasSpeed) s.append(" vel=").append(mSpeed);
-    if (mHasBearing) s.append(" bear=").append(mBearing);
-    if (mIsFromMockProvider) s.append(" mock");
-
-    s.append(']');
-    return s.toString();
-  }
-
-  /**
-   * Returns true if the Location came from a mock provider.
-   *
-   * @return true if this Location came from a mock provider, false otherwise
-   */
-  public boolean isFromMockProvider() {
-    return mIsFromMockProvider;
-  }
-
 }

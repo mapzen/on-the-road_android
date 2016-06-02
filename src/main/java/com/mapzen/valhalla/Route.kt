@@ -23,7 +23,6 @@ open class Route {
         const val KEY_TIME = "time"
         const val KEY_LOCATIONS = "locations"
         const val KEY_SUMMARY = "summary"
-        const val SNAP_PROVIDER: String = "snap"
         const val CLOSE_TO_DESTINATION_THRESHOLD_METERS: Int = 20
         const val CLOSE_TO_NEXT_LEG_THRESHOLD_METERS: Int = 5
         const val LOST_THRESHOLD_METERS: Int = 50
@@ -206,7 +205,7 @@ open class Route {
     }
 
     open fun getStartCoordinates(): Location {
-        val location = Location(SNAP_PROVIDER)
+        val location = Location()
         location.latitude = poly!![0].lat
         location.longitude = poly!![0].lng
         return location
@@ -455,7 +454,7 @@ open class Route {
         // normalise to -180..+180º
         val lon3 = ((lon1 + dLon13) + 3 * Math.PI) % (2 * Math.PI) - Math.PI
 
-        val loc = Location(SNAP_PROVIDER)
+        val loc = Location()
         loc.latitude = Math.toDegrees(lat3)
         loc.longitude = Math.toDegrees(lon3)
         return loc

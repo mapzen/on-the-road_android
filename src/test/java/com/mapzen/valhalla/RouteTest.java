@@ -533,7 +533,7 @@ public class RouteTest {
         ArrayList<Location> allLocations = new ArrayList<Location>();
         for(String locations: Files.readLines(file, defaultCharset())) {
             String[] latLng = locations.split(",");
-            Location location = new Location("test");
+            Location location = new Location();
             location.setLatitude(Double.valueOf(latLng[0]));
             location.setLongitude(Double.valueOf(latLng[1]));
             allLocations.add(location);

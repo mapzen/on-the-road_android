@@ -315,7 +315,7 @@ public class RouteEngineTest {
     }
 
     public static Location getTestLocation(double lat, double lng) {
-        Location location = new Location("testing");
+        Location location = new Location();
         location.setLatitude(lat);
         location.setLongitude(lng);
         return location;

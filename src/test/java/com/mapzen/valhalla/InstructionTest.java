@@ -210,7 +210,7 @@ public class InstructionTest {
 
     @Test
     public void canSetCoordinates() throws Exception {
-        Location expected = new Location("snap");
+        Location expected = new Location();
         expected.setLatitude(3.3);
         expected.setLongitude(4.4);
         instruction.setLocation(expected);

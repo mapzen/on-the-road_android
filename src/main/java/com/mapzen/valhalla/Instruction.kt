@@ -47,7 +47,7 @@ open class Instruction {
 
     var turnInstruction: Int = 0
     var distance: Int = 0
-    var location: Location = Location("snap")
+    var location: Location = Location()
     var liveDistanceToNext: Int = -1
     var bearing: Int = 0
 

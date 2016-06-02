@@ -8,7 +8,7 @@ open class Node(val lat: Double, val lng: Double) {
     var legDistance: Double = 0.0
 
     fun getLocation(): Location {
-        val loc = Location("snap")
+        val loc = Location()
         loc.latitude = lat
         loc.longitude = lng
         loc.bearing = bearing.toFloat()
