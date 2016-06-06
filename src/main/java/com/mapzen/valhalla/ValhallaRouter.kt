@@ -3,6 +3,7 @@ package com.mapzen.valhalla
 import com.google.gson.Gson
 import com.mapzen.helpers.CharStreams
 import com.mapzen.helpers.ResultConverter
+import com.mapzen.valhalla.HttpHandler
 import retrofit.RestAdapter
 import retrofit.RetrofitError
 import retrofit.client.Response
@@ -12,24 +13,19 @@ import java.net.MalformedURLException
 import java.util.ArrayList
 
 open class ValhallaRouter : Router, Runnable {
-    companion object {
-        const val DEFAULT_URL = "https://valhalla.mapzen.com/"
-        private const val HEADER_DNT = "DNT"
-        private const val VALUE_DNT = "1"
-    }
 
-    private var API_KEY = "";
-    private var endpoint: String = DEFAULT_URL
     private var type = Router.Type.DRIVING
     private val locations = ArrayList<JSON.Location>()
     private var callback: RouteCallback? = null
     private var units: Router.DistanceUnits = Router.DistanceUnits.KILOMETERS
-    private var logLevel: RestAdapter.LogLevel = RestAdapter.LogLevel.NONE
-    protected var dntEnabled: Boolean = false
 
-    override fun setApiKey(key: String): Router {
-        API_KEY = key
-        return this
+    private var httpHandler: HttpHandler? = null
+
+    var gson: Gson = Gson();
+
+    override fun setHttpHandler(handler: HttpHandler): Router {
+        httpHandler = handler
+        return this;
     }
 
     override fun setWalking(): Router {
@@ -79,19 +75,6 @@ open class ValhallaRouter : Router, Runnable {
         return this
     }
 
-    override fun setEndpoint(url: String): Router {
-        endpoint = url;
-        return this
-    }
-
-    override fun getEndpoint(): String {
-        return endpoint
-    }
-
-    private fun readInputStream(`in`: InputStream?): String {
-        return CharStreams.toString(InputStreamReader(`in`))
-    }
-
     override fun setCallback(callback: RouteCallback): Router {
         this.callback = callback
         return this
@@ -105,30 +88,17 @@ open class ValhallaRouter : Router, Runnable {
     }
 
     override fun run() {
-        var restAdapter: RestAdapter = RestAdapter.Builder()
-                .setConverter(ResultConverter())
-                .setEndpoint(endpoint)
-                .setLogLevel(logLevel)
-                .setRequestInterceptor { request ->
-                    if (this.dntEnabled) {
-                        request?.addHeader(HEADER_DNT, VALUE_DNT)
-                    }
-                }
-                .build()
+        var jsonString = gson.toJson(getJSONRequest()).toString();
+        httpHandler?.requestRoute(jsonString, object : retrofit.Callback<String> {
+            override fun success(result: String, response: Response) {
+                callback?.success(Route(result))
+            }
 
-        var routingService = RestAdapterFactory(restAdapter).routingService;
-        var gson: Gson = Gson();
-        routingService.getRoute(gson.toJson(getJSONRequest()).toString(),
-                API_KEY,
-                object : retrofit.Callback<String> {
-                    override fun failure(error: RetrofitError?) {
-                        callback?.failure(207)
-                    }
-
-                    override fun success(result: String, response: Response) {
-                        callback?.success(Route(result))
-                    }
-                })
+            override fun failure(error: RetrofitError?) {
+                val statusCode = error?.response?.status ?: 207
+                callback?.failure(statusCode)
+            }
+        });
     }
 
     override fun getJSONRequest(): JSON {
@@ -141,19 +111,5 @@ open class ValhallaRouter : Router, Runnable {
         json.costing = this.type.toString()
         json.directionsOptions.units = this.units.toString()
         return json
-    }
-
-    override fun setLogLevel(logLevel: RestAdapter.LogLevel): Router {
-        this.logLevel = logLevel
-        return this
-    }
-
-    override fun setDntEnabled(enabled: Boolean): Router {
-        this.dntEnabled = enabled
-        return this
-    }
-
-    override fun isDntEnabled(): Boolean {
-        return this.dntEnabled
     }
 }
