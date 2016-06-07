@@ -1,7 +1,5 @@
 package com.mapzen.valhalla;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
 import com.google.gson.Gson;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
@@ -16,12 +14,13 @@ import org.mockito.Captor;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import java.io.File;
 import java.net.MalformedURLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static com.mapzen.TestUtils.getFixture;
 import static org.fest.assertions.api.Assertions.assertThat;
+import retrofit.RestAdapter;
 
 public class RouterTest {
     @Captor ArgumentCaptor<RouteCallback> callback;
@@ -30,6 +29,7 @@ public class RouterTest {
 
     Router router;
     MockWebServer server;
+    HttpHandler httpHandler;
 
     @Before
     public void setup() throws Exception {
@@ -38,22 +38,13 @@ public class RouterTest {
         MockitoAnnotations.initMocks(this);
         double[] loc = new double[] {1.0, 2.0};
         router = new ValhallaRouter().setLocation(loc).setLocation(loc);
+        String endpoint = server.getUrl("").toString();
+        httpHandler = new HttpHandler(endpoint, RestAdapter.LogLevel.NONE);
     }
 
     @After
     public void tearDown() throws Exception {
         server.shutdown();
-    }
-
-    @Test
-    public void shouldHaveDefaultEndpoint() throws Exception {
-        assertThat(router.getEndpoint()).startsWith("https://valhalla.mapzen.com/");
-    }
-
-    @Test
-    public void shouldSetEndpoint() throws Exception {
-        router.setEndpoint("http://testing.com");
-        assertThat(router.getEndpoint()).startsWith("http://testing.com");
     }
 
     @Test
@@ -77,11 +68,6 @@ public class RouterTest {
     public void shouldSetToFoot() throws Exception {
         router.setWalking();
         assertThat(router.getJSONRequest().costing).contains("pedestrian");
-    }
-
-    @Test
-    public void shouldNotSendDntByDefault() {
-        assertThat(router.isDntEnabled()).isFalse();
     }
 
     @Test
@@ -132,10 +118,9 @@ public class RouterTest {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                String endpoint = server.getUrl("").toString();
                 RouteCallback callback = Mockito.mock(RouteCallback.class);
                 Router router = new ValhallaRouter()
-                        .setEndpoint(endpoint)
+                        .setHttpHandler(httpHandler)
                         .setLocation(new double[] { 40.659241, -73.983776 })
                         .setLocation(new double[] { 40.671773, -73.981115 });
                 router.setCallback(callback);
@@ -154,9 +139,8 @@ public class RouterTest {
             @Override
             public void run() {
                 RouteCallback callback = Mockito.mock(RouteCallback.class);
-                String endpoint = server.getUrl("").toString();
                 Router router = new ValhallaRouter()
-                        .setEndpoint(endpoint)
+                        .setHttpHandler(httpHandler)
                         .setLocation(new double[]{40.659241, -73.983776})
                         .setLocation(new double[]{40.671773, -73.981115});
                 router.setCallback(callback);
@@ -175,9 +159,8 @@ public class RouterTest {
             @Override
             public void run() {
                 RouteCallback callback = Mockito.mock(RouteCallback.class);
-                String endpoint = server.getUrl("").toString();
                 Router router = new ValhallaRouter()
-                        .setEndpoint(endpoint)
+                        .setHttpHandler(httpHandler)
                         .setLocation(new double[]{40.659241, -73.983776})
                         .setLocation(new double[]{40.671773, -73.981115});
                 router.setCallback(callback);
@@ -196,9 +179,8 @@ public class RouterTest {
             @Override
             public void run() {
                 RouteCallback callback = Mockito.mock(RouteCallback.class);
-                String endpoint = server.getUrl("").toString();
                 Router router = new ValhallaRouter()
-                        .setEndpoint(endpoint)
+                        .setHttpHandler(httpHandler)
                         .setLocation(new double[] { 40.659241, -73.983776 })
                         .setLocation(new double[] { 40.671773, -73.981115 });
                 router.setCallback(callback);
@@ -219,7 +201,7 @@ public class RouterTest {
                 String endpoint = server.getUrl("").toString();
                 RouteCallback callback = Mockito.mock(RouteCallback.class);
                 Router router = new ValhallaRouter()
-                        .setEndpoint(endpoint)
+                        .setHttpHandler(httpHandler)
                         .setLocation(new double[] { 40.659241, -73.983776 })
                         .setLocation(new double[] { 40.671773, -73.981115 });
                 router.setCallback(callback);
@@ -278,41 +260,15 @@ public class RouterTest {
                 .contains("{\"lat\":\"1.0\",\"lon\":\"2.0\",\"heading\":\"180\"}");
     }
 
-    @Test
-    public void setDntEnabled_shouldSendHeader() throws Exception {
-        startServerAndEnqueue(new MockResponse());
-        String endpoint = server.getUrl("").toString();
-        Router router = new ValhallaRouter()
-                .setEndpoint(endpoint)
-                .setLocation(new double[] { 40.659241, -73.983776 })
-                .setLocation(new double[] { 40.671773, -73.981115 })
-                .setDntEnabled(true);
-        ((ValhallaRouter) router).run();
-        RecordedRequest request = server.takeRequest();
-        assertThat(request.getHeader("DNT")).isNotNull();
-        assertThat(request.getHeader("DNT")).isEqualTo("1");
-    }
 
-    @Test
-    public void setDntDisabled_shouldNotSendHeader() throws Exception {
-        startServerAndEnqueue(new MockResponse());
-        String endpoint = server.getUrl("").toString();
-        Router router = new ValhallaRouter()
-                .setEndpoint(endpoint)
-                .setLocation(new double[] { 40.659241, -73.983776 })
-                .setLocation(new double[] { 40.671773, -73.981115 })
-                .setDntEnabled(false);
-        ((ValhallaRouter) router).run();
-        RecordedRequest request = server.takeRequest();
-        assertThat(request.getHeader("DNT")).isNull();
-    }
 
     @Test
     public void setEndpoint_shouldUpdateBaseRequestUrl() throws Exception {
         startServerAndEnqueue(new MockResponse());
         String endpoint = server.getUrl("/test").toString();
+        HttpHandler httpHandler = new HttpHandler(endpoint, RestAdapter.LogLevel.NONE);
         Router router = new ValhallaRouter()
-                .setEndpoint(endpoint)
+                .setHttpHandler(httpHandler)
                 .setLocation(new double[] { 40.659241, -73.983776 })
                 .setLocation(new double[] { 40.671773, -73.981115 });
         ((ValhallaRouter) router).run();
@@ -324,15 +280,4 @@ public class RouterTest {
         server.enqueue(response);
     }
 
-    public static String getFixture(String name) {
-        String basedir = System.getProperty("user.dir");
-        File file = new File(basedir + "/src/test/fixtures/" + name + ".route");
-        String fixture = "";
-        try {
-            fixture = Files.toString(file, Charsets.UTF_8);
-        } catch (Exception e) {
-            fixture = "not found";
-        }
-        return fixture;
-    }
 }
