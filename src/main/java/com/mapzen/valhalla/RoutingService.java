@@ -7,7 +7,5 @@ public interface RoutingService {
     @GET("/route") void getRoute(
             @Query("json")
             String json,
-            @Query("api_key")
-            String apiKey,
             retrofit.Callback<String> callback);
 }

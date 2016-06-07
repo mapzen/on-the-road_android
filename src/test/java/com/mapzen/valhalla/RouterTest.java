@@ -39,7 +39,7 @@ public class RouterTest {
         double[] loc = new double[] {1.0, 2.0};
         router = new ValhallaRouter().setLocation(loc).setLocation(loc);
         String endpoint = server.getUrl("").toString();
-        httpHandler = new HttpHandler("key", endpoint, RestAdapter.LogLevel.NONE);
+        httpHandler = new HttpHandler(endpoint, RestAdapter.LogLevel.NONE);
     }
 
     @After
@@ -266,7 +266,7 @@ public class RouterTest {
     public void setEndpoint_shouldUpdateBaseRequestUrl() throws Exception {
         startServerAndEnqueue(new MockResponse());
         String endpoint = server.getUrl("/test").toString();
-        HttpHandler httpHandler = new HttpHandler("test", endpoint, RestAdapter.LogLevel.NONE);
+        HttpHandler httpHandler = new HttpHandler(endpoint, RestAdapter.LogLevel.NONE);
         Router router = new ValhallaRouter()
                 .setHttpHandler(httpHandler)
                 .setLocation(new double[] { 40.659241, -73.983776 })

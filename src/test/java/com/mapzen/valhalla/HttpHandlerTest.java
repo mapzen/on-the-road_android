@@ -24,12 +24,7 @@ public class HttpHandlerTest {
   HttpHandler httpHandler;
 
   @Before public void setup() throws IOException {
-    httpHandler = new HttpHandler("test", endpoint, RestAdapter.LogLevel.NONE);
-  }
-
-  @Test public void shouldHaveApiKey() {
-    String key = (String) Whitebox.getInternalState(httpHandler, "apiKey");
-    assertThat(key).isEqualTo("test");
+    httpHandler = new HttpHandler(endpoint, RestAdapter.LogLevel.NONE);
   }
 
   @Test public void shouldHaveEndpoint() {
@@ -53,7 +48,7 @@ public class HttpHandlerTest {
       @Override
       public void run() {
         String endpoint = server.getUrl("").toString();
-        TestHttpHandler httpHandler = new TestHttpHandler("key", endpoint, RestAdapter.LogLevel.NONE);
+        TestHttpHandler httpHandler = new TestHttpHandler(endpoint, RestAdapter.LogLevel.NONE);
         Router router = new ValhallaRouter()
             .setHttpHandler(httpHandler)
             .setLocation(new double[] { 40.659241, -73.983776 })
@@ -70,12 +65,12 @@ public class HttpHandlerTest {
 
     public boolean headersAdded = false;
 
-    public TestHttpHandler(String apiKey, String endpoint, RestAdapter.LogLevel logLevel) {
-      super(apiKey, endpoint, logLevel);
+    public TestHttpHandler(String endpoint, RestAdapter.LogLevel logLevel) {
+      super( endpoint, logLevel);
     }
 
     @Override
-    protected void addHeadersForRequest(RequestInterceptor.RequestFacade requestFacade) {
+    protected void onRequest(RequestInterceptor.RequestFacade requestFacade) {
       headersAdded = true;
     }
   }

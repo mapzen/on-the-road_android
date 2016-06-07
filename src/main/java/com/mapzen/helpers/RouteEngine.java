@@ -139,7 +139,7 @@ public class RouteEngine {
 
     /**
      * Sets the route for engine, gets route instructions, calls listener method to notify that the
-     * route has started, and updates route state to {@link RouteState.PRE_INSTRUCTION}
+     * route has started, and updates route state to {@code RouteState.PRE_INSTRUCTION}
      *
      * Listener must be set before calling this or IllegalStateException is thrown
      * @param route

@@ -13,10 +13,9 @@ import retrofit.RestAdapter;
  */
 public class HttpHandler {
 
-  private static final String DEFAULT_URL = "https://valhalla.mapzen.com/";
-  private static final RestAdapter.LogLevel DEFAULT_LOG_LEVEL = RestAdapter.LogLevel.NONE;
+  protected static final String DEFAULT_URL = "https://valhalla.mapzen.com/";
+  protected static final RestAdapter.LogLevel DEFAULT_LOG_LEVEL = RestAdapter.LogLevel.NONE;
 
-  String apiKey;
   String endpoint;
   RestAdapter.LogLevel logLevel;
   RestAdapter adapter;
@@ -24,20 +23,27 @@ public class HttpHandler {
 
   private RequestInterceptor requestInterceptor = new RequestInterceptor() {
     @Override public void intercept(RequestFacade request) {
-      addHeadersForRequest(request);
+      onRequest(request);
     }
   };
 
-  public HttpHandler(String apiKey) {
-    this(apiKey, DEFAULT_URL, DEFAULT_LOG_LEVEL);
+  public HttpHandler() {
+    this(DEFAULT_URL, DEFAULT_LOG_LEVEL);
   }
 
-  public HttpHandler(String apiKey, RestAdapter.LogLevel logLevel) {
-    this(apiKey, DEFAULT_URL, logLevel);
+  public HttpHandler(String endpoint) {
+    this(endpoint, DEFAULT_LOG_LEVEL);
   }
 
-  public HttpHandler(String apiKey, String endpoint, RestAdapter.LogLevel logLevel) {
-    this.apiKey = apiKey;
+  public HttpHandler(RestAdapter.LogLevel logLevel) {
+    this(DEFAULT_URL, logLevel);
+  }
+
+  public HttpHandler(String endpoint, RestAdapter.LogLevel logLevel) {
+    configure(endpoint, logLevel);
+  }
+
+  protected void configure(String endpoint, RestAdapter.LogLevel logLevel) {
     this.endpoint = endpoint;
     this.logLevel = logLevel;
     this.adapter = new RestAdapter.Builder()
@@ -50,14 +56,14 @@ public class HttpHandler {
   }
 
   public void requestRoute(String routeJson, Callback callback) {
-    service.getRoute(routeJson, apiKey, callback);
+    service.getRoute(routeJson, callback);
   }
 
   /**
    * Subclasses can overwrite to add custom headers to each request
    * @param requestFacade
    */
-  protected void addHeadersForRequest(RequestInterceptor.RequestFacade requestFacade) {
+  protected void onRequest(RequestInterceptor.RequestFacade requestFacade) {
 
   }
 
