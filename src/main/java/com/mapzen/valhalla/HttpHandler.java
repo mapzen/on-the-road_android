@@ -9,7 +9,10 @@ import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 
 /**
- *
+ *  Handles all things http including setting the route engine's url and request log level. Route
+ *  requests can be made using this object. To customize headers and params that are sent with each
+ *  request, subclass this object and overwrite
+ *  {@link HttpHandler#onRequest(RequestInterceptor.RequestFacade)}
  */
 public class HttpHandler {
 

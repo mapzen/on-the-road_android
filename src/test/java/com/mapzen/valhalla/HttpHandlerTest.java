@@ -9,12 +9,9 @@ import org.mockito.Mockito;
 import org.mockito.internal.util.reflection.Whitebox;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static com.mapzen.TestUtils.getFixture;
 import static org.fest.assertions.api.Assertions.assertThat;
-import retrofit.Endpoint;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 
@@ -43,22 +40,16 @@ public class HttpHandlerTest {
     final MockWebServer server = new MockWebServer();
     server.start();
     server.enqueue(new MockResponse().setBody(getFixture("brooklyn")));
-    ExecutorService executorService = Executors.newSingleThreadExecutor();
-    executorService.execute(new Runnable() {
-      @Override
-      public void run() {
-        String endpoint = server.getUrl("").toString();
-        TestHttpHandler httpHandler = new TestHttpHandler(endpoint, RestAdapter.LogLevel.NONE);
-        Router router = new ValhallaRouter()
-            .setHttpHandler(httpHandler)
-            .setLocation(new double[] { 40.659241, -73.983776 })
-            .setLocation(new double[] { 40.671773, -73.981115 });
-        RouteCallback callback = Mockito.mock(RouteCallback.class);
-        router.setCallback(callback);
-        router.fetch();
-        assertThat(httpHandler.headersAdded).isTrue();
-      }
-    });
+    String endpoint = server.getUrl("").toString();
+    TestHttpHandler httpHandler = new TestHttpHandler(endpoint, RestAdapter.LogLevel.NONE);
+    Router router = new ValhallaRouter()
+        .setHttpHandler(httpHandler)
+        .setLocation(new double[] { 40.659241, -73.983776 })
+        .setLocation(new double[] { 40.671773, -73.981115 });
+    RouteCallback callback = Mockito.mock(RouteCallback.class);
+    router.setCallback(callback);
+    ((ValhallaRouter) router).run();
+    assertThat(httpHandler.headersAdded).isTrue();
   }
 
   private class TestHttpHandler extends HttpHandler {
