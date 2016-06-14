@@ -71,6 +71,12 @@ public class RouterTest {
     }
 
     @Test
+    public void shouldSetToMultimodal() throws Exception {
+        router.setMultimodal();
+        assertThat(router.getJSONRequest().costing).contains("multimodal");
+    }
+
+    @Test
     public void shouldClearLocations() throws Exception {
         double[] loc1 = { 1.0, 2.0 };
         double[] loc2 = { 3.0, 4.0 };

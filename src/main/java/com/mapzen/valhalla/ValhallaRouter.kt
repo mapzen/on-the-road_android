@@ -43,6 +43,11 @@ open class ValhallaRouter : Router, Runnable {
         return this
     }
 
+    override fun setMultimodal(): Router {
+        this.type = Router.Type.MULTIMODAL
+        return this
+    }
+
     override fun setLocation(point: DoubleArray): Router {
         this.locations.add(JSON.Location(point[0].toString(), point[1].toString()))
         return this
