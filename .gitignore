@@ -6,4 +6,5 @@ out/
 local.properties
 classes/
 target/
+*.DS_Store
 

@@ -1,0 +1,15 @@
+<resources>
+  <string name="app_name">On the Road Sample</string>
+  <string name="missing_vals">Unable to generate route, missing beginning/ending coordinate values</string>
+  <string name="start_lat">Start lat:</string>
+  <string name="start_lng">Start lng:</string>
+  <string name="end_lat">End lat:</string>
+  <string name="end_lng">End lng:</string>
+  <string name="generate_route">Generate route</string>
+  <string-array name="costing_types_array">
+    <item>auto</item>
+    <item>bicycle</item>
+    <item>pedestrian</item>
+    <item>multimodal</item>
+  </string-array>
+</resources>
