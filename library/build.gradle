@@ -20,8 +20,6 @@ group = GROUP
 version = VERSION_NAME
 project.archivesBaseName = POM_ARTIFACT_ID
 
-defaultTasks = ['clean', 'assembleDebug', 'copyTask', 'testDebug', 'install']
-
 task copyTask(type: Copy) {
   println "Copying com/mapzen/ontheroad/R.java to android/support/v7/appcompat/R.java"
   from 'build/generated/source/r/debug/com/mapzen/ontheroad'
