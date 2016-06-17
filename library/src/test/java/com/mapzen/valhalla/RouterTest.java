@@ -5,7 +5,6 @@ import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
@@ -37,7 +36,7 @@ public class RouterTest {
         double[] loc = new double[] {1.0, 2.0};
         router = new ValhallaRouter().setLocation(loc).setLocation(loc);
         String endpoint = server.getUrl("").toString();
-        httpHandler = new TestHttpHandler(endpoint, RestAdapter.LogLevel.FULL);
+        httpHandler = new TestHttpHandler(endpoint, RestAdapter.LogLevel.NONE);
     }
 
     @After
