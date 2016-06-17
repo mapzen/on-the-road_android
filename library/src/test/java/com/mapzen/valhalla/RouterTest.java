@@ -6,6 +6,7 @@ import com.squareup.okhttp.mockwebserver.MockWebServer;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,21 +16,18 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.net.MalformedURLException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static com.mapzen.TestUtils.getFixture;
 import static org.fest.assertions.api.Assertions.assertThat;
 import retrofit.RestAdapter;
 
 public class RouterTest {
-    @Captor ArgumentCaptor<RouteCallback> callback;
     @Captor ArgumentCaptor<Route> route;
     @Captor ArgumentCaptor<Integer> statusCode;
 
     Router router;
     MockWebServer server;
-    HttpHandler httpHandler;
+    TestHttpHandler httpHandler;
 
     @Before
     public void setup() throws Exception {
@@ -39,7 +37,7 @@ public class RouterTest {
         double[] loc = new double[] {1.0, 2.0};
         router = new ValhallaRouter().setLocation(loc).setLocation(loc);
         String endpoint = server.getUrl("").toString();
-        httpHandler = new HttpHandler(endpoint, RestAdapter.LogLevel.NONE);
+        httpHandler = new TestHttpHandler(endpoint, RestAdapter.LogLevel.FULL);
     }
 
     @After
@@ -118,105 +116,76 @@ public class RouterTest {
     }
 
     @Test
-    public void shouldGetRoute() throws Exception, JSONException {
-        startServerAndEnqueue(new MockResponse().setBody(getFixture("brooklyn")));
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                RouteCallback callback = Mockito.mock(RouteCallback.class);
-                Router router = new ValhallaRouter()
-                        .setHttpHandler(httpHandler)
-                        .setLocation(new double[] { 40.659241, -73.983776 })
-                        .setLocation(new double[] { 40.671773, -73.981115 });
-                router.setCallback(callback);
-                router.fetch();
-                Mockito.verify(callback).success(route.capture());
-                assertThat(route.getValue().foundRoute()).isTrue();
-            }
-        });
+    public void shouldGetRoute() throws Exception {
+        final RouteCallback callback = Mockito.mock(RouteCallback.class);
+        String routeJson = getFixture("brooklyn_valhalla");
+        startServerAndEnqueue(new MockResponse().setBody(routeJson));
+        Router router = new ValhallaRouter()
+            .setHttpHandler(httpHandler)
+            .setLocation(new double[] { 40.659241, -73.983776 })
+            .setLocation(new double[] { 40.671773, -73.981115 });
+        router.setCallback(callback);
+        ((ValhallaRouter) router).run();
+        Mockito.verify(callback).success(route.capture());
+        assertThat(route.getValue().foundRoute()).isTrue();
     }
 
     @Test
     public void shouldGetError() throws Exception {
         startServerAndEnqueue(new MockResponse().setResponseCode(500));
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                RouteCallback callback = Mockito.mock(RouteCallback.class);
-                Router router = new ValhallaRouter()
-                        .setHttpHandler(httpHandler)
-                        .setLocation(new double[]{40.659241, -73.983776})
-                        .setLocation(new double[]{40.671773, -73.981115});
-                router.setCallback(callback);
-                router.fetch();
-                Mockito.verify(callback).failure(statusCode.capture());
-                assertThat(statusCode.getValue()).isEqualTo(500);
-            }
-        });
+        RouteCallback callback = Mockito.mock(RouteCallback.class);
+        Router router = new ValhallaRouter()
+            .setHttpHandler(httpHandler)
+            .setLocation(new double[]{40.659241, -73.983776})
+            .setLocation(new double[]{40.671773, -73.981115});
+        router.setCallback(callback);
+        ((ValhallaRouter) router).run();
+        Mockito.verify(callback).failure(statusCode.capture());
+        assertThat(statusCode.getValue()).isEqualTo(500);
     }
 
     @Test
     public void shouldGetNotFound() throws Exception {
         startServerAndEnqueue(new MockResponse().setResponseCode(404));
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                RouteCallback callback = Mockito.mock(RouteCallback.class);
-                Router router = new ValhallaRouter()
-                        .setHttpHandler(httpHandler)
-                        .setLocation(new double[]{40.659241, -73.983776})
-                        .setLocation(new double[]{40.671773, -73.981115});
-                router.setCallback(callback);
-                router.fetch();
-                Mockito.verify(callback).failure(statusCode.capture());
-                assertThat(statusCode.getValue()).isEqualTo(404);
-            }
-        });
+        RouteCallback callback = Mockito.mock(RouteCallback.class);
+        Router router = new ValhallaRouter()
+            .setHttpHandler(httpHandler)
+            .setLocation(new double[]{40.659241, -73.983776})
+            .setLocation(new double[]{40.671773, -73.981115});
+        router.setCallback(callback);
+        ((ValhallaRouter) router).run();
+        Mockito.verify(callback).failure(statusCode.capture());
+        assertThat(statusCode.getValue()).isEqualTo(404);
     }
 
     @Test
     public void shouldGetRouteNotFound() throws Exception {
-        startServerAndEnqueue(new MockResponse().setBody(getFixture("unsuccessful")));
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                RouteCallback callback = Mockito.mock(RouteCallback.class);
-                Router router = new ValhallaRouter()
-                        .setHttpHandler(httpHandler)
-                        .setLocation(new double[] { 40.659241, -73.983776 })
-                        .setLocation(new double[] { 40.671773, -73.981115 });
-                router.setCallback(callback);
-                router.fetch();
-                Mockito.verify(callback).failure(statusCode.capture());
-                assertThat(statusCode.getValue()).isEqualTo(207);
-            }
-        });
+        startServerAndEnqueue(new MockResponse().setBody(getFixture("unsuccessful")).setResponseCode(400));
+        RouteCallback callback = Mockito.mock(RouteCallback.class);
+        Router router = new ValhallaRouter()
+            .setHttpHandler(httpHandler)
+            .setLocation(new double[] { 40.659241, -73.983776 })
+            .setLocation(new double[] { 40.671773, -73.981115 });
+        router.setCallback(callback);
+        ((ValhallaRouter) router).run();
+        Mockito.verify(callback).failure(statusCode.capture());
+        assertThat(statusCode.getValue()).isEqualTo(400);
     }
 
     @Test
     public void shouldStoreRawRoute() throws Exception {
-        startServerAndEnqueue(new MockResponse().setBody(getFixture("brooklyn")));
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                String endpoint = server.getUrl("").toString();
-                RouteCallback callback = Mockito.mock(RouteCallback.class);
-                Router router = new ValhallaRouter()
-                        .setHttpHandler(httpHandler)
-                        .setLocation(new double[] { 40.659241, -73.983776 })
-                        .setLocation(new double[] { 40.671773, -73.981115 });
-                router.setCallback(callback);
-                router.fetch();
-                Mockito.verify(callback).success(route.capture());
-                assertThat(route.getValue().getRawRoute().toString())
-                        .isEqualTo(getFixture("brooklyn"));
-            }
-        });
+        String routeJson = getFixture("brooklyn_valhalla");
+        startServerAndEnqueue(new MockResponse().setBody(routeJson));
+        RouteCallback callback = Mockito.mock(RouteCallback.class);
+        Router router = new ValhallaRouter()
+            .setHttpHandler(httpHandler)
+            .setLocation(new double[] { 40.659241, -73.983776 })
+            .setLocation(new double[] { 40.671773, -73.981115 });
+        router.setCallback(callback);
+        ((ValhallaRouter) router).run();
+        Mockito.verify(callback).success(route.capture());
+        assertThat(route.getValue().getRawRoute().toString())
+            .isEqualTo(new JSONObject(routeJson).toString());
     }
 
     @Test
