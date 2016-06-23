@@ -14,6 +14,16 @@ open class Instruction {
         //full list of types defined: https://mapzen.com/documentation/turn-by-turn/api-reference/
         const val MANEUVER_TYPE_DESTINATION : Int = 4
 
+        const val KEY_INSTRUCTION = "instruction"
+        const val KEY_LENGTH = "length"
+        const val KEY_BEGIN_STREET_NAMES = "begin_street_names"
+        const val KEY_STREET_NAMES = "street_names"
+        const val KEY_BEGIN_SHAPE_INDEX = "begin_shape_index"
+        const val KEY_END_SHAPE_INDEX = "end_shape_index"
+        const val KEY_TYPE = "type"
+        const val KEY_VERBAL_PRE_TRANSITION_INSTRUCTION = "verbal_pre_transition_instruction"
+        const val KEY_VERBAL_TRANSITION_ALERT_INSTRUCTION = "verbal_transition_alert_instruction"
+        const val KEY_VERBAL_POST_TRANSITION_INSTRUCTION = "verbal_post_transition_instruction"
         const val KEY_TRAVEL_MODE = "travel_mode"
         const val KEY_TRAVEL_TYPE = "travel_type"
         const val KEY_TRANSIT_INFO = "transit_info"
@@ -36,7 +46,7 @@ open class Instruction {
         this.json = json
         turnInstruction = parseTurnInstruction(json)
 
-        val raw = json.getDouble("length")
+        val raw = json.getDouble(KEY_LENGTH)
         when (units) {
             Router.DistanceUnits.KILOMETERS -> distance = Math.round(raw * KM_TO_METERS).toInt()
             Router.DistanceUnits.MILES -> distance = Math.round(raw * MI_TO_METERS).toInt()
@@ -48,15 +58,15 @@ open class Instruction {
     }
 
     fun getHumanTurnInstruction(): String? {
-        return json.getString("instruction");
+        return json.getString(KEY_INSTRUCTION);
     }
 
     fun getBeginStreetNames(): String {
-        if (json.has("begin_street_names") ?: false) {
+        if (json.has(KEY_BEGIN_STREET_NAMES)) {
             var streetName = "";
-            val numStreetNames = (json!!.getJSONArray("begin_street_names").length())
+            val numStreetNames = (json.getJSONArray(KEY_BEGIN_STREET_NAMES).length())
             for(i in 0..numStreetNames - 1) {
-                streetName += json!!.getJSONArray("begin_street_names").get(i);
+                streetName += json.getJSONArray(KEY_BEGIN_STREET_NAMES).get(i);
                 if((numStreetNames > 1) && (i < numStreetNames - 1)) {
                     streetName += "/"
                 }
@@ -69,11 +79,11 @@ open class Instruction {
 
 
     fun getName(): String {
-        if (json.has("street_names") ?: false) {
+        if (json.has(KEY_STREET_NAMES)) {
             var streetName = "";
-            val numStreetNames = (json!!.getJSONArray("street_names").length())
+            val numStreetNames = (json.getJSONArray(KEY_STREET_NAMES).length())
             for(i in 0..numStreetNames - 1) {
-                streetName += json!!.getJSONArray("street_names").get(i);
+                streetName += json.getJSONArray(KEY_STREET_NAMES).get(i);
                 if((numStreetNames > 1) && (i < numStreetNames - 1)) {
                     streetName += "/"
                 }
@@ -81,7 +91,7 @@ open class Instruction {
             return streetName;
         }
 
-        return json.getString("instruction") ?: ""
+        return json.getString(KEY_INSTRUCTION) ?: ""
     }
 
     fun getFormattedDistance(): String {
@@ -89,11 +99,11 @@ open class Instruction {
     }
 
     fun getBeginPolygonIndex(): Int {
-        return json!!.getInt("begin_shape_index");
+        return json.getInt(KEY_BEGIN_SHAPE_INDEX);
     }
 
     fun getEndPolygonIndex(): Int {
-        return json!!.getInt("end_shape_index");
+        return json.getInt(KEY_END_SHAPE_INDEX);
     }
 
     fun getDirectionAngle(): Float {
@@ -175,27 +185,27 @@ open class Instruction {
     }
 
     private fun parseTurnInstruction(json: JSONObject): Int =
-            json.getInt("type")
+            json.getInt(KEY_TYPE)
 
     fun getVerbalPreTransitionInstruction(): String {
-        if (json.has("verbal_pre_transition_instruction") ?: false) {
-            return json.getString("verbal_pre_transition_instruction") ?: ""
+        if (json.has(KEY_VERBAL_PRE_TRANSITION_INSTRUCTION)) {
+            return json.getString(KEY_VERBAL_PRE_TRANSITION_INSTRUCTION) ?: ""
         }
 
         return ""
     }
 
     fun getVerbalTransitionAlertInstruction(): String {
-        if (json.has("verbal_transition_alert_instruction") ?: false) {
-            return json.getString("verbal_transition_alert_instruction") ?: ""
+        if (json.has(KEY_VERBAL_TRANSITION_ALERT_INSTRUCTION)) {
+            return json.getString(KEY_VERBAL_TRANSITION_ALERT_INSTRUCTION) ?: ""
         }
 
         return ""
     }
 
     fun getVerbalPostTransitionInstruction(): String {
-        if (json.has("verbal_post_transition_instruction") ?: false) {
-            return json.getString("verbal_post_transition_instruction") ?: ""
+        if (json.has(KEY_VERBAL_POST_TRANSITION_INSTRUCTION)) {
+            return json.getString(KEY_VERBAL_POST_TRANSITION_INSTRUCTION) ?: ""
         }
 
         return ""
