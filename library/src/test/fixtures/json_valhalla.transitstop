@@ -1,0 +1,12 @@
+{
+  departure_date_time: "2016-06-23T13:39",
+  name: "23 St",
+  onestop_id: "s-dr5ru3006q-23st<d18s",
+  type: "station",
+  arrival_date_time: "2016-06-23T13:40",
+  is_parent_stop: true,
+  assumed_schedule: true
+}
+
+
+

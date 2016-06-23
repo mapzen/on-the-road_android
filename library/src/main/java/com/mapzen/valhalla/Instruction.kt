@@ -4,17 +4,22 @@ import com.mapzen.helpers.DistanceFormatter
 import com.mapzen.model.ValhallaLocation
 import org.json.JSONException
 import org.json.JSONObject
+import java.util.ArrayList
 import java.util.Locale
 
 open class Instruction {
     companion object {
-        val KM_TO_METERS = 1000
-        val MI_TO_METERS = 1609.344
+        const val KM_TO_METERS = 1000
+        const val MI_TO_METERS = 1609.344
         //full list of types defined: https://mapzen.com/documentation/turn-by-turn/api-reference/
-        val MANEUVER_TYPE_DESTINATION : Int = 4
+        const val MANEUVER_TYPE_DESTINATION : Int = 4
+
+        const val KEY_TRAVEL_MODE = "travel_mode"
+        const val KEY_TRAVEL_TYPE = "travel_type"
+        const val KEY_TRANSIT_INFO = "transit_info"
     }
 
-    private var json: JSONObject? = null;
+    lateinit var json: JSONObject
 
     var turnInstruction: Int = 0
     var distance: Int = 0
@@ -38,23 +43,16 @@ open class Instruction {
         }
     }
 
-    /**
-     * Used for testing. Do not remove.
-     */
-    @SuppressWarnings("unused")
-    protected constructor() {
-    }
-
     fun getIntegerInstruction(): Int {
        return turnInstruction;
     }
 
     fun getHumanTurnInstruction(): String? {
-        return json?.getString("instruction");
+        return json.getString("instruction");
     }
 
     fun getBeginStreetNames(): String {
-        if (json?.has("begin_street_names") ?: false) {
+        if (json.has("begin_street_names") ?: false) {
             var streetName = "";
             val numStreetNames = (json!!.getJSONArray("begin_street_names").length())
             for(i in 0..numStreetNames - 1) {
@@ -71,7 +69,7 @@ open class Instruction {
 
 
     fun getName(): String {
-        if (json?.has("street_names") ?: false) {
+        if (json.has("street_names") ?: false) {
             var streetName = "";
             val numStreetNames = (json!!.getJSONArray("street_names").length())
             for(i in 0..numStreetNames - 1) {
@@ -83,7 +81,7 @@ open class Instruction {
             return streetName;
         }
 
-        return json?.getString("instruction") ?: ""
+        return json.getString("instruction") ?: ""
     }
 
     fun getFormattedDistance(): String {
@@ -180,26 +178,62 @@ open class Instruction {
             json.getInt("type")
 
     fun getVerbalPreTransitionInstruction(): String {
-        if (json?.has("verbal_pre_transition_instruction") ?: false) {
-            return json?.getString("verbal_pre_transition_instruction") ?: ""
+        if (json.has("verbal_pre_transition_instruction") ?: false) {
+            return json.getString("verbal_pre_transition_instruction") ?: ""
         }
 
         return ""
     }
 
     fun getVerbalTransitionAlertInstruction(): String {
-        if (json?.has("verbal_transition_alert_instruction") ?: false) {
-            return json?.getString("verbal_transition_alert_instruction") ?: ""
+        if (json.has("verbal_transition_alert_instruction") ?: false) {
+            return json.getString("verbal_transition_alert_instruction") ?: ""
         }
 
         return ""
     }
 
     fun getVerbalPostTransitionInstruction(): String {
-        if (json?.has("verbal_post_transition_instruction") ?: false) {
-            return json?.getString("verbal_post_transition_instruction") ?: ""
+        if (json.has("verbal_post_transition_instruction") ?: false) {
+            return json.getString("verbal_post_transition_instruction") ?: ""
         }
 
         return ""
+    }
+
+    fun getTravelMode(): TravelMode {
+        val mode = json.getString(KEY_TRAVEL_MODE)
+
+        when (mode) {
+            TravelMode.DRIVE.toString() -> return TravelMode.DRIVE
+            TravelMode.PEDESTRIAN.toString() -> return TravelMode.PEDESTRIAN
+            TravelMode.BICYCLE.toString() -> return TravelMode.BICYCLE
+            TravelMode.TRANSIT.toString() -> return TravelMode.TRANSIT
+            else -> return TravelMode.DRIVE
+        }
+    }
+
+    fun getTravelType(): TravelType {
+        val type = json.getString(KEY_TRAVEL_TYPE)
+
+        when (type) {
+            TravelType.CAR.toString() -> return TravelType.CAR
+            TravelType.FOOT.toString() -> return TravelType.FOOT
+            TravelType.ROAD.toString() -> return TravelType.ROAD
+            TravelType.TRAM.toString() -> return TravelType.TRAM
+            TravelType.METRO.toString() -> return TravelType.METRO
+            TravelType.RAIL.toString() -> return TravelType.RAIL
+            TravelType.BUS.toString() -> return TravelType.BUS
+            TravelType.FERRY.toString() -> return TravelType.FERRY
+            TravelType.CABLE_CAR.toString() -> return TravelType.CABLE_CAR
+            TravelType.GONDOLA.toString() -> return TravelType.GONDOLA
+            TravelType.FUNICULAR.toString() -> return TravelType.FUNICULAR
+            else -> return TravelType.CAR
+        }
+    }
+
+    fun getTransitInfo(): TransitInfo {
+        val transitInfoJson = json.getJSONObject(KEY_TRANSIT_INFO)
+        return TransitInfo(transitInfoJson)
     }
 }

@@ -15,9 +15,25 @@ public class TestUtils {
         return loc;
     }
 
-    public static String getFixture(String name) {
+    public static String getRouteFixture(String name) {
+        return getFixture(name + ".route");
+    }
+
+    public static String getInstructionFixture(String name) {
+        return getFixture(name + ".instruction");
+    }
+
+    public static String getTransitInfoFixture(String name) {
+        return getFixture(name + ".transitinfo");
+    }
+
+    public static String getTransitStopFixture(String name) {
+        return getFixture(name + ".transitstop");
+    }
+
+    private static String getFixture(String name) {
         String basedir = System.getProperty("user.dir");
-        File file = new File(basedir + "/src/test/fixtures/" + name + ".route");
+        File file = new File(basedir + "/src/test/fixtures/" + name);
         String fixture = "";
         try {
             fixture = Files.toString(file, Charsets.UTF_8);
