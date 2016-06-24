@@ -35,23 +35,23 @@ class TransitInfo {
   }
 
   fun getHeadsign(): String {
-    return json.getString(KEY_HEADSIGN)
+    return json.optString(KEY_HEADSIGN)
   }
 
   fun getLongName(): String {
-    return json.getString(KEY_LONG_NAME)
+    return json.optString(KEY_LONG_NAME)
   }
 
   fun getOperatorUrl(): String {
-    return json.getString(KEY_OPERATOR_URL)
+    return json.optString(KEY_OPERATOR_URL)
   }
 
   fun getOnestopId(): String {
-    return json.getString(KEY_ONESTOP_ID)
+    return json.optString(KEY_ONESTOP_ID)
   }
 
   fun getShortName(): String {
-    return json.getString(KEY_SHORT_NAME)
+    return json.optString(KEY_SHORT_NAME)
   }
 
   fun getColor(): Int {
@@ -59,7 +59,7 @@ class TransitInfo {
   }
 
   fun getDescription(): String {
-    return json.getString(KEY_DESCRIPTION)
+    return json.optString(KEY_DESCRIPTION)
   }
 
   fun getTextColor(): Int {
@@ -67,10 +67,10 @@ class TransitInfo {
   }
 
   fun getOperatorOnestopId(): String {
-    return json.getString(KEY_OPERATOR_ONESTOP_ID)
+    return json.optString(KEY_OPERATOR_ONESTOP_ID)
   }
 
   fun getOperatorName(): String {
-    return json.getString(KEY_OPERATOR_NAME)
+    return json.optString(KEY_OPERATOR_NAME)
   }
 }

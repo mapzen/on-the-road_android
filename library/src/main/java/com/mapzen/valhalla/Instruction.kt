@@ -242,8 +242,8 @@ open class Instruction {
         }
     }
 
-    fun getTransitInfo(): TransitInfo {
-        val transitInfoJson = json.getJSONObject(KEY_TRANSIT_INFO)
+    fun getTransitInfo(): TransitInfo? {
+        val transitInfoJson = json.optJSONObject(KEY_TRANSIT_INFO) ?: return null
         return TransitInfo(transitInfoJson)
     }
 }
