@@ -16,7 +16,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.net.MalformedURLException;
 
-import static com.mapzen.TestUtils.getFixture;
+import static com.mapzen.TestUtils.getRouteFixture;
 import static org.fest.assertions.api.Assertions.assertThat;
 import retrofit.RestAdapter;
 
@@ -117,7 +117,7 @@ public class RouterTest {
     @Test
     public void shouldGetRoute() throws Exception {
         final RouteCallback callback = Mockito.mock(RouteCallback.class);
-        String routeJson = getFixture("brooklyn_valhalla");
+        String routeJson = getRouteFixture("brooklyn_valhalla");
         startServerAndEnqueue(new MockResponse().setBody(routeJson));
         Router router = new ValhallaRouter()
             .setHttpHandler(httpHandler)
@@ -159,7 +159,7 @@ public class RouterTest {
 
     @Test
     public void shouldGetRouteNotFound() throws Exception {
-        startServerAndEnqueue(new MockResponse().setBody(getFixture("unsuccessful")).setResponseCode(400));
+        startServerAndEnqueue(new MockResponse().setBody(getRouteFixture("unsuccessful")).setResponseCode(400));
         RouteCallback callback = Mockito.mock(RouteCallback.class);
         Router router = new ValhallaRouter()
             .setHttpHandler(httpHandler)
@@ -173,7 +173,7 @@ public class RouterTest {
 
     @Test
     public void shouldStoreRawRoute() throws Exception {
-        String routeJson = getFixture("brooklyn_valhalla");
+        String routeJson = getRouteFixture("brooklyn_valhalla");
         startServerAndEnqueue(new MockResponse().setBody(routeJson));
         RouteCallback callback = Mockito.mock(RouteCallback.class);
         Router router = new ValhallaRouter()

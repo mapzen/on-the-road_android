@@ -2,9 +2,6 @@ package com.mapzen.valhalla;
 
 import com.mapzen.model.ValhallaLocation;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
-
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,6 +13,7 @@ import org.robolectric.RobolectricTestRunner;
 import java.io.File;
 import java.util.Locale;
 
+import static com.mapzen.TestUtils.getInstructionFixture;
 import static com.mapzen.TestUtils.getLocation;
 import static java.lang.System.getProperty;
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -27,7 +25,7 @@ public class InstructionTest {
     static {
         JSONObject JSON1;
         try {
-            JSON1 = new JSONObject(getInstructionFixture("json_valhalla.instruction"));
+            JSON1 = new JSONObject(getInstructionFixture("json_valhalla"));
         } catch (JSONException e) {
             e.printStackTrace();
             JSON1 = null;
@@ -41,7 +39,7 @@ public class InstructionTest {
         JSONObject DOUBLE_STREET_NAME1;
         try {
             DOUBLE_STREET_NAME1 =
-                    new JSONObject(getInstructionFixture("double_street_name.instruction"));
+                    new JSONObject(getInstructionFixture("double_street_name"));
         } catch (JSONException e) {
             e.printStackTrace();
             DOUBLE_STREET_NAME1 = null;
@@ -54,7 +52,7 @@ public class InstructionTest {
     static {
         JSONObject STREET_NOT_FOUND1;
         try {
-            STREET_NOT_FOUND1 = new JSONObject(getInstructionFixture("street_not_found.instruction"));
+            STREET_NOT_FOUND1 = new JSONObject(getInstructionFixture("street_not_found"));
         } catch (JSONException e) {
             e.printStackTrace();
             STREET_NOT_FOUND1 = null;
@@ -67,7 +65,7 @@ public class InstructionTest {
     static {
         JSONObject TTS_INSTRUCTION1;
         try {
-            TTS_INSTRUCTION1 = new JSONObject(getInstructionFixture("valhalla_tts.instruction"));
+            TTS_INSTRUCTION1 = new JSONObject(getInstructionFixture("valhalla_tts"));
         } catch (JSONException e) {
             e.printStackTrace();
             TTS_INSTRUCTION1 = null;
@@ -121,6 +119,21 @@ public class InstructionTest {
     @Test
     public void hasDirection() throws Exception {
         assertThat(instruction.getDirection()).isNotNull();
+    }
+
+    @Test
+    public void hasTravelType() {
+        assertThat(instruction.getTravelType()).isEqualTo(TravelType.METRO);
+    }
+
+    @Test
+    public void hasTravelMode() {
+        assertThat(instruction.getTravelMode()).isEqualTo(TravelMode.TRANSIT);
+    }
+
+    @Test
+    public void hasTransitInfo() {
+        assertThat(instruction.getTransitInfo()).isNotNull();
     }
 
     @Test
@@ -323,17 +336,5 @@ public class InstructionTest {
         File file = new File(fileName + "/src/test/fixtures/" + name + ".route");
         String content = FileUtils.readFileToString(file, "UTF-8");
         return new Route(content);
-    }
-
-    public static String getInstructionFixture(String name) {
-        String basedir = System.getProperty("user.dir");
-        File file = new File(basedir + "/src/test/fixtures/" + name);
-        String fixture = "";
-        try {
-            fixture = Files.toString(file, Charsets.UTF_8);
-        } catch (Exception e) {
-            fixture = "not found";
-        }
-        return fixture;
     }
 }

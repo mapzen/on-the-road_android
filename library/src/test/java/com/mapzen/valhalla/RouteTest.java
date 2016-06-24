@@ -49,7 +49,7 @@ public class RouteTest {
     public void shouldConvertTotalDistanceInMilesToMeters() throws Exception {
         route = getRoute("valhalla_miles");
         assertThat(route.getTotalDistance())
-                .isEqualTo((int) Math.round(0.712 * Instruction.Companion.getMI_TO_METERS()));
+                .isEqualTo((int) Math.round(0.712 * Instruction.MI_TO_METERS));
     }
 
     @Test

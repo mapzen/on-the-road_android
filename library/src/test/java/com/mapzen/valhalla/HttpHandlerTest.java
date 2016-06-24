@@ -10,7 +10,7 @@ import org.mockito.internal.util.reflection.Whitebox;
 
 import java.io.IOException;
 
-import static com.mapzen.TestUtils.getFixture;
+import static com.mapzen.TestUtils.getRouteFixture;
 import static org.fest.assertions.api.Assertions.assertThat;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
@@ -39,7 +39,7 @@ public class HttpHandlerTest {
   @Test public void shouldAddHeaders() throws IOException {
     final MockWebServer server = new MockWebServer();
     server.start();
-    server.enqueue(new MockResponse().setBody(getFixture("brooklyn")));
+    server.enqueue(new MockResponse().setBody(getRouteFixture("brooklyn")));
     String endpoint = server.getUrl("").toString();
     TestHttpHandler httpHandler = new TestHttpHandler(endpoint, RestAdapter.LogLevel.NONE);
     Router router = new ValhallaRouter()
