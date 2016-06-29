@@ -27,6 +27,7 @@ open class Instruction {
         const val KEY_TRAVEL_MODE = "travel_mode"
         const val KEY_TRAVEL_TYPE = "travel_type"
         const val KEY_TRANSIT_INFO = "transit_info"
+        const val KEY_TIME = "time"
     }
 
     lateinit var json: JSONObject
@@ -96,6 +97,10 @@ open class Instruction {
 
     fun getFormattedDistance(): String {
         return DistanceFormatter.format(distance.toInt())
+    }
+
+    fun getTime(): Int {
+        return json.getInt(KEY_TIME)
     }
 
     fun getBeginPolygonIndex(): Int {
