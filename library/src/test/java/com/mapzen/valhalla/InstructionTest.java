@@ -137,6 +137,11 @@ public class InstructionTest {
     }
 
     @Test
+    public void hasTransitInfoColorHex() {
+        assertThat(instruction.getTransitInfoColorHex()).isEqualTo("#ff6319");
+    }
+
+    @Test
     public void hasCorrectDirection() throws Exception {
         Route myRoute = getRoute("brooklyn_valhalla");
         instruction = myRoute.getCurrentInstruction();
