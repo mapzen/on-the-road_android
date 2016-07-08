@@ -251,4 +251,12 @@ open class Instruction {
         val transitInfoJson = json.optJSONObject(KEY_TRANSIT_INFO) ?: return null
         return TransitInfo(transitInfoJson)
     }
+
+    fun getTransitInfoColorHex(): String? {
+        if (getTransitInfo() == null) {
+            return null
+        }
+        val color = getTransitInfo()?.getColor() as Int
+        return "#" + Integer.toString(color, 16)
+    }
 }
