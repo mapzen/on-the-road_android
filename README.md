@@ -131,7 +131,7 @@ Include dependency using Maven.
 <dependency>
   <groupId>com.mapzen</groupId>
   <artifactId>on-the-road</artifactId>
-  <version>0.8.2</version>
+  <version>0.8.3</version>
   <type>aar</type>
 </dependency>
 ```
@@ -141,10 +141,10 @@ Include dependency using Maven.
 Include dependency using Gradle.
 
 ```groovy
-compile 'com.mapzen:on-the-road:0.8.2'
+compile 'com.mapzen:on-the-road:0.8.3'
 ```
 
-[1]: http://search.maven.org/remotecontent?filepath=com/mapzen/on-the-road/0.8.2/on-the-road-0.8.2.aar
+[1]: http://search.maven.org/remotecontent?filepath=com/mapzen/on-the-road/0.8.3/on-the-road-0.8.3.aar
 [2]: https://mapzen.com/projects/valhalla/
 [3]: https://github.com/mapzen/lost
 [4]: http://www.movable-type.co.uk/scripts/latlong.html
