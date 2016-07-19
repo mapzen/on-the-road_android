@@ -12,6 +12,8 @@ class TransitStop {
     const val KEY_DEPARTURE_DATE_TIME = "departure_date_time"
     const val KEY_IS_PARENT_STOP = "is_parent_stop"
     const val KEY_ASSUMED_SCHEDULE = "assumed_schedule"
+    const val KEY_LON = "lon"
+    const val KEY_LAT = "lat"
   }
 
   lateinit var json: JSONObject
@@ -46,6 +48,14 @@ class TransitStop {
 
   fun getArrivalDateTime(): String {
     return json.optString(KEY_ARRIVAL_DATE_TIME)
+  }
+
+  fun getLon(): Double {
+    return json.optDouble(KEY_LON)
+  }
+
+  fun getLat(): Double {
+    return json.optDouble(KEY_LAT)
   }
 
 }

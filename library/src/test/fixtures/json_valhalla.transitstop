@@ -5,7 +5,9 @@
   type: "station",
   arrival_date_time: "2016-06-23T13:40",
   is_parent_stop: true,
-  assumed_schedule: true
+  assumed_schedule: true,
+  lat: "40.741302",
+  lon: "-73.989342"
 }
 
 
