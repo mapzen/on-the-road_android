@@ -61,4 +61,14 @@ public class TransitStopTest {
     assertThat(transitStop.getAssumedSchedule()).isTrue();
   }
 
+  @Test
+  public void hasLat() {
+    assertThat(transitStop.getLat()).isEqualTo(40.741302);
+  }
+
+  @Test
+  public void hasLon() {
+    assertThat(transitStop.getLon()).isEqualTo(-73.989342);
+  }
+
 }
