@@ -4,7 +4,6 @@ import com.mapzen.helpers.DistanceFormatter
 import com.mapzen.model.ValhallaLocation
 import org.json.JSONException
 import org.json.JSONObject
-import java.util.ArrayList
 import java.util.Locale
 
 open class Instruction {
@@ -252,11 +251,32 @@ open class Instruction {
         return TransitInfo(transitInfoJson)
     }
 
+    /**
+     * Returns a valid hex color value for the transit line or null if no color is available or
+     * the value in the response is invalid.
+     */
     fun getTransitInfoColorHex(): String? {
         if (getTransitInfo() == null) {
             return null
         }
-        val color = getTransitInfo()?.getColor() as Int
-        return "#" + Integer.toString(color, 16)
+
+        val color = getTransitInfo()?.getColor() ?: return null
+        return formatColorString(Integer.toHexString(color))
+    }
+
+    /**
+     * Ensures the color string is a properly formatted 6-digit hexadecimal color value by
+     * prepending leading zeros if necessary. Returns null if the color string is over 6 characters.
+     */
+    private fun formatColorString(color: String): String? {
+        if (color.length > 6) {
+            return null
+        }
+
+        if (color.length == 6) {
+            return "#" + color
+        }
+
+        return formatColorString("0" + color)
     }
 }

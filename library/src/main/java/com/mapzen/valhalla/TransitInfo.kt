@@ -54,8 +54,12 @@ class TransitInfo {
     return json.optString(KEY_SHORT_NAME)
   }
 
-  fun getColor(): Int {
-    return json.getInt(KEY_COLOR)
+  fun getColor(): Int? {
+    if (json.has(KEY_COLOR)) {
+      return json.getInt(KEY_COLOR)
+    } else {
+      return null
+    }
   }
 
   fun getDescription(): String {
