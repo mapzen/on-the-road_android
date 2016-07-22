@@ -142,12 +142,32 @@ public class InstructionTest {
     }
 
     @Test
+    public void getTransitInfoColorHex_shouldReturnSixDigitHexValue() throws Exception {
+        final JSONObject json = new JSONObject(getInstructionFixture("transit_color_green"));
+        instruction = new Instruction(json);
+        assertThat(instruction.getTransitInfoColorHex()).isEqualTo("#00933c");
+    }
+
+    @Test
+    public void getTransitInfoColorHex_shouldReturnNullIfNoneAvailable() throws Exception {
+        final JSONObject json = new JSONObject(getInstructionFixture("transit_no_color"));
+        instruction = new Instruction(json);
+        assertThat(instruction.getTransitInfoColorHex()).isNull();
+    }
+
+    @Test
+    public void getTransitInfoColorHex_shouldReturnNullIfColorIsInvalid() throws Exception {
+        final JSONObject json = new JSONObject(getInstructionFixture("transit_color_invalid"));
+        instruction = new Instruction(json);
+        assertThat(instruction.getTransitInfoColorHex()).isNull();
+    }
+
+    @Test
     public void hasCorrectDirection() throws Exception {
         Route myRoute = getRoute("brooklyn_valhalla");
         instruction = myRoute.getCurrentInstruction();
         assertThat(instruction.getDirection()).isEqualTo("W");
     }
-
 
     @Test
     public void hasBeginPolygonIndex() throws Exception {
