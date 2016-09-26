@@ -1,6 +1,8 @@
 # On The Road
 
-[![Circle CI Build Status](https://circleci.com/gh/mapzen/on-the-road.png?circle-token=654423209f8f63b35432f450450069ce44bb5729)](https://circleci.com/gh/mapzen/on-the-road_android)
+Android client for the Valhalla routing service plus mobile nav tools
+
+[![CircleCI](https://circleci.com/gh/mapzen/on-the-road_android.svg?style=svg&circle-token=654423209f8f63b35432f450450069ce44bb5729)](https://circleci.com/gh/mapzen/on-the-road_android)
 
 This library has two main responsibilities, it acts as an Android client for [Mapzen Turn-by-Turn][2] (powered by [Valhalla][5]) and it handles client-side location correction, specifically snapping the client’s location along road.
 
