@@ -1,6 +1,6 @@
 # On The Road
 
-[![Circle CI Build Status](https://circleci.com/gh/mapzen/on-the-road.png?circle-token=654423209f8f63b35432f450450069ce44bb5729)](https://circleci.com/gh/mapzen/on-the-road)
+[![Circle CI Build Status](https://circleci.com/gh/mapzen/on-the-road.png?circle-token=654423209f8f63b35432f450450069ce44bb5729)](https://circleci.com/gh/mapzen/on-the-road_android)
 
 This library has two main responsibilities, it acts as an Android client for [Mapzen Turn-by-Turn][2] (powered by [Valhalla][5]) and it handles client-side location correction, specifically snapping the client’s location along road.
 
@@ -67,7 +67,7 @@ increased stability and self documentation.
 #### Client side magic
 
 Device GPS accuracy is almost never perfect, especially in cities. Being off by several feet becomes a very apparent problem in routing. Your user could be driving their car in a straight line down the street but your app could be displaying them 20 feet off the road. To combat this we mathematically manipulate the
-location we receive from the location service and snap it to the road. You can use our project [LOST][3] if you would like an open source alternative to the Fused Location Provider.
+location we receive from the location service and snap it to the road. You can use our project [Lost][3] if you would like an open source alternative to the `FusedLocationProvider`.
 
 The best way to describe the problem is by looking at two illustrations:
 
@@ -131,7 +131,7 @@ Include dependency using Maven.
 <dependency>
   <groupId>com.mapzen</groupId>
   <artifactId>on-the-road</artifactId>
-  <version>0.8.4</version>
+  <version>1.0.0</version>
   <type>aar</type>
 </dependency>
 ```
@@ -141,10 +141,10 @@ Include dependency using Maven.
 Include dependency using Gradle.
 
 ```groovy
-compile 'com.mapzen:on-the-road:0.8.4'
+compile 'com.mapzen:on-the-road:1.0.0'
 ```
 
-[1]: http://search.maven.org/remotecontent?filepath=com/mapzen/on-the-road/0.8.4/on-the-road-0.8.4.aar
+[1]: http://search.maven.org/remotecontent?filepath=com/mapzen/on-the-road/1.0.0/on-the-road-1.0.0.aar
 [2]: https://mapzen.com/projects/valhalla/
 [3]: https://github.com/mapzen/lost
 [4]: http://www.movable-type.co.uk/scripts/latlong.html
