@@ -45,6 +45,53 @@ public class RouterTest {
     }
 
     @Test
+    public void shouldDefaultToEnUs() throws Exception {
+        assertThat(router.getJSONRequest().directionsOptions.language).contains("en-US");
+    }
+
+    @Test
+    public void shouldSetToCsCs() throws Exception {
+        router.setLanguage(Router.Language.CS_CZ);
+        assertThat(router.getJSONRequest().directionsOptions.language).contains("cs-CZ");
+    }
+
+    @Test
+    public void shouldSetToDeDe() throws Exception {
+        router.setLanguage(Router.Language.DE_DE);
+        assertThat(router.getJSONRequest().directionsOptions.language).contains("de-DE");
+    }
+
+    @Test
+    public void shouldSetToEnUs() throws Exception {
+        router.setLanguage(Router.Language.EN_US);
+        assertThat(router.getJSONRequest().directionsOptions.language).contains("en-US");
+    }
+
+    @Test
+    public void shouldSetToEnUsPirate() throws Exception {
+        router.setLanguage(Router.Language.PIRATE);
+        assertThat(router.getJSONRequest().directionsOptions.language).contains("en-US-x-pirate");
+    }
+
+    @Test
+    public void shouldSetToEsEs() throws Exception {
+        router.setLanguage(Router.Language.ES_ES);
+        assertThat(router.getJSONRequest().directionsOptions.language).contains("es-ES");
+    }
+
+    @Test
+    public void shouldSetToFrFr() throws Exception {
+        router.setLanguage(Router.Language.FR_FR);
+        assertThat(router.getJSONRequest().directionsOptions.language).contains("fr-FR");
+    }
+
+    @Test
+    public void shouldSetToItIt() throws Exception {
+        router.setLanguage(Router.Language.IT_IT);
+        assertThat(router.getJSONRequest().directionsOptions.language).contains("it-IT");
+    }
+
+    @Test
     public void shouldDefaultToCar() throws Exception {
         assertThat(router.getJSONRequest().costing).contains("auto");
     }
@@ -191,11 +238,11 @@ public class RouterTest {
     public void setDistanceUnits_shouldAppendUnitsToJson() throws Exception {
         router.setDistanceUnits(Router.DistanceUnits.MILES);
         assertThat(new Gson().toJson(router.getJSONRequest()))
-                .contains("\"directions_options\":{\"units\":\"miles\"}");
+                .contains("\"directions_options\":{\"units\":\"miles\",\"language\":\"en-US\"}");
 
         router.setDistanceUnits(Router.DistanceUnits.KILOMETERS);
         assertThat(new Gson().toJson(router.getJSONRequest()))
-                .contains("\"directions_options\":{\"units\":\"kilometers\"}");
+                .contains("\"directions_options\":{\"units\":\"kilometers\",\"language\":\"en-US\"}");
     }
 
     @Test

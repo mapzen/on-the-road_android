@@ -42,5 +42,6 @@ public class JSON {
 
     public static class DirectionOptions {
         public String units;
+        public String language;
     }
 }
