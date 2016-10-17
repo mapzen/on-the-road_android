@@ -23,10 +23,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import static com.mapzen.valhalla.Router.*;
 import retrofit.RestAdapter;
 
 public class MainActivity extends AppCompatActivity {
 
+  Spinner languageSpinner;
   Spinner costingSpinner;
   EditText startLatText;
   EditText startLngText;
@@ -41,7 +43,8 @@ public class MainActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     configureRouter();
-    configureSpinner();
+    configureLanguageSpinner();
+    configureCostingSpinner();
     configureTextViews();
     configureRouteBtn();
     configureListView();
@@ -61,7 +64,16 @@ public class MainActivity extends AppCompatActivity {
     });
   }
 
-  private void configureSpinner() {
+  private void configureLanguageSpinner() {
+    languageSpinner = (Spinner) findViewById(R.id.language);
+    ArrayAdapter<CharSequence> spinnerAdapter =
+        ArrayAdapter.createFromResource(this, R.array.languages_array,
+            android.R.layout.simple_spinner_item);
+    spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    languageSpinner.setAdapter(spinnerAdapter);
+  }
+
+  private void configureCostingSpinner() {
     costingSpinner = (Spinner) findViewById(R.id.costing_type);
     ArrayAdapter<CharSequence> spinnerAdapter =
         ArrayAdapter.createFromResource(this, R.array.costing_types_array,
@@ -174,6 +186,8 @@ public class MainActivity extends AppCompatActivity {
       } else {
         router.setMultimodal();
       }
+      Language language = Language.valueOf((String) languageSpinner.getSelectedItem());
+      router.setLanguage(language);
       router.fetch();
     }
   }

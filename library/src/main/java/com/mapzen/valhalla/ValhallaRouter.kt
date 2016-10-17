@@ -14,6 +14,7 @@ import java.util.ArrayList
 
 open class ValhallaRouter : Router, Runnable {
 
+    private var language = Router.Language.EN_US
     private var type = Router.Type.DRIVING
     private val locations = ArrayList<JSON.Location>()
     private var callback: RouteCallback? = null
@@ -25,7 +26,12 @@ open class ValhallaRouter : Router, Runnable {
 
     override fun setHttpHandler(handler: HttpHandler): Router {
         httpHandler = handler
-        return this;
+        return this
+    }
+
+    override fun setLanguage(language: Router.Language): Router {
+        this.language = language
+        return this
     }
 
     override fun setWalking(): Router {
@@ -93,7 +99,7 @@ open class ValhallaRouter : Router, Runnable {
     }
 
     override fun run() {
-        var jsonString = gson.toJson(getJSONRequest()).toString();
+        var jsonString = gson.toJson(getJSONRequest()).toString()
         httpHandler?.requestRoute(jsonString, object : retrofit.Callback<String> {
             override fun success(result: String, response: Response) {
                 callback?.success(Route(result))
@@ -108,12 +114,13 @@ open class ValhallaRouter : Router, Runnable {
 
     override fun getJSONRequest(): JSON {
         if (locations.size < 2) {
-            throw  MalformedURLException();
+            throw  MalformedURLException()
         }
-        var json: JSON = JSON();
-        json.locations[0] = locations.get(0)
-        json.locations[1] = locations.get(1)
+        var json: JSON = JSON()
+        json.locations[0] = locations[0]
+        json.locations[1] = locations[1]
         json.costing = this.type.toString()
+        json.directionsOptions.language = this.language.toString()
         json.directionsOptions.units = this.units.toString()
         return json
     }
