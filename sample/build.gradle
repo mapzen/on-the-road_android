@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 // Read API Key from gradle.properties
-def TURN_BY_TURN_API_KEY = hasProperty('valhallaApiKey') ? '"' + valhallaApiKey + '"' : "null";
+def API_KEY = hasProperty('apiKey') ? '"' + apiKey + '"' : "null";
 
 android {
   compileSdkVersion 23
@@ -15,7 +15,7 @@ android {
     versionName "1.0"
 
     // Create BuildConfig field for accessing gradle property in code
-    buildConfigField "String", "TURN_BY_TURN_API_KEY", TURN_BY_TURN_API_KEY
+    buildConfigField "String", "API_KEY", API_KEY
   }
   buildTypes {
     release {
