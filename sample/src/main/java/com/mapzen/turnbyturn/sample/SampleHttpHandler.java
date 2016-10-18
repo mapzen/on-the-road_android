@@ -17,7 +17,7 @@ public class SampleHttpHandler extends HttpHandler {
   }
 
   @Override protected void onRequest(RequestInterceptor.RequestFacade requestFacade) {
-    String apiKey = BuildConfig.TURN_BY_TURN_API_KEY;
+    String apiKey = BuildConfig.API_KEY;
     requestFacade.addQueryParam(NAME_API_KEY, apiKey);
   }
 }
