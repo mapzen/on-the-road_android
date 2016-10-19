@@ -92,6 +92,12 @@ public class RouterTest {
     }
 
     @Test
+    public void shouldSetToHiIn() throws Exception {
+        router.setLanguage(Router.Language.HI_IN);
+        assertThat(router.getJSONRequest().directionsOptions.language).contains("hi-IN");
+    }
+
+    @Test
     public void shouldDefaultToCar() throws Exception {
         assertThat(router.getJSONRequest().costing).contains("auto");
     }

@@ -9,7 +9,8 @@ interface Router {
         PIRATE("en-US-x-pirate"),
         ES_ES("es-ES"),
         FR_FR("fr-FR"),
-        IT_IT("it-IT");
+        IT_IT("it-IT"),
+        HI_IN("hi-IN");
 
         override fun toString(): String {
             return languageTag
