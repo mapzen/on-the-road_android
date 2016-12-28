@@ -1,14 +1,11 @@
 package com.mapzen.valhalla;
 
-import retrofit.RestAdapter;
+import retrofit2.Retrofit;
 
-/**
- * Created by peterjasko on 6/8/15.
- */
 public class RestAdapterFactory {
-    RestAdapter adapter;
+    Retrofit adapter;
 
-    public RestAdapterFactory(RestAdapter adapter) {
+    public RestAdapterFactory(Retrofit adapter) {
         this.adapter = adapter;
     }
 

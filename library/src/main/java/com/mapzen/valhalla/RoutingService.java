@@ -1,11 +1,9 @@
 package com.mapzen.valhalla;
 
-import retrofit.http.GET;
-import retrofit.http.Query;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
+import retrofit2.Call;
 
 public interface RoutingService {
-    @GET("/route") void getRoute(
-            @Query("json")
-            String json,
-            retrofit.Callback<String> callback);
+    @GET("/route") Call<String> getRoute(@Query("json") String json);
 }

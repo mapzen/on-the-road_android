@@ -9,9 +9,8 @@ import com.mapzen.valhalla.ValhallaRouter;
 
 import org.jetbrains.annotations.NotNull;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -23,8 +22,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import static com.mapzen.valhalla.Router.*;
-import retrofit.RestAdapter;
+import okhttp3.logging.HttpLoggingInterceptor;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -51,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void configureRouter() {
-    router.setHttpHandler(new SampleHttpHandler(RestAdapter.LogLevel.FULL));
+    router.setHttpHandler(new SampleHttpHandler(HttpLoggingInterceptor.Level.BODY));
     router.setCallback(new RouteCallback() {
       @Override public void success(@NotNull Route route) {
         MainActivity.this.route = route;
@@ -186,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
       } else {
         router.setMultimodal();
       }
-      Language language = Language.valueOf((String) languageSpinner.getSelectedItem());
+      Router.Language language = Router.Language.valueOf((String) languageSpinner.getSelectedItem());
       router.setLanguage(language);
       router.fetch();
     }

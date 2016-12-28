@@ -1,9 +1,6 @@
 package com.mapzen.valhalla;
 
 import com.google.gson.Gson;
-import com.squareup.okhttp.mockwebserver.MockResponse;
-import com.squareup.okhttp.mockwebserver.MockWebServer;
-import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
 import org.json.JSONObject;
 import org.junit.After;
@@ -17,8 +14,11 @@ import org.mockito.MockitoAnnotations;
 import java.net.MalformedURLException;
 
 import static com.mapzen.TestUtils.getRouteFixture;
+import okhttp3.logging.HttpLoggingInterceptor;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
 import static org.fest.assertions.api.Assertions.assertThat;
-import retrofit.RestAdapter;
 
 public class RouterTest {
     @Captor ArgumentCaptor<Route> route;
@@ -35,8 +35,8 @@ public class RouterTest {
         MockitoAnnotations.initMocks(this);
         double[] loc = new double[] {1.0, 2.0};
         router = new ValhallaRouter().setLocation(loc).setLocation(loc);
-        String endpoint = server.getUrl("").toString();
-        httpHandler = new TestHttpHandler(endpoint, RestAdapter.LogLevel.NONE);
+        String endpoint = server.url("").toString();
+        httpHandler = new TestHttpHandler(endpoint, HttpLoggingInterceptor.Level.NONE);
     }
 
     @After
@@ -292,8 +292,8 @@ public class RouterTest {
     @Test
     public void setEndpoint_shouldUpdateBaseRequestUrl() throws Exception {
         startServerAndEnqueue(new MockResponse());
-        String endpoint = server.getUrl("/test").toString();
-        HttpHandler httpHandler = new HttpHandler(endpoint, RestAdapter.LogLevel.NONE);
+        String endpoint = server.url("/test").toString();
+        HttpHandler httpHandler = new HttpHandler(endpoint, HttpLoggingInterceptor.Level.NONE);
         Router router = new ValhallaRouter()
                 .setHttpHandler(httpHandler)
                 .setLocation(new double[] { 40.659241, -73.983776 })
@@ -306,5 +306,4 @@ public class RouterTest {
     private void startServerAndEnqueue(MockResponse response) throws Exception {
         server.enqueue(response);
     }
-
 }

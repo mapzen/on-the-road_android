@@ -1,32 +1,35 @@
 package com.mapzen.valhalla;
 
-import com.mapzen.helpers.ResultConverter;
-import com.mapzen.valhalla.RestAdapterFactory;
-import com.mapzen.valhalla.RoutingService;
+import java.io.IOException;
 
-import retrofit.Callback;
-import retrofit.RequestInterceptor;
-import retrofit.RestAdapter;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Callback;
+import retrofit2.Retrofit;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 /**
  *  Handles all things http including setting the route engine's url and request log level. Route
  *  requests can be made using this object. To customize headers and params that are sent with each
  *  request, subclass this object and overwrite
- *  {@link HttpHandler#onRequest(RequestInterceptor.RequestFacade)}
+ *  {@link HttpHandler#onRequest(Interceptor.Chain)}
  */
 public class HttpHandler {
 
   protected static final String DEFAULT_URL = "https://valhalla.mapzen.com/";
-  protected static final RestAdapter.LogLevel DEFAULT_LOG_LEVEL = RestAdapter.LogLevel.NONE;
+  protected static final HttpLoggingInterceptor.Level DEFAULT_LOG_LEVEL =
+      HttpLoggingInterceptor.Level.NONE;
 
   String endpoint;
-  RestAdapter.LogLevel logLevel;
-  RestAdapter adapter;
+  HttpLoggingInterceptor.Level logLevel;
+  Retrofit adapter;
   RoutingService service;
 
-  private RequestInterceptor requestInterceptor = new RequestInterceptor() {
-    @Override public void intercept(RequestFacade request) {
-      onRequest(request);
+  private Interceptor requestInterceptor = new Interceptor() {
+    @Override public Response intercept(Chain chain) throws IOException {
+      return onRequest(chain);
     }
   };
 
@@ -38,37 +41,38 @@ public class HttpHandler {
     this(endpoint, DEFAULT_LOG_LEVEL);
   }
 
-  public HttpHandler(RestAdapter.LogLevel logLevel) {
+  public HttpHandler(HttpLoggingInterceptor.Level logLevel) {
     this(DEFAULT_URL, logLevel);
   }
 
-  public HttpHandler(String endpoint, RestAdapter.LogLevel logLevel) {
+  public HttpHandler(String endpoint, HttpLoggingInterceptor.Level logLevel) {
     configure(endpoint, logLevel);
   }
 
-  protected void configure(String endpoint, RestAdapter.LogLevel logLevel) {
+  protected void configure(String endpoint, HttpLoggingInterceptor.Level logLevel) {
+    final OkHttpClient client = new OkHttpClient.Builder()
+        .addInterceptor(requestInterceptor)
+        .build();
+
     this.endpoint = endpoint;
     this.logLevel = logLevel;
-    this.adapter = new RestAdapter.Builder()
-        .setConverter(new ResultConverter())
-        .setEndpoint(endpoint)
-        .setLogLevel(logLevel)
-        .setRequestInterceptor(requestInterceptor)
+    this.adapter = new Retrofit.Builder()
+        .baseUrl(endpoint)
+        .client(client)
+        .addConverterFactory(ScalarsConverterFactory.create())
         .build();
     this.service = new RestAdapterFactory(this.adapter).getRoutingService();
   }
 
-  public void requestRoute(String routeJson, Callback callback) {
-    service.getRoute(routeJson, callback);
+  public void requestRoute(String routeJson, Callback<String> callback) {
+    service.getRoute(routeJson).enqueue(callback);
   }
 
   /**
-   * Subclasses can overwrite to add custom headers to each request
-   * @param requestFacade
+   * Subclasses can overwrite to add custom headers to each request.
+   * @param chain used to modify outgoing requests.
    */
-  protected void onRequest(RequestInterceptor.RequestFacade requestFacade) {
-
+  protected Response onRequest(Interceptor.Chain chain) throws IOException {
+    return chain.proceed(chain.request());
   }
-
 }
-
