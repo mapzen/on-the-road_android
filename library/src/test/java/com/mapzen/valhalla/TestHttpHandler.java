@@ -1,24 +1,34 @@
 package com.mapzen.valhalla;
 
+import java.io.IOException;
+
+import okhttp3.Interceptor;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class TestHttpHandler extends HttpHandler {
+/**
+ * Executes route requests synchronously in testing environment.
+ */
+class TestHttpHandler extends HttpHandler {
+  boolean headersAdded = false;
+  Response<String> route = null;
 
-  TestRoutingService testService;
-
-  public TestHttpHandler(String endpoint, HttpLoggingInterceptor.Level logLevel) {
-    configure(endpoint, logLevel);
+  TestHttpHandler(String endpoint, HttpLoggingInterceptor.Level logLevel) {
+    super(endpoint, logLevel);
   }
 
-  protected void configure(String endpoint, HttpLoggingInterceptor.Level logLevel) {
-    super.configure(endpoint, logLevel);
-    testService = adapter.create(TestRoutingService.class);
+  @Override public void requestRoute(String routeJson, Callback<String> callback) {
+    try {
+      route = service.getRoute(routeJson).execute();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    callback.onResponse(null, route);
   }
 
-  @Override public void requestRoute(String routeJson, Callback callback) {
-    String route = testService.getRoute(routeJson);
-    callback.onResponse(null, Response.success(route));
+  @Override protected okhttp3.Response onRequest(Interceptor.Chain chain) throws IOException {
+    headersAdded = true;
+    return chain.proceed(chain.request());
   }
 }

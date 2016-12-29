@@ -17,7 +17,6 @@ import static com.mapzen.TestUtils.getRouteFixture;
 import okhttp3.logging.HttpLoggingInterceptor;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-import okhttp3.mockwebserver.RecordedRequest;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class RouterTest {
@@ -287,20 +286,18 @@ public class RouterTest {
                 .contains("{\"lat\":\"1.0\",\"lon\":\"2.0\",\"heading\":\"180\"}");
     }
 
-
-
     @Test
     public void setEndpoint_shouldUpdateBaseRequestUrl() throws Exception {
         startServerAndEnqueue(new MockResponse());
-        String endpoint = server.url("/test").toString();
-        HttpHandler httpHandler = new HttpHandler(endpoint, HttpLoggingInterceptor.Level.NONE);
+        String endpoint = server.url("").toString();
+        TestHttpHandler httpHandler = new TestHttpHandler(endpoint,
+            HttpLoggingInterceptor.Level.NONE);
         Router router = new ValhallaRouter()
                 .setHttpHandler(httpHandler)
                 .setLocation(new double[] { 40.659241, -73.983776 })
                 .setLocation(new double[] { 40.671773, -73.981115 });
         ((ValhallaRouter) router).run();
-        RecordedRequest request = server.takeRequest();
-        assertThat(request.getPath()).contains("/test");
+        assertThat(httpHandler.route.raw().request().url().toString()).contains(endpoint);
     }
 
     private void startServerAndEnqueue(MockResponse response) throws Exception {

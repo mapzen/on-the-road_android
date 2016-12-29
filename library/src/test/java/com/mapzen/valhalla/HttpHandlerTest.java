@@ -1,11 +1,5 @@
 package com.mapzen.valhalla;
 
-import okhttp3.Interceptor;
-import okhttp3.Response;
-import okhttp3.logging.HttpLoggingInterceptor;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -14,6 +8,9 @@ import org.mockito.internal.util.reflection.Whitebox;
 import java.io.IOException;
 
 import static com.mapzen.TestUtils.getRouteFixture;
+import okhttp3.logging.HttpLoggingInterceptor;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class HttpHandlerTest {
@@ -40,7 +37,7 @@ public class HttpHandlerTest {
   @Test public void shouldAddHeaders() throws IOException {
     final MockWebServer server = new MockWebServer();
     server.start();
-    server.enqueue(new MockResponse().setBody(getRouteFixture("brooklyn")));
+    server.enqueue(new MockResponse().setBody(getRouteFixture("brooklyn_valhalla")));
     String endpoint = server.url("").toString();
     TestHttpHandler httpHandler = new TestHttpHandler(endpoint, HttpLoggingInterceptor.Level.NONE);
     Router router = new ValhallaRouter()
@@ -51,19 +48,5 @@ public class HttpHandlerTest {
     router.setCallback(callback);
     ((ValhallaRouter) router).run();
     assertThat(httpHandler.headersAdded).isTrue();
-  }
-
-  private class TestHttpHandler extends HttpHandler {
-
-    public boolean headersAdded = false;
-
-    public TestHttpHandler(String endpoint, HttpLoggingInterceptor.Level logLevel) {
-      super(endpoint, logLevel);
-    }
-
-    @Override protected Response onRequest(Interceptor.Chain chain) throws IOException {
-      headersAdded = true;
-      return null;
-    }
   }
 }
