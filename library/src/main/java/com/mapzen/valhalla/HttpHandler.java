@@ -51,7 +51,8 @@ public class HttpHandler {
 
   protected void configure(String endpoint, HttpLoggingInterceptor.Level logLevel) {
     final OkHttpClient client = new OkHttpClient.Builder()
-        .addInterceptor(requestInterceptor)
+        .addNetworkInterceptor(requestInterceptor)
+        .addNetworkInterceptor(new HttpLoggingInterceptor().setLevel(logLevel))
         .build();
 
     this.endpoint = endpoint;
