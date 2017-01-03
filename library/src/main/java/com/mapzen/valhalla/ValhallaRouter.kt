@@ -1,14 +1,9 @@
 package com.mapzen.valhalla
 
 import com.google.gson.Gson
-import com.mapzen.helpers.CharStreams
-import com.mapzen.helpers.ResultConverter
-import com.mapzen.valhalla.HttpHandler
-import retrofit.RestAdapter
-import retrofit.RetrofitError
-import retrofit.client.Response
-import java.io.InputStream
-import java.io.InputStreamReader
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.net.MalformedURLException
 import java.util.ArrayList
 
@@ -22,7 +17,7 @@ open class ValhallaRouter : Router, Runnable {
 
     private var httpHandler: HttpHandler? = null
 
-    var gson: Gson = Gson();
+    var gson: Gson = Gson()
 
     override fun setHttpHandler(handler: HttpHandler): Router {
         httpHandler = handler
@@ -100,16 +95,21 @@ open class ValhallaRouter : Router, Runnable {
 
     override fun run() {
         var jsonString = gson.toJson(getJSONRequest()).toString()
-        httpHandler?.requestRoute(jsonString, object : retrofit.Callback<String> {
-            override fun success(result: String, response: Response) {
-                callback?.success(Route(result))
+        httpHandler?.requestRoute(jsonString, object: Callback<String> {
+            override fun onResponse(call: Call<String>?, response: Response<String>?) {
+                if (response != null) {
+                    if (response.isSuccessful) {
+                        callback?.success(Route(response.body()))
+                    } else {
+                        callback?.failure(response.raw().code())
+                    }
+                }
             }
 
-            override fun failure(error: RetrofitError?) {
-                val statusCode = error?.response?.status ?: 207
-                callback?.failure(statusCode)
+            override fun onFailure(call: Call<String>?, t: Throwable?) {
+                t?.printStackTrace()
             }
-        });
+        })
     }
 
     override fun getJSONRequest(): JSON {

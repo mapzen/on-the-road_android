@@ -1,8 +1,5 @@
 package com.mapzen.valhalla;
 
-import com.squareup.okhttp.mockwebserver.MockResponse;
-import com.squareup.okhttp.mockwebserver.MockWebServer;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -11,9 +8,10 @@ import org.mockito.internal.util.reflection.Whitebox;
 import java.io.IOException;
 
 import static com.mapzen.TestUtils.getRouteFixture;
+import okhttp3.logging.HttpLoggingInterceptor;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
 import static org.fest.assertions.api.Assertions.assertThat;
-import retrofit.RequestInterceptor;
-import retrofit.RestAdapter;
 
 public class HttpHandlerTest {
 
@@ -21,7 +19,7 @@ public class HttpHandlerTest {
   HttpHandler httpHandler;
 
   @Before public void setup() throws IOException {
-    httpHandler = new HttpHandler(endpoint, RestAdapter.LogLevel.NONE);
+    httpHandler = new HttpHandler(endpoint, HttpLoggingInterceptor.Level.NONE);
   }
 
   @Test public void shouldHaveEndpoint() {
@@ -31,17 +29,17 @@ public class HttpHandlerTest {
   }
 
   @Test public void shouldHaveLogLevel() {
-    final RestAdapter.LogLevel logLevel =
-        (RestAdapter.LogLevel) Whitebox.getInternalState(httpHandler, "logLevel");
-    assertThat(logLevel).isEqualTo(RestAdapter.LogLevel.NONE);
+    final HttpLoggingInterceptor.Level logLevel =
+        (HttpLoggingInterceptor.Level) Whitebox.getInternalState(httpHandler, "logLevel");
+    assertThat(logLevel).isEqualTo(HttpLoggingInterceptor.Level.NONE);
   }
 
   @Test public void shouldAddHeaders() throws IOException {
     final MockWebServer server = new MockWebServer();
     server.start();
-    server.enqueue(new MockResponse().setBody(getRouteFixture("brooklyn")));
-    String endpoint = server.getUrl("").toString();
-    TestHttpHandler httpHandler = new TestHttpHandler(endpoint, RestAdapter.LogLevel.NONE);
+    server.enqueue(new MockResponse().setBody(getRouteFixture("brooklyn_valhalla")));
+    String endpoint = server.url("").toString();
+    TestHttpHandler httpHandler = new TestHttpHandler(endpoint, HttpLoggingInterceptor.Level.NONE);
     Router router = new ValhallaRouter()
         .setHttpHandler(httpHandler)
         .setLocation(new double[] { 40.659241, -73.983776 })
@@ -50,19 +48,5 @@ public class HttpHandlerTest {
     router.setCallback(callback);
     ((ValhallaRouter) router).run();
     assertThat(httpHandler.headersAdded).isTrue();
-  }
-
-  private class TestHttpHandler extends HttpHandler {
-
-    public boolean headersAdded = false;
-
-    public TestHttpHandler(String endpoint, RestAdapter.LogLevel logLevel) {
-      super( endpoint, logLevel);
-    }
-
-    @Override
-    protected void onRequest(RequestInterceptor.RequestFacade requestFacade) {
-      headersAdded = true;
-    }
   }
 }

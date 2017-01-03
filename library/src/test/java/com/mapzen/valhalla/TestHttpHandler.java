@@ -1,37 +1,34 @@
 package com.mapzen.valhalla;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
 
-import retrofit.Callback;
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
-import retrofit.client.Header;
-import retrofit.client.Response;
+import okhttp3.Interceptor;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-public class TestHttpHandler extends HttpHandler {
+/**
+ * Executes route requests synchronously in testing environment.
+ */
+class TestHttpHandler extends HttpHandler {
+  boolean headersAdded = false;
+  Response<String> route = null;
 
-  TestRoutingService testService;
-
-  public TestHttpHandler(String endpoint, RestAdapter.LogLevel logLevel) {
-    configure(endpoint, logLevel);
+  TestHttpHandler(String endpoint, HttpLoggingInterceptor.Level logLevel) {
+    super(endpoint, logLevel);
   }
 
-  protected void configure(String endpoint, RestAdapter.LogLevel logLevel) {
-    super.configure(endpoint, logLevel);
-    testService = adapter.create(TestRoutingService.class);
-  }
-
-  @Override
-  public void requestRoute(String routeJson, Callback callback) {
+  @Override public void requestRoute(String routeJson, Callback<String> callback) {
     try {
-      String route = testService.getRoute(routeJson);
-      List<Header> headers = new ArrayList<>();
-      Response response = new Response("test", 200, "test", headers, null);
-      callback.success(route, response);
-    } catch (RetrofitError error) {
-      callback.failure(error);
+      route = service.getRoute(routeJson).execute();
+    } catch (IOException e) {
+      e.printStackTrace();
     }
+    callback.onResponse(null, route);
   }
 
+  @Override protected okhttp3.Response onRequest(Interceptor.Chain chain) throws IOException {
+    headersAdded = true;
+    return chain.proceed(chain.request());
+  }
 }
