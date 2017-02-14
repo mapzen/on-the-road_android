@@ -31,8 +31,6 @@ release {
   versionProperties = ['VERSION_NAME']
 }
 
-afterReleaseBuild.dependsOn uploadArchives
-
 task copyTask(type: Copy) {
   println "Copying com/mapzen/ontheroad/R.java to android/support/v7/appcompat/R.java"
   from 'build/generated/source/r/debug/com/mapzen/ontheroad'
