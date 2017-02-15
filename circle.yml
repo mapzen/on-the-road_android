@@ -21,7 +21,7 @@ dependencies:
 
 test:
   override:
-    - ./gradlew
+    - ./gradlew -PdisablePreDex
 
 deployment:
   master:
