@@ -9,7 +9,15 @@ machine:
 
 dependencies:
   pre:
-    - echo y | android update sdk --all --no-ui --force --filter "build-tools-23.0.3,platform-tools,android-18,addon-google_apis-google-18,android-19,extra-android-m2repository"
+    - if [ ! -e /usr/local/android-sdk-linux/build-tools/23.0.3 ]; then echo y | android update sdk --all --no-ui --filter "build-tools-23.0.3"; fi;
+    - if [ ! -e /usr/local/android-sdk-linux/platforms/android-18 ]; then echo y | android update sdk --all --no-ui --filter "android-18"; fi;
+    - if [ ! -e /usr/local/android-sdk-linux/platforms/android-19 ]; then echo y | android update sdk --all --no-ui --filter "android-19"; fi;
+    - if ! $(grep -q "Revision=43.0.0" /usr/local/android-sdk-linux/extras/android/m2repository/source.properties); then echo y | android update sdk --all --no-ui --filter "extra-android-m2repository"; fi;
+  cache_directories:
+    - /usr/local/android-sdk-linux/build-tools/23.0.3
+    - /usr/local/android-sdk-linux/platforms/android-18
+    - /usr/local/android-sdk-linux/platforms/android-19
+    - /usr/local/android-sdk-linux/extras/android/m2repository
 
 test:
   override:
