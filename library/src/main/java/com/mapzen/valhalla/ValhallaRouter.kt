@@ -1,5 +1,6 @@
 package com.mapzen.valhalla
 
+import android.util.Log
 import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
@@ -95,6 +96,7 @@ open class ValhallaRouter : Router, Runnable {
 
     override fun run() {
         var jsonString = gson.toJson(getJSONRequest()).toString()
+        Log.v("a",jsonString)
         httpHandler?.requestRoute(jsonString, object: Callback<String> {
             override fun onResponse(call: Call<String>?, response: Response<String>?) {
                 if (response != null) {
@@ -117,8 +119,12 @@ open class ValhallaRouter : Router, Runnable {
             throw  MalformedURLException()
         }
         var json: JSON = JSON()
-        json.locations[0] = locations[0]
-        json.locations[1] = locations[1]
+        for ( i in 0..(locations.size-1)){
+            json.locations.add(locations[i])
+        }
+
+        //json.locations[0] = locations[0]
+        //json.locations[1] = locations[1]
         json.costing = this.type.toString()
         json.directionsOptions.language = this.language.toString()
         json.directionsOptions.units = this.units.toString()

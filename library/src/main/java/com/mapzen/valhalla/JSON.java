@@ -1,9 +1,13 @@
 package com.mapzen.valhalla;
 
+
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class JSON {
-    public Location[] locations = new Location[2];
+    public List<JSON.Location> locations = new ArrayList<>();
     public String costing;
 
     @SerializedName("directions_options")

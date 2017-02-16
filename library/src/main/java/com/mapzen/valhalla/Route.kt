@@ -1,5 +1,6 @@
 package com.mapzen.valhalla
 
+import android.util.Log
 import com.mapzen.helpers.GeometryHelper.getBearing
 import com.mapzen.model.ValhallaLocation
 import org.json.JSONArray
@@ -37,6 +38,7 @@ open class Route {
      * in response can indicate too many requests in which case no poly line will be present
      */
     private var poly: ArrayList<Node>? = null
+    private var fullpoly: ArrayList<Node>? = null
     /**
      * Because https://valhalla.mapzen.com/route does not use http status codes, "status" key
      * in response can indicate too many requests in which case no instructions will be present
@@ -53,6 +55,7 @@ open class Route {
     private var currentInstructionIndex: Int = 0
     var totalDistanceTravelled: Double = 0.0
     private var beginningRouteLostThresholdMeters: Int? = null
+    private var fullString: ArrayList<String>? = null
 
     constructor(jsonString: String) {
         setJsonObject(JSONObject(jsonString))
@@ -66,8 +69,15 @@ open class Route {
         this.rawRoute = jsonObject
         if (foundRoute()) {
             initializeDistanceUnits(jsonObject)
-            initializePolyline(jsonObject.getJSONObject(KEY_TRIP).getJSONArray(KEY_LEGS).
-                    getJSONObject(0).getString(KEY_SHAPE))
+
+            fullString = ArrayList()
+            for ( i in 0..(jsonObject.getJSONObject(KEY_TRIP).getJSONArray(KEY_LEGS).length()-1)){
+
+                fullString!!.add(jsonObject.getJSONObject(KEY_TRIP).getJSONArray(KEY_LEGS).
+                        getJSONObject(i).getString(KEY_SHAPE))
+            }
+            initializePolyline(fullString)
+
             initializeTurnByTurn(jsonObject.getJSONObject(KEY_TRIP).getJSONArray(KEY_LEGS).
                     getJSONObject(0).getJSONArray(KEY_MANEUVERS))
         }
@@ -80,50 +90,58 @@ open class Route {
         }
     }
 
-    private fun initializePolyline(encoded: String): ArrayList<Node> {
-        var lastNode: Node? = null
-        poly = ArrayList<Node>()
-        var index = 0
-        val len = encoded.length
-        var lat = 0
-        var lng = 0
-        while (index < len) {
-            var b: Int
-            var shift = 0
-            var result = 0
-            do {
-                b = encoded[index++].toInt() - 63
-                result = result or ((b and 31) shl shift)
-                shift += 5
-            } while (b >= 32)
-            val dlat = (if ((result and 1) != 0) (result shr 1).inv() else (result shr 1))
-            lat += dlat
-            shift = 0
-            result = 0
-            do {
-                b = encoded[index++].toInt() - 63
-                result = result or ((b and 31) shl shift)
-                shift += 5
-            } while (b >= 32)
-            val dlng = (if ((result and 1) != 0) (result shr 1).inv() else (result shr 1))
-            lng += dlng
-            val x = lat.toDouble() / 1E6.toDouble()
-            val y = lng.toDouble() / 1E6.toDouble()
-            val node = Node(x, y)
-            if (!poly!!.isEmpty()) {
-                val lastElement = poly!![poly!!.size - 1]
-                val distance = node.getLocation().distanceTo(lastElement.getLocation()).toDouble()
-                val totalDistance = distance + lastElement.totalDistance
-                node.totalDistance = totalDistance
-                if (lastNode != null) {
-                    lastNode.bearing = getBearing(lastNode.getLocation(), node.getLocation())
-                }
-                lastNode!!.legDistance = distance
-            }
 
-            lastNode = node
-            poly!!.add(node)
+    private fun initializePolyline(encodedFull: ArrayList<String>?): ArrayList<Node> {
+        fullpoly = ArrayList<Node>()
+        for ( a in 0..(encodedFull!!.size-1)) {
+            var encoded = encodedFull[a]
+            poly = ArrayList<Node>()
+            var lastNode: Node? = null
+
+            var index = 0
+            val len = encoded.length
+            var lat = 0
+            var lng = 0
+            while (index < len) {
+                var b: Int
+                var shift = 0
+                var result = 0
+                do {
+                    b = encoded[index++].toInt() - 63
+                    result = result or ((b and 31) shl shift)
+                    shift += 5
+                } while (b >= 32)
+                val dlat = (if ((result and 1) != 0) (result shr 1).inv() else (result shr 1))
+                lat += dlat
+                shift = 0
+                result = 0
+                do {
+                    b = encoded[index++].toInt() - 63
+                    result = result or ((b and 31) shl shift)
+                    shift += 5
+                } while (b >= 32)
+                val dlng = (if ((result and 1) != 0) (result shr 1).inv() else (result shr 1))
+                lng += dlng
+                val x = lat.toDouble() / 1E6.toDouble()
+                val y = lng.toDouble() / 1E6.toDouble()
+                val node = Node(x, y)
+                if (!poly!!.isEmpty()) {
+                    val lastElement = poly!![poly!!.size - 1]
+                    val distance = node.getLocation().distanceTo(lastElement.getLocation()).toDouble()
+                    val totalDistance = distance + lastElement.totalDistance
+                    node.totalDistance = totalDistance
+                    if (lastNode != null) {
+                        lastNode.bearing = getBearing(lastNode.getLocation(), node.getLocation())
+                    }
+                    lastNode!!.legDistance = distance
+                }
+
+                lastNode = node
+                poly!!.add(node)
+                fullpoly!!.add(node)
+            }
         }
+        poly = fullpoly
         return poly!!
     }
 
