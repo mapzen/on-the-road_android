@@ -1,22 +1,30 @@
 machine:
-  pre:
-    - curl -O http://apache.osuosl.org/maven/maven-3/3.1.1/binaries/apache-maven-3.1.1-bin.tar.gz && tar xvf apache-maven-3.1.1-bin.tar.gz -C ~/.m2
-  environment:
-    PATH: $HOME/.m2/apache-maven-3.1.1/bin:$PATH
-    M2_HOME: $HOME/.m2/apache-maven-3.1.1/
-    M2: $HOME/.m2/apache-maven-3.1.1/bin/
-    ANDROID_HOME: /usr/local/android-sdk-linux
+  java:
+    version: oraclejdk8
 
 dependencies:
   pre:
-    - echo y | android update sdk --all --no-ui --force --filter "build-tools-23.0.3,platform-tools,android-18,addon-google_apis-google-18,android-19,extra-android-m2repository"
+    - if [ ! -e /usr/local/android-sdk-linux/build-tools/23.0.3 ]; then echo y | android update sdk --all --no-ui --filter "build-tools-23.0.3"; fi;
+    - if [ ! -e /usr/local/android-sdk-linux/platforms/android-18 ]; then echo y | android update sdk --all --no-ui --filter "android-18"; fi;
+    - if [ ! -e /usr/local/android-sdk-linux/platforms/android-19 ]; then echo y | android update sdk --all --no-ui --filter "android-19"; fi;
+    - if ! $(grep -q "Revision=43.0.0" /usr/local/android-sdk-linux/extras/android/m2repository/source.properties); then echo y | android update sdk --all --no-ui --filter "extra-android-m2repository"; fi;
+  cache_directories:
+    - /usr/local/android-sdk-linux/build-tools/23.0.3
+    - /usr/local/android-sdk-linux/platforms/android-18
+    - /usr/local/android-sdk-linux/platforms/android-19
+    - /usr/local/android-sdk-linux/extras/android/m2repository
 
 test:
   override:
-    - ./gradlew
+    - ./gradlew -PdisablePreDex
 
 deployment:
   master:
     branch: master
     commands:
       - ./gradlew uploadArchives -PsonatypeUsername=$SONATYPE_NEXUS_SNAPSHOTS_USERNAME -PsonatypePassword=$SONATYPE_NEXUS_SNAPSHOTS_PASSWORD
+  release:
+     tag: /on-the-road-[0-9]+(\.[0-9]+)*(-rc[0-9])?/
+     owner: mapzen
+     commands:
+      - scripts/deploy-staging.sh
