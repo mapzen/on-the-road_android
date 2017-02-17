@@ -137,9 +137,9 @@ public class RouterTest {
         router.setLocation(loc2);
         router.setLocation(loc3);
         JSON json = router.getJSONRequest();
-        assertThat(json.locations[0].lat).doesNotContain("1.0");
-        assertThat(json.locations[0].lat).contains("3.0");
-        assertThat(json.locations[1].lat).contains("5.0");
+        assertThat(json.locations.get(0).lat).doesNotContain("1.0");
+        assertThat(json.locations.get(0).lat).contains("3.0");
+        assertThat(json.locations.get(1).lat).contains("5.0");
     }
 
     @Test(expected=MalformedURLException.class)
@@ -160,10 +160,10 @@ public class RouterTest {
                 .setLocation(loc1)
                 .setLocation(loc2)
                 .getJSONRequest();
-        assertThat(json.locations[0].lat).contains("1.0");
-        assertThat(json.locations[0].lon).contains("2.0");
-        assertThat(json.locations[1].lat).contains("3.0");
-        assertThat(json.locations[1].lon).contains("4.0");
+        assertThat(json.locations.get(0).lat).contains("1.0");
+        assertThat(json.locations.get(0).lon).contains("2.0");
+        assertThat(json.locations.get(1).lat).contains("3.0");
+        assertThat(json.locations.get(1).lon).contains("4.0");
     }
 
     @Test
