@@ -1,6 +1,5 @@
 package com.mapzen.valhalla
 
-import android.util.Log
 import com.mapzen.helpers.GeometryHelper.getBearing
 import com.mapzen.model.ValhallaLocation
 import org.json.JSONArray
@@ -38,7 +37,7 @@ open class Route {
      * in response can indicate too many requests in which case no poly line will be present
      */
     private var poly: ArrayList<Node>? = null
-    private var fullpoly: ArrayList<Node>? = null
+    //private var fullpoly: ArrayList<Node>? = null
     /**
      * Because https://valhalla.mapzen.com/route does not use http status codes, "status" key
      * in response can indicate too many requests in which case no instructions will be present
@@ -92,9 +91,9 @@ open class Route {
 
 
     private fun initializePolyline(encodedFull: ArrayList<String>?): ArrayList<Node> {
-        fullpoly = ArrayList<Node>()
+        val fullpoly: ArrayList<Node> = ArrayList()
         for ( a in 0..(encodedFull!!.size-1)) {
-            var encoded = encodedFull[a]
+            val encoded = encodedFull[a]
             poly = ArrayList<Node>()
             var lastNode: Node? = null
 
@@ -138,7 +137,7 @@ open class Route {
 
                 lastNode = node
                 poly!!.add(node)
-                fullpoly!!.add(node)
+                fullpoly.add(node)
             }
         }
         poly = fullpoly
