@@ -96,7 +96,6 @@ open class ValhallaRouter : Router, Runnable {
 
     override fun run() {
         var jsonString = gson.toJson(getJSONRequest()).toString()
-        Log.v("a",jsonString)
         httpHandler?.requestRoute(jsonString, object: Callback<String> {
             override fun onResponse(call: Call<String>?, response: Response<String>?) {
                 if (response != null) {
@@ -123,8 +122,6 @@ open class ValhallaRouter : Router, Runnable {
             json.locations.add(locations[i])
         }
 
-        //json.locations[0] = locations[0]
-        //json.locations[1] = locations[1]
         json.costing = this.type.toString()
         json.directionsOptions.language = this.language.toString()
         json.directionsOptions.units = this.units.toString()
