@@ -167,6 +167,28 @@ public class RouterTest {
     }
 
     @Test
+    public void shouldAddWaypoints() throws Exception {
+        double[] loc1 = { 1.0, 2.0 };
+        double[] loc2 = { 3.0, 4.0 };
+        double[] loc3 = { 5.0, 6.0 };
+        double[] loc4 = { 7.0, 8.0 };
+        JSON json = new ValhallaRouter()
+            .setLocation(loc1)
+            .setLocation(loc2)
+            .setLocation(loc3)
+            .setLocation(loc4)
+            .getJSONRequest();
+        assertThat(json.locations.get(0).lat).contains("1.0");
+        assertThat(json.locations.get(0).lon).contains("2.0");
+        assertThat(json.locations.get(1).lat).contains("3.0");
+        assertThat(json.locations.get(1).lon).contains("4.0");
+        assertThat(json.locations.get(2).lat).contains("5.0");
+        assertThat(json.locations.get(2).lon).contains("6.0");
+        assertThat(json.locations.get(3).lat).contains("7.0");
+        assertThat(json.locations.get(3).lon).contains("8.0");
+    }
+
+    @Test
     public void shouldGetRoute() throws Exception {
         final RouteCallback callback = Mockito.mock(RouteCallback.class);
         String routeJson = getRouteFixture("brooklyn_valhalla");
