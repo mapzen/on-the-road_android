@@ -37,7 +37,7 @@ open class Route {
      * in response can indicate too many requests in which case no poly line will be present
      */
     private var poly: ArrayList<Node>? = null
-    //private var fullpoly: ArrayList<Node>? = null
+    private var fullpoly: ArrayList<Node>? = null
     /**
      * Because https://valhalla.mapzen.com/route does not use http status codes, "status" key
      * in response can indicate too many requests in which case no instructions will be present
@@ -91,9 +91,9 @@ open class Route {
 
 
     private fun initializePolyline(encodedFull: ArrayList<String>?): ArrayList<Node> {
-        val fullpoly: ArrayList<Node> = ArrayList()
+        fullpoly = ArrayList<Node>()
         for ( a in 0..(encodedFull!!.size-1)) {
-            val encoded = encodedFull[a]
+            var encoded = encodedFull[a]
             poly = ArrayList<Node>()
             var lastNode: Node? = null
 
@@ -137,7 +137,7 @@ open class Route {
 
                 lastNode = node
                 poly!!.add(node)
-                fullpoly.add(node)
+                fullpoly!!.add(node)
             }
         }
         poly = fullpoly
