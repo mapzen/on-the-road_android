@@ -7,10 +7,11 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.net.MalformedURLException
 import java.util.ArrayList
+import java.util.Locale
 
 open class ValhallaRouter : Router, Runnable {
 
-    private var language = Router.Language.EN_US
+    private var language = Locale.getDefault().language
     private var type = Router.Type.DRIVING
     private val locations = ArrayList<JSON.Location>()
     private var callback: RouteCallback? = null
@@ -28,7 +29,7 @@ open class ValhallaRouter : Router, Runnable {
     }
 
     override fun setLanguage(language: Router.Language): Router {
-        this.language = language
+        this.language = language.toString()
         return this
     }
 
@@ -124,7 +125,7 @@ open class ValhallaRouter : Router, Runnable {
         }
 
         json.costing = this.type.toString()
-        json.directionsOptions.language = this.language.toString()
+        json.directionsOptions.language = language
         json.directionsOptions.units = this.units.toString()
         return json
     }
