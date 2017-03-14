@@ -1,7 +1,7 @@
 package com.mapzen.valhalla
 
-import android.util.Log
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -18,7 +18,9 @@ open class ValhallaRouter : Router, Runnable {
 
     private var httpHandler: HttpHandler? = null
 
-    var gson: Gson = Gson()
+    private val gson: Gson = GsonBuilder()
+        .registerTypeAdapter(JSON.Location::class.java, LocationSerializer())
+        .create()
 
     override fun setHttpHandler(handler: HttpHandler): Router {
         httpHandler = handler
@@ -51,13 +53,12 @@ open class ValhallaRouter : Router, Runnable {
     }
 
     override fun setLocation(point: DoubleArray): Router {
-        this.locations.add(JSON.Location(point[0].toString(), point[1].toString()))
+        this.locations.add(JSON.Location(point[0], point[1]))
         return this
     }
 
-    override fun setLocation(point: DoubleArray, heading: Float): Router {
-        this.locations.add(JSON.Location(point[0].toString(), point[1].toString(),
-                heading.toInt().toString()))
+    override fun setLocation(point: DoubleArray, heading: Double): Router {
+        this.locations.add(JSON.Location(point[0], point[1], heading))
         return this
     }
 
@@ -67,7 +68,7 @@ open class ValhallaRouter : Router, Runnable {
             city: String?,
             state: String?): Router {
 
-        this.locations.add(JSON.Location(point[0].toString(), point[1].toString(),
+        this.locations.add(JSON.Location(point[0], point[1],
                 name, street, city, state));
         return this
     }

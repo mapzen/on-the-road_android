@@ -44,7 +44,7 @@ interface Router {
     fun setBiking(): Router
     fun setMultimodal(): Router
     fun setLocation(point: DoubleArray): Router
-    fun setLocation(point: DoubleArray, heading: Float): Router
+    fun setLocation(point: DoubleArray, heading: Double): Router
     fun setLocation(point: DoubleArray,
             name: String? = null,
             street: String? = null,

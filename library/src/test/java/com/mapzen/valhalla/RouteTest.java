@@ -2,8 +2,6 @@ package com.mapzen.valhalla;
 
 import com.mapzen.model.ValhallaLocation;
 
-import com.google.common.io.Files;
-
 import org.apache.commons.io.FileUtils;
 import org.fest.assertions.data.Offset;
 import org.junit.Before;
@@ -18,7 +16,6 @@ import java.util.ListIterator;
 
 import static com.mapzen.TestUtils.getLocation;
 import static java.lang.System.getProperty;
-import static java.nio.charset.Charset.defaultCharset;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
@@ -525,19 +522,5 @@ public class RouteTest {
 
         route = getRoute("brooklyn_valhalla_miles");
         assertThat(route.getUnits()).isEqualTo(Router.DistanceUnits.MILES);
-    }
-
-    private ArrayList<ValhallaLocation> getLocationsFromFile(String name) throws Exception {
-        String fileName = getProperty("user.dir");
-        File file = new File(fileName + "/src/test/fixtures/" + name + ".txt");
-        ArrayList<ValhallaLocation> allLocations = new ArrayList<ValhallaLocation>();
-        for(String locations: Files.readLines(file, defaultCharset())) {
-            String[] latLng = locations.split(",");
-            ValhallaLocation location = new ValhallaLocation();
-            location.setLatitude(Double.valueOf(latLng[0]));
-            location.setLongitude(Double.valueOf(latLng[1]));
-            allLocations.add(location);
-        }
-        return allLocations;
     }
 }

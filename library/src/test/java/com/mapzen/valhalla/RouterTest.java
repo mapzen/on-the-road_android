@@ -1,6 +1,7 @@
 package com.mapzen.valhalla;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.json.JSONObject;
 import org.junit.After;
@@ -137,9 +138,9 @@ public class RouterTest {
         router.setLocation(loc2);
         router.setLocation(loc3);
         JSON json = router.getJSONRequest();
-        assertThat(json.locations.get(0).lat).doesNotContain("1.0");
-        assertThat(json.locations.get(0).lat).contains("3.0");
-        assertThat(json.locations.get(1).lat).contains("5.0");
+        assertThat(json.locations.get(0).lat).isNotEqualTo(1.0);
+        assertThat(json.locations.get(0).lat).isEqualTo(3.0);
+        assertThat(json.locations.get(1).lat).isEqualTo(5.0);
     }
 
     @Test(expected=MalformedURLException.class)
@@ -160,10 +161,10 @@ public class RouterTest {
                 .setLocation(loc1)
                 .setLocation(loc2)
                 .getJSONRequest();
-        assertThat(json.locations.get(0).lat).contains("1.0");
-        assertThat(json.locations.get(0).lon).contains("2.0");
-        assertThat(json.locations.get(1).lat).contains("3.0");
-        assertThat(json.locations.get(1).lon).contains("4.0");
+        assertThat(json.locations.get(0).lat).isEqualTo(1.0);
+        assertThat(json.locations.get(0).lon).isEqualTo(2.0);
+        assertThat(json.locations.get(1).lat).isEqualTo(3.0);
+        assertThat(json.locations.get(1).lon).isEqualTo(4.0);
     }
 
     @Test
@@ -178,14 +179,14 @@ public class RouterTest {
             .setLocation(loc3)
             .setLocation(loc4)
             .getJSONRequest();
-        assertThat(json.locations.get(0).lat).contains("1.0");
-        assertThat(json.locations.get(0).lon).contains("2.0");
-        assertThat(json.locations.get(1).lat).contains("3.0");
-        assertThat(json.locations.get(1).lon).contains("4.0");
-        assertThat(json.locations.get(2).lat).contains("5.0");
-        assertThat(json.locations.get(2).lon).contains("6.0");
-        assertThat(json.locations.get(3).lat).contains("7.0");
-        assertThat(json.locations.get(3).lon).contains("8.0");
+        assertThat(json.locations.get(0).lat).isEqualTo(1.0);
+        assertThat(json.locations.get(0).lon).isEqualTo(2.0);
+        assertThat(json.locations.get(1).lat).isEqualTo(3.0);
+        assertThat(json.locations.get(1).lon).isEqualTo(4.0);
+        assertThat(json.locations.get(2).lat).isEqualTo(5.0);
+        assertThat(json.locations.get(2).lon).isEqualTo(6.0);
+        assertThat(json.locations.get(3).lat).isEqualTo(7.0);
+        assertThat(json.locations.get(3).lon).isEqualTo(8.0);
     }
 
     @Test
@@ -277,8 +278,11 @@ public class RouterTest {
         double[] loc = new double[] {1.0, 2.0};
         router = new ValhallaRouter().setLocation(loc)
                 .setLocation(loc, "Acme", null, null, null);
-        assertThat(new Gson().toJson(router.getJSONRequest()))
-                .contains("{\"lat\":\"1.0\",\"lon\":\"2.0\",\"name\":\"Acme\"}");
+        Gson gson = new GsonBuilder()
+            .registerTypeAdapter(JSON.Location.class, new LocationSerializer())
+            .create();
+        assertThat(gson.toJson(router.getJSONRequest()))
+                .contains("{\"lat\":1.0,\"lon\":2.0,\"name\":\"Acme\"}");
     }
 
     @Test
@@ -292,8 +296,11 @@ public class RouterTest {
         double[] loc = new double[] {1.0, 2.0};
         router = new ValhallaRouter()
                 .setLocation(loc).setLocation(loc, "Acme", "North Main Street", "Doylestown", "PA");
-        assertThat(new Gson().toJson(router.getJSONRequest()))
-                .contains("{\"lat\":\"1.0\",\"lon\":\"2.0\","
+        Gson gson = new GsonBuilder()
+            .registerTypeAdapter(JSON.Location.class, new LocationSerializer())
+            .create();
+        assertThat(gson.toJson(router.getJSONRequest()))
+                .contains("{\"lat\":1.0,\"lon\":2.0,"
                         + "\"name\":\"Acme\","
                         + "\"street\":\"North Main Street\","
                         + "\"city\":\"Doylestown\","
@@ -305,7 +312,7 @@ public class RouterTest {
         double[] loc = new double[] {1.0, 2.0};
         router = new ValhallaRouter().setLocation(loc, 180).setLocation(loc);
         assertThat(new Gson().toJson(router.getJSONRequest()))
-                .contains("{\"lat\":\"1.0\",\"lon\":\"2.0\",\"heading\":\"180\"}");
+                .contains("{\"lat\":1.0,\"lon\":2.0,\"heading\":180.0}");
     }
 
     @Test
