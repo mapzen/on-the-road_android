@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JSON {
-    public static final double HEADING_NONE = -1;
+    public static final int HEADING_NONE = -1;
 
     public List<JSON.Location> locations = new ArrayList<>();
     public String costing;
@@ -22,14 +22,14 @@ public class JSON {
         public String street;
         public String city;
         public String state;
-        public double heading = HEADING_NONE;
+        public int heading = HEADING_NONE;
 
         public Location(double lat, double lon) {
             this.lat = lat;
             this.lon = lon;
         }
 
-        public Location(double lat, double lon, double heading) {
+        public Location(double lat, double lon, int heading) {
             if (heading < 0 || heading >= 360) {
                 throw new IllegalArgumentException("Heading value must in the range [0, 360)");
             }

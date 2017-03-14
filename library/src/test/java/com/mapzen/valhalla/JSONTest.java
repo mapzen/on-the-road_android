@@ -7,7 +7,7 @@ public class JSONTest {
   public void shouldNotThrowIfHeadingEqualsZero() throws Exception {
     double lat = 0.0;
     double lon = 0.0;
-    double heading = 0.0;
+    int heading = 0;
     new JSON.Location(lat, lon, heading);
   }
 
@@ -15,7 +15,7 @@ public class JSONTest {
   public void shouldThrowIfHeadingLessThanZero() throws Exception {
     double lat = 0.0;
     double lon = 0.0;
-    double heading = -1.0;
+    int heading = -1;
     new JSON.Location(lat, lon, heading);
   }
 
@@ -23,7 +23,7 @@ public class JSONTest {
   public void shouldThrowIfHeadingEquals360() throws Exception {
     double lat = 0.0;
     double lon = 0.0;
-    double heading = 360.0;
+    int heading = 360;
     new JSON.Location(lat, lon, heading);
   }
 
@@ -31,7 +31,7 @@ public class JSONTest {
   public void shouldThrowIfHeadingIsGreaterThan360() throws Exception {
     double lat = 0.0;
     double lon = 0.0;
-    double heading = 361.0;
+    int heading = 361;
     new JSON.Location(lat, lon, heading);
   }
 }

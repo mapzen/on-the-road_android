@@ -57,7 +57,7 @@ open class ValhallaRouter : Router, Runnable {
         return this
     }
 
-    override fun setLocation(point: DoubleArray, heading: Double): Router {
+    override fun setLocation(point: DoubleArray, heading: Int): Router {
         this.locations.add(JSON.Location(point[0], point[1], heading))
         return this
     }
