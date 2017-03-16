@@ -11,7 +11,7 @@ import java.util.Locale
 
 open class ValhallaRouter : Router, Runnable {
 
-    private var language = Locale.getDefault().language
+    private var language: String? = null
     private var type = Router.Type.DRIVING
     private val locations = ArrayList<JSON.Location>()
     private var callback: RouteCallback? = null
@@ -124,9 +124,19 @@ open class ValhallaRouter : Router, Runnable {
             json.locations.add(locations[i])
         }
 
+        if (language == null) {
+            language = getDefaultLanguage()
+        }
+
         json.costing = this.type.toString()
         json.directionsOptions.language = language
         json.directionsOptions.units = this.units.toString()
         return json
+    }
+
+    fun getDefaultLanguage(): String? {
+        val locale = Locale.getDefault().language + "-" + Locale.getDefault().country
+        return if (Router.Language.values().any { it.toString() == locale }) locale
+            else Locale.getDefault().language
     }
 }

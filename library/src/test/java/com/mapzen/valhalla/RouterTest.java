@@ -46,59 +46,69 @@ public class RouterTest {
     }
 
     @Test
-    public void shouldUseDefaultLocaleIfNoLanguageSpecified() throws Exception {
+    public void shouldUseFourCharacterLanguageCodeIfDefaultIsSupported() throws Exception {
         Locale.setDefault(Locale.FRANCE);
         double[] loc = new double[] {1.0, 2.0};
         router = new ValhallaRouter().setLocation(loc).setLocation(loc);
+        assertThat(router.getJSONRequest().directionsOptions.language).contains("fr-FR");
+    }
+
+    @Test
+    public void shouldUseTwoCharacterLanguageCodeIfDefaultIsNotSupported() throws Exception {
+        Locale.setDefault(Locale.CANADA_FRENCH);
+        double[] loc = new double[] {1.0, 2.0};
+        router = new ValhallaRouter().setLocation(loc).setLocation(loc);
         assertThat(router.getJSONRequest().directionsOptions.language).contains("fr");
+        assertThat(router.getJSONRequest().directionsOptions.language).doesNotContain("-FR");
+        assertThat(router.getJSONRequest().directionsOptions.language).doesNotContain("-CA");
     }
 
     @Test
     public void shouldSetToCsCs() throws Exception {
         router.setLanguage(Router.Language.CS_CZ);
-        assertThat(router.getJSONRequest().directionsOptions.language).contains("cs");
+        assertThat(router.getJSONRequest().directionsOptions.language).contains("cs-CZ");
     }
 
     @Test
     public void shouldSetToDeDe() throws Exception {
         router.setLanguage(Router.Language.DE_DE);
-        assertThat(router.getJSONRequest().directionsOptions.language).contains("de");
+        assertThat(router.getJSONRequest().directionsOptions.language).contains("de-DE");
     }
 
     @Test
     public void shouldSetToEnUs() throws Exception {
         router.setLanguage(Router.Language.EN_US);
-        assertThat(router.getJSONRequest().directionsOptions.language).contains("en");
+        assertThat(router.getJSONRequest().directionsOptions.language).contains("en-US");
     }
 
     @Test
     public void shouldSetToEnUsPirate() throws Exception {
         router.setLanguage(Router.Language.PIRATE);
-        assertThat(router.getJSONRequest().directionsOptions.language).contains("pirate");
+        assertThat(router.getJSONRequest().directionsOptions.language).contains("en-US-x-pirate");
     }
 
     @Test
     public void shouldSetToEsEs() throws Exception {
         router.setLanguage(Router.Language.ES_ES);
-        assertThat(router.getJSONRequest().directionsOptions.language).contains("es");
+        assertThat(router.getJSONRequest().directionsOptions.language).contains("es-ES");
     }
 
     @Test
     public void shouldSetToFrFr() throws Exception {
         router.setLanguage(Router.Language.FR_FR);
-        assertThat(router.getJSONRequest().directionsOptions.language).contains("fr");
+        assertThat(router.getJSONRequest().directionsOptions.language).contains("fr-FR");
     }
 
     @Test
     public void shouldSetToItIt() throws Exception {
         router.setLanguage(Router.Language.IT_IT);
-        assertThat(router.getJSONRequest().directionsOptions.language).contains("it");
+        assertThat(router.getJSONRequest().directionsOptions.language).contains("it-IT");
     }
 
     @Test
     public void shouldSetToHiIn() throws Exception {
         router.setLanguage(Router.Language.HI_IN);
-        assertThat(router.getJSONRequest().directionsOptions.language).contains("hi");
+        assertThat(router.getJSONRequest().directionsOptions.language).contains("hi-IN");
     }
 
     @Test
