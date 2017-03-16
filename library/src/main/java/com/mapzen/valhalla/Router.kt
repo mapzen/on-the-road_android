@@ -10,7 +10,9 @@ interface Router {
         ES_ES("es-ES"),
         FR_FR("fr-FR"),
         IT_IT("it-IT"),
-        HI_IN("hi-IN");
+        HI_IN("hi-IN"),
+        CA_ES("ca-ES"),
+        SL_SI("sl-SI");
 
         override fun toString(): String {
             return languageTag

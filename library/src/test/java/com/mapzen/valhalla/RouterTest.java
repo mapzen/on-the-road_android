@@ -13,6 +13,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.net.MalformedURLException;
+import java.util.Locale;
 
 import static com.mapzen.TestUtils.getRouteFixture;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -45,8 +46,21 @@ public class RouterTest {
     }
 
     @Test
-    public void shouldDefaultToEnUs() throws Exception {
-        assertThat(router.getJSONRequest().directionsOptions.language).contains("en-US");
+    public void shouldUseFourCharacterLanguageCodeIfDefaultIsSupported() throws Exception {
+        Locale.setDefault(Locale.FRANCE);
+        double[] loc = new double[] {1.0, 2.0};
+        router = new ValhallaRouter().setLocation(loc).setLocation(loc);
+        assertThat(router.getJSONRequest().directionsOptions.language).contains("fr-FR");
+    }
+
+    @Test
+    public void shouldUseTwoCharacterLanguageCodeIfDefaultIsNotSupported() throws Exception {
+        Locale.setDefault(Locale.CANADA_FRENCH);
+        double[] loc = new double[] {1.0, 2.0};
+        router = new ValhallaRouter().setLocation(loc).setLocation(loc);
+        assertThat(router.getJSONRequest().directionsOptions.language).contains("fr");
+        assertThat(router.getJSONRequest().directionsOptions.language).doesNotContain("-FR");
+        assertThat(router.getJSONRequest().directionsOptions.language).doesNotContain("-CA");
     }
 
     @Test
@@ -95,6 +109,18 @@ public class RouterTest {
     public void shouldSetToHiIn() throws Exception {
         router.setLanguage(Router.Language.HI_IN);
         assertThat(router.getJSONRequest().directionsOptions.language).contains("hi-IN");
+    }
+
+    @Test
+    public void shouldSetToCaEs() throws Exception {
+        router.setLanguage(Router.Language.CA_ES);
+        assertThat(router.getJSONRequest().directionsOptions.language).contains("ca-ES");
+    }
+
+    @Test
+    public void shouldSetToSlSi() throws Exception {
+        router.setLanguage(Router.Language.SL_SI);
+        assertThat(router.getJSONRequest().directionsOptions.language).contains("sl-SI");
     }
 
     @Test
@@ -266,11 +292,11 @@ public class RouterTest {
     public void setDistanceUnits_shouldAppendUnitsToJson() throws Exception {
         router.setDistanceUnits(Router.DistanceUnits.MILES);
         assertThat(new Gson().toJson(router.getJSONRequest()))
-                .contains("\"directions_options\":{\"units\":\"miles\",\"language\":\"en-US\"}");
+                .contains("\"directions_options\":{\"units\":\"miles\"");
 
         router.setDistanceUnits(Router.DistanceUnits.KILOMETERS);
         assertThat(new Gson().toJson(router.getJSONRequest()))
-                .contains("\"directions_options\":{\"units\":\"kilometers\",\"language\":\"en-US\"}");
+                .contains("\"directions_options\":{\"units\":\"kilometers\"");
     }
 
     @Test
