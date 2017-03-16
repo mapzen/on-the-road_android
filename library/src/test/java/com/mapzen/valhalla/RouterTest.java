@@ -112,6 +112,18 @@ public class RouterTest {
     }
 
     @Test
+    public void shouldSetToCaEs() throws Exception {
+        router.setLanguage(Router.Language.CA_ES);
+        assertThat(router.getJSONRequest().directionsOptions.language).contains("ca-ES");
+    }
+
+    @Test
+    public void shouldSetToSlSi() throws Exception {
+        router.setLanguage(Router.Language.SL_SI);
+        assertThat(router.getJSONRequest().directionsOptions.language).contains("sl-SI");
+    }
+
+    @Test
     public void shouldDefaultToCar() throws Exception {
         assertThat(router.getJSONRequest().costing).contains("auto");
     }
