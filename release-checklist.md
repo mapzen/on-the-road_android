@@ -4,10 +4,11 @@ Instructions to build a new release version of **On the Road** and deploy to [Ma
 
 ### 0. Build & Deploy Release
 
-Build release and deploy to the Sonatype staging repository.
+Ensure that you have set a CIRCLE_TOKEN environment variable.
 
+Run the deploy script with the release and new version specified like so:
 ```bash
-$ ./gradlew clean release --refresh-dependencies
+$ ./scripts/deploy.sh 1.1.0 1.1.2-SNAPSHOT
 ```
 
 Verify snapshot build was successfully deployed to [Sonatype OSS Snapshots][1].
