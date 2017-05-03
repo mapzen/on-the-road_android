@@ -16,6 +16,8 @@ android {
 
     // Create BuildConfig field for accessing gradle property in code
     buildConfigField "String", "API_KEY", API_KEY
+
+    multiDexEnabled true
   }
   buildTypes {
     release {
