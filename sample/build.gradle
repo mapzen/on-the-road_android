@@ -6,7 +6,7 @@ def API_KEY = hasProperty('apiKey') ? '"' + apiKey + '"' : "null";
 android {
   compileSdkVersion 25
   buildToolsVersion '25.0.2'
-
+  
   defaultConfig {
     applicationId "com.mapzen.sample"
     minSdkVersion 15
