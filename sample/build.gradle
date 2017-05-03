@@ -17,10 +17,6 @@ android {
     // Create BuildConfig field for accessing gradle property in code
     buildConfigField "String", "API_KEY", API_KEY
   }
-  dexOptions {
-    preDexLibraries = false
-    javaMaxHeapSize "4g"
-  }
   buildTypes {
     release {
       minifyEnabled false
