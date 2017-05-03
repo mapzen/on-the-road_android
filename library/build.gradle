@@ -89,7 +89,6 @@ dependencies {
   testCompile 'junit:junit:4.12'
   testCompile('org.robolectric:robolectric:2.2') {
     exclude group: 'commons-logging', module: 'commons-logging'
-    exclude group: 'org.apache.httpcomponents', module: 'httpclient'
   }
   testCompile 'org.easytesting:fest-assert-core:2.0M10'
   testCompile 'com.squareup:fest-android:1.0.7'
@@ -98,7 +97,6 @@ dependencies {
   testCompile 'org.easytesting:fest-reflect:1.4.1'
   testCompile 'com.google.guava:guava:18.0'
   testCompile 'org.json:json:20160212'
-  testCompile 'org.apache.httpcomponents:httpclient:4.5.3'
 }
 
 apply from: file('../gradle-mvn-push.gradle')
