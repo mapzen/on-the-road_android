@@ -98,6 +98,7 @@ dependencies {
   testCompile 'org.easytesting:fest-reflect:1.4.1'
   testCompile 'com.google.guava:guava:18.0'
   testCompile 'org.json:json:20160212'
+  testCompile 'org.apache.httpcomponents:httpclient:4.5.3'
 }
 
 apply from: file('../gradle-mvn-push.gradle')
