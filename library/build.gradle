@@ -42,12 +42,12 @@ task copyTask(type: Copy) {
 }
 
 android {
-  compileSdkVersion 22
-  buildToolsVersion "22.0.1"
+  compileSdkVersion 25
+  buildToolsVersion '25.0.2'
 
   defaultConfig {
     minSdkVersion 15
-    targetSdkVersion 22
+    targetSdkVersion 25
     versionCode 1
     versionName version
   }
@@ -76,7 +76,7 @@ repositories {
 }
 
 dependencies {
-  compile 'com.android.support:support-v4:22.1.0'
+  compile 'com.android.support:appcompat-v7:25.1.0'
   compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
   compile 'com.squareup.okhttp3:okhttp:3.5.0'
   compile 'com.squareup.okhttp3:logging-interceptor:3.5.0'
