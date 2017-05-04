@@ -42,12 +42,12 @@ task copyTask(type: Copy) {
 }
 
 android {
-  compileSdkVersion 22
-  buildToolsVersion "22.0.1"
+  compileSdkVersion 25
+  buildToolsVersion '25.0.2'
 
   defaultConfig {
     minSdkVersion 15
-    targetSdkVersion 22
+    targetSdkVersion 25
     versionCode 1
     versionName version
   }
@@ -76,11 +76,10 @@ repositories {
 }
 
 dependencies {
-  compile 'com.android.support:support-v4:22.1.0'
+  compile 'com.android.support:appcompat-v7:25.1.0'
   compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
   compile 'com.squareup.okhttp3:okhttp:3.5.0'
   compile 'com.squareup.okhttp3:logging-interceptor:3.5.0'
-  compile 'org.apache.commons:commons-io:1.3.2'
   compile 'com.squareup.retrofit2:retrofit:2.1.0'
   compile 'com.squareup.retrofit2:converter-gson:2.1.0'
   compile 'com.squareup.retrofit2:converter-scalars:2.1.0'
@@ -89,7 +88,6 @@ dependencies {
   testCompile 'junit:junit:4.12'
   testCompile('org.robolectric:robolectric:2.2') {
     exclude group: 'commons-logging', module: 'commons-logging'
-    exclude group: 'org.apache.httpcomponents', module: 'httpclient'
   }
   testCompile 'org.easytesting:fest-assert-core:2.0M10'
   testCompile 'com.squareup:fest-android:1.0.7'
@@ -98,6 +96,7 @@ dependencies {
   testCompile 'org.easytesting:fest-reflect:1.4.1'
   testCompile 'com.google.guava:guava:18.0'
   testCompile 'org.json:json:20160212'
+  testCompile 'commons-io:commons-io:2.5'
 }
 
 apply from: file('../gradle-mvn-push.gradle')
