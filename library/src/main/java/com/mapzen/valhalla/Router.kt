@@ -3,15 +3,16 @@ package com.mapzen.valhalla
 interface Router {
 
     enum class Language(private val languageTag: String) {
+        CA_ES("ca-ES"),
         CS_CZ("cs-CZ"),
         DE_DE("de-DE"),
         EN_US("en-US"),
         PIRATE("en-US-x-pirate"),
         ES_ES("es-ES"),
         FR_FR("fr-FR"),
-        IT_IT("it-IT"),
         HI_IN("hi-IN"),
-        CA_ES("ca-ES"),
+        IT_IT("it-IT"),
+        RU_RU("ru-RU"),
         SL_SI("sl-SI");
 
         override fun toString(): String {
