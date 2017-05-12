@@ -13,13 +13,16 @@
     <item>multimodal</item>
   </string-array>
   <string-array name="languages_array">
+    <item>CA_ES</item>
     <item>CS_CZ</item>
     <item>DE_DE</item>
     <item>EN_US</item>
     <item>PIRATE</item>
     <item>ES_ES</item>
-    <item>FR_FR</item>
-    <item>IT_IT</item>
     <item>HI_IN</item>
+    <item>IT_IT</item>
+    <item>FR_FR</item>
+    <item>RU_RU</item>
+    <item>SL_SI</item>
   </string-array>
 </resources>
