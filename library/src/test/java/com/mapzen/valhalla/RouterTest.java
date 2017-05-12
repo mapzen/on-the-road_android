@@ -124,6 +124,12 @@ public class RouterTest {
     }
 
     @Test
+    public void shouldSetToRuRu() throws Exception {
+        router.setLanguage(Router.Language.RU_RU);
+        assertThat(router.getJSONRequest().directionsOptions.language).contains("ru-RU");
+    }
+
+    @Test
     public void shouldDefaultToCar() throws Exception {
         assertThat(router.getJSONRequest().costing).contains("auto");
     }
