@@ -1,5 +1,7 @@
 package com.mapzen.valhalla;
 
+import com.mapzen.http.Tls12OkHttpClientFactory;
+
 import java.io.IOException;
 
 import okhttp3.Interceptor;
@@ -50,7 +52,9 @@ public class HttpHandler {
   }
 
   protected void configure(String endpoint, HttpLoggingInterceptor.Level logLevel) {
-    final OkHttpClient client = new OkHttpClient.Builder()
+    final OkHttpClient.Builder builder = Tls12OkHttpClientFactory.Companion.
+        enableTls12OnPreLollipop(new OkHttpClient.Builder());
+    final OkHttpClient client = builder
         .addNetworkInterceptor(requestInterceptor)
         .addNetworkInterceptor(new HttpLoggingInterceptor().setLevel(logLevel))
         .build();
