@@ -14,7 +14,7 @@ import javax.net.ssl.X509TrustManager
 
 
 /**
- * Created by sarahlensing on 5/25/17.
+ * Enables TLS 1.2 for [OkHttpClient.Builder].
  */
 class Tls12OkHttpClientFactory {
 
