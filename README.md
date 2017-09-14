@@ -146,6 +146,15 @@ Include dependency using Gradle.
 compile 'com.mapzen:on-the-road:1.2.0'
 ```
 
+## Sample app
+This project includes a sample app which can be used to easily test the library.
+
+#### API key
+To run the app you will need to sign up and [obtain an API key](https://mapzen.com/dashboard). After you have your API key, create a `gradle.properties` file in `~/.gradle/gradle.properties` and add your api key `apiKey=YOUR_API_KEY`.
+
+Install the app from your IDE or from the command line with `./gradlew :sample:installDebug`
+
+
 [1]: http://search.maven.org/remotecontent?filepath=com/mapzen/on-the-road/1.2.0/on-the-road-1.2.0.aar
 [2]: https://mapzen.com/projects/valhalla/
 [3]: https://github.com/mapzen/lost
