@@ -5,5 +5,5 @@ import retrofit2.http.Query;
 import retrofit2.Call;
 
 public interface RoutingService {
-    @GET("/route") Call<String> getRoute(@Query("json") String json);
+    @GET("/route") Call<String> getRoute(@Query("json") JSON json);
 }
