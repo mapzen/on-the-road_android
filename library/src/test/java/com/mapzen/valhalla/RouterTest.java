@@ -231,7 +231,7 @@ public class RouterTest {
             .setLocation(new double[] { 40.659241, -73.983776 })
             .setLocation(new double[] { 40.671773, -73.981115 });
         router.setCallback(callback);
-        ((ValhallaRouter) router).run();
+        router.fetch();
         Mockito.verify(callback).success(route.capture());
         assertThat(route.getValue().foundRoute()).isTrue();
     }
@@ -245,7 +245,7 @@ public class RouterTest {
             .setLocation(new double[]{40.659241, -73.983776})
             .setLocation(new double[]{40.671773, -73.981115});
         router.setCallback(callback);
-        ((ValhallaRouter) router).run();
+        router.fetch();
         Mockito.verify(callback).failure(statusCode.capture());
         assertThat(statusCode.getValue()).isEqualTo(500);
     }
@@ -259,7 +259,7 @@ public class RouterTest {
             .setLocation(new double[]{40.659241, -73.983776})
             .setLocation(new double[]{40.671773, -73.981115});
         router.setCallback(callback);
-        ((ValhallaRouter) router).run();
+        router.fetch();
         Mockito.verify(callback).failure(statusCode.capture());
         assertThat(statusCode.getValue()).isEqualTo(404);
     }
@@ -273,7 +273,7 @@ public class RouterTest {
             .setLocation(new double[] { 40.659241, -73.983776 })
             .setLocation(new double[] { 40.671773, -73.981115 });
         router.setCallback(callback);
-        ((ValhallaRouter) router).run();
+        router.fetch();
         Mockito.verify(callback).failure(statusCode.capture());
         assertThat(statusCode.getValue()).isEqualTo(400);
     }
@@ -288,7 +288,7 @@ public class RouterTest {
             .setLocation(new double[] { 40.659241, -73.983776 })
             .setLocation(new double[] { 40.671773, -73.981115 });
         router.setCallback(callback);
-        ((ValhallaRouter) router).run();
+        router.fetch();
         Mockito.verify(callback).success(route.capture());
         assertThat(route.getValue().getRawRoute().toString())
             .isEqualTo(new JSONObject(routeJson).toString());
@@ -357,7 +357,7 @@ public class RouterTest {
                 .setHttpHandler(httpHandler)
                 .setLocation(new double[] { 40.659241, -73.983776 })
                 .setLocation(new double[] { 40.671773, -73.981115 });
-        ((ValhallaRouter) router).run();
+        router.fetch();
         assertThat(httpHandler.route.raw().request().url().toString()).contains(endpoint);
     }
 
