@@ -133,7 +133,7 @@ Include dependency using Maven.
 <dependency>
   <groupId>com.mapzen</groupId>
   <artifactId>on-the-road</artifactId>
-  <version>1.2.0</version>
+  <version>1.2.1</version>
   <type>aar</type>
 </dependency>
 ```
@@ -143,7 +143,7 @@ Include dependency using Maven.
 Include dependency using Gradle.
 
 ```groovy
-compile 'com.mapzen:on-the-road:1.2.0'
+compile 'com.mapzen:on-the-road:1.2.1'
 ```
 
 ## Sample app
@@ -155,7 +155,7 @@ To run the app you will need to sign up and [obtain an API key](https://mapzen.c
 Install the app from your IDE or from the command line with `./gradlew :sample:installDebug`
 
 
-[1]: http://search.maven.org/remotecontent?filepath=com/mapzen/on-the-road/1.2.0/on-the-road-1.2.0.aar
+[1]: http://search.maven.org/remotecontent?filepath=com/mapzen/on-the-road/1.2.1/on-the-road-1.2.1.aar
 [2]: https://mapzen.com/projects/valhalla/
 [3]: https://github.com/mapzen/lost
 [4]: http://www.movable-type.co.uk/scripts/latlong.html
