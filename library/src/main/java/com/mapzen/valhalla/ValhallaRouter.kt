@@ -1,7 +1,5 @@
 package com.mapzen.valhalla
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -9,7 +7,7 @@ import java.net.MalformedURLException
 import java.util.ArrayList
 import java.util.Locale
 
-open class ValhallaRouter : Router, Runnable {
+open class ValhallaRouter : Router {
 
     private var language: String? = null
     private var type = Router.Type.DRIVING
@@ -18,10 +16,6 @@ open class ValhallaRouter : Router, Runnable {
     private var units: Router.DistanceUnits = Router.DistanceUnits.KILOMETERS
 
     private var httpHandler: HttpHandler? = null
-
-    private val gson: Gson = GsonBuilder()
-        .registerTypeAdapter(JSON.Location::class.java, LocationSerializer())
-        .create()
 
     override fun setHttpHandler(handler: HttpHandler): Router {
         httpHandler = handler
@@ -89,20 +83,12 @@ open class ValhallaRouter : Router, Runnable {
         return this
     }
 
-    override fun fetch() {
-        if (callback == null) {
-            return
-        }
-        Thread(this).start()
-    }
-
-    override fun run() {
-        var jsonString = gson.toJson(getJSONRequest()).toString()
-        httpHandler?.requestRoute(jsonString, object: Callback<String> {
+    override fun fetch(): Call<String>? {
+        return httpHandler?.requestRoute(getJSONRequest(), object: Callback<String> {
             override fun onResponse(call: Call<String>?, response: Response<String>?) {
                 if (response != null) {
-                    if (response.isSuccessful) {
-                        callback?.success(Route(response.body()))
+                    if (response.isSuccessful && response.body() != null) {
+                        response.body()?.let { callback?.success(Route(it)) }
                     } else {
                         callback?.failure(response.raw().code())
                     }
@@ -119,8 +105,8 @@ open class ValhallaRouter : Router, Runnable {
         if (locations.size < 2) {
             throw  MalformedURLException()
         }
-        var json: JSON = JSON()
-        for ( i in 0..(locations.size-1)){
+        var json = JSON()
+        for (i in 0..(locations.size-1)){
             json.locations.add(locations[i])
         }
 

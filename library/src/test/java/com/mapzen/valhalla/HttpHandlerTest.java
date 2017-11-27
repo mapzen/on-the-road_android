@@ -46,7 +46,7 @@ public class HttpHandlerTest {
         .setLocation(new double[] { 40.671773, -73.981115 });
     RouteCallback callback = Mockito.mock(RouteCallback.class);
     router.setCallback(callback);
-    ((ValhallaRouter) router).run();
+    router.fetch();
     assertThat(httpHandler.headersAdded).isTrue();
   }
 }

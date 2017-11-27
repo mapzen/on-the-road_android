@@ -2,13 +2,20 @@ package com.mapzen.valhalla;
 
 import com.mapzen.http.Tls12OkHttpClientFactory;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
@@ -34,6 +41,10 @@ public class HttpHandler {
       return onRequest(chain);
     }
   };
+
+  private Gson gson = new GsonBuilder()
+      .registerTypeAdapter(JSON.Location.class, new LocationSerializer())
+      .create();
 
   public HttpHandler() {
     this(DEFAULT_URL, DEFAULT_LOG_LEVEL);
@@ -65,12 +76,24 @@ public class HttpHandler {
         .baseUrl(endpoint)
         .client(client)
         .addConverterFactory(ScalarsConverterFactory.create())
+        .addConverterFactory(new Converter.Factory() {
+          @Override public Converter<?, String> stringConverter(Type type, Annotation[] annotations,
+              Retrofit retrofit) {
+            return new Converter<Object, String>() {
+              @Override public String convert(Object value) throws IOException {
+                return gson.toJson(value);
+              }
+            };
+          }
+        })
         .build();
     this.service = new RestAdapterFactory(this.adapter).getRoutingService();
   }
 
-  public void requestRoute(String routeJson, Callback<String> callback) {
-    service.getRoute(routeJson).enqueue(callback);
+  public Call<String> requestRoute(JSON routeJson, Callback<String> callback) {
+    Call call = service.getRoute(routeJson);
+    call.enqueue(callback);
+    return call;
   }
 
   /**

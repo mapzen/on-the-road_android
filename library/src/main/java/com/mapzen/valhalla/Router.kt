@@ -1,5 +1,7 @@
 package com.mapzen.valhalla
 
+import retrofit2.Call
+
 interface Router {
 
     enum class Language(private val languageTag: String) {
@@ -56,6 +58,6 @@ interface Router {
     fun setDistanceUnits(units: DistanceUnits): Router
     fun clearLocations(): Router
     fun setCallback(callback: RouteCallback): Router
-    fun fetch()
+    fun fetch(): Call<String>?
     fun getJSONRequest(): JSON
 }
