@@ -56,6 +56,7 @@ interface Router {
             city: String? = null,
             state: String? = null): Router
     fun setDistanceUnits(units: DistanceUnits): Router
+    fun setMaxDifficulty(difficulty: Int): Router
     fun clearLocations(): Router
     fun setCallback(callback: RouteCallback): Router
     fun fetch(): Call<String>?
