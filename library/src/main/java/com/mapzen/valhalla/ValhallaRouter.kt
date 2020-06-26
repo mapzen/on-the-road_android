@@ -74,7 +74,7 @@ open class ValhallaRouter : Router {
         return this
     }
 
-    override fun setMaxDifficulty(difficulty: Int): Router {
+    override fun setMaxHikingDifficulty(difficulty: Int): Router {
         this.maxDifficulty = difficulty
         return this
     }
