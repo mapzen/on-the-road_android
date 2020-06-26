@@ -12,6 +12,7 @@ open class ValhallaRouter : Router {
     private var language: String? = null
     private var type = Router.Type.DRIVING
     private val locations = ArrayList<JSON.Location>()
+    private var maxDifficulty = 1
     private var callback: RouteCallback? = null
     private var units: Router.DistanceUnits = Router.DistanceUnits.KILOMETERS
 
@@ -73,6 +74,11 @@ open class ValhallaRouter : Router {
         return this
     }
 
+    override fun setMaxHikingDifficulty(difficulty: Int): Router {
+        this.maxDifficulty = difficulty
+        return this
+    }
+
     override fun clearLocations(): Router {
         this.locations.clear()
         return this
@@ -117,6 +123,7 @@ open class ValhallaRouter : Router {
         json.costing = this.type.toString()
         json.directionsOptions.language = language
         json.directionsOptions.units = this.units.toString()
+        json.costingOptions.maxHikingDifficulty = this.maxDifficulty.toString()
         return json
     }
 

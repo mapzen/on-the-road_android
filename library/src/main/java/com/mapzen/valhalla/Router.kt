@@ -56,6 +56,16 @@ interface Router {
             city: String? = null,
             state: String? = null): Router
     fun setDistanceUnits(units: DistanceUnits): Router
+    /*
+     * Sets the difficulty for hiking route types
+     *
+     * This value indicates the maximum difficulty of hiking trails that is allowed. Values between
+     * 0 and 6 are allowed. The values correspond to sac_scale values within OpenStreetMap. The
+     * default value is 1 which means that well cleared trails that are mostly flat or slightly
+     * sloped are allowed. Higher difficulty trails can be allowed by specifying a higher value for
+     * maxHikingDifficulty.
+     */
+    fun setMaxHikingDifficulty(difficulty: Int): Router
     fun clearLocations(): Router
     fun setCallback(callback: RouteCallback): Router
     fun fetch(): Call<String>?

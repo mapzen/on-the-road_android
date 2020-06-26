@@ -15,6 +15,14 @@ public class JSON {
     @SerializedName("directions_options")
     public DirectionOptions directionsOptions = new DirectionOptions();
 
+    @SerializedName("costing_options")
+    public CostingOptions costingOptions = new CostingOptions();
+
+    public static class CostingOptions {
+        @SerializedName("max_hiking_difficulty")
+        public String maxHikingDifficulty;
+    }
+
     public static class Location {
         public double lat;
         public double lon;
