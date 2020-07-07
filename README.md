@@ -133,7 +133,7 @@ Include dependency using Maven.
 <dependency>
   <groupId>com.mapzen</groupId>
   <artifactId>on-the-road</artifactId>
-  <version>1.2.1</version>
+  <version>1.3.2</version>
   <type>aar</type>
 </dependency>
 ```
