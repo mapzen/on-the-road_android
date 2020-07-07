@@ -28,10 +28,10 @@ jobs:
 workflows:
   master:
     jobs:
-    - when:
-        condition:
-          equal: [ sl/circle-test, << pipeline.git.branch >> ]
     - build:
+        branches:
+          only:
+            - sl/circle-test
         post-steps:
         - run:
             command: scripts/deploy-snapshot.sh
