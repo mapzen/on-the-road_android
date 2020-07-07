@@ -27,11 +27,12 @@ jobs:
         path: app/build/test-results
 workflows:
   master:
+    filters:
+      branches:
+        only:
+        - sl/circle-test
     jobs:
     - build:
-        branches:
-          only:
-            - sl/circle-test
         post-steps:
         - run:
             command: scripts/deploy-snapshot.sh
