@@ -143,7 +143,7 @@ Include dependency using Maven.
 Include dependency using Gradle.
 
 ```groovy
-compile 'com.mapzen:on-the-road:1.2.1'
+compile 'com.mapzen:on-the-road:1.3.2'
 ```
 
 ## Sample app
