@@ -1,29 +1,49 @@
-machine:
-  java:
-    version: oraclejdk8
-
-dependencies:
-  pre:
-    - if [ ! -e /usr/local/android-sdk-linux/build-tools/25.0.2 ]; then echo y | android update sdk --all --no-ui --filter "build-tools-25.0.2"; fi;
-    - if [ ! -e /usr/local/android-sdk-linux/platforms/android-25 ]; then echo y | android update sdk --all --no-ui --filter "android-25"; fi;
-    - if ! $(grep -q "Revision=43.0.0" /usr/local/android-sdk-linux/extras/android/m2repository/source.properties); then echo y | android update sdk --all --no-ui --filter "extra-android-m2repository"; fi;
-  cache_directories:
-    - /usr/local/android-sdk-linux/build-tools/25.0.2
-    - /usr/local/android-sdk-linux/platforms/android-25
-    - /usr/local/android-sdk-linux/extras/android/m2repository
-
-test:
-  override:
-    - ./gradlew -PdisablePreDex
-
-deployment:
+version: 2.1
+jobs:
+  build:
+    docker:
+    - image: circleci/android:api-25-alpha
+    steps:
+    - checkout
+    - restore_cache:
+        key: jars-{{ checksum "build.gradle" }}-{{ checksum  "library/build.gradle" }}--{{ checksum  "sample/build.gradle" }}
+    - run:
+        name: Download Dependencies
+        command: ./gradlew androidDependencies
+    - save_cache:
+        paths:
+        - ~/.gradle
+        key: jars-{{ checksum "build.gradle" }}-{{ checksum  "library/build.gradle" }}--{{ checksum  "sample/build.gradle" }}
+    - run:
+        name: Disable predex
+        command: ./gradlew -PdisablePreDex
+    - run:
+        name: Run Tests
+        command: ./gradlew lint test
+    - store_artifacts: # for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
+        path: app/build/reports
+        destination: reports
+    - store_test_results: # for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
+        path: app/build/test-results
+workflows:
   master:
-    branch: master
-    commands:
-      - scripts/deploy-snapshot.sh
-      - scripts/release.sh
-  release:
-     tag: /on-the-road-[0-9]+(\.[0-9]+)*(-rc[0-9])?/
-     owner: mapzen
-     commands:
-      - scripts/deploy-staging.sh
+    jobs:
+    - when:
+        condition:
+          equal: [ master, << pipeline.git.branch >> ]
+    - build:
+        post-steps:
+        - run:
+            command: scripts/deploy-snapshot.sh
+        - run:
+            command: scripts/release.sh
+#  release:
+#    jobs:
+#    - when:
+#        condition:
+#          equal: [ /on-the-road-[0-9]+(\.[0-9]+)*(-rc[0-9])?/, << pipeline.git.tag >> ]
+#    - build:
+#        post-steps:
+#        - run:
+#            command: scripts/deploy-staging.sh
+#TODO: owner
